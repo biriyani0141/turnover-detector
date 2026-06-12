@@ -23,8 +23,9 @@ C_GRID        = (38, 44, 66)
 C_TITLE       = (120, 165, 255)
 C_DIM         = (120, 125, 145)
 
-HIGHLIGHT_RATIO = 0.10
-ORANGE_RATIO    = 0.05
+HIGHLIGHT_RATIO  = 0.10
+ORANGE_RATIO     = 0.05
+CHANGE_PCT_COL   = 5  # COLS内の「前日比%」列インデックス
 
 # ---- テーブル列定義 (ラベル, 幅px, 寄せ) ----
 COLS = [
@@ -87,19 +88,23 @@ def _put(draw, text, x, col_w, y, font, color, align):
         draw.text((x + 4, cell_y), text, fill=color, font=font)
 
 
-def _stock_to_vals(s: Stock, rank: int) -> list[str]:
+def _stock_to_vals(s: Stock, rank: int) -> dict:
     tr = s.turnover_ratio
-    return [
-        str(rank),
-        s.code,
-        s.name[:13],
-        s.market or "",
-        f"{s.price:,.0f}" if s.price else "-",
-        f"{s.change_pct:+.2f}%" if s.change_pct is not None else "-",
-        f"{s.turnover_oku:,.0f}" if s.turnover_oku else "-",
-        f"{s.mktcap_oku:,.0f}" if s.mktcap_oku else "-",
-        f"{tr*100:.1f}%" if tr else "-",
-    ]
+    return {
+        "tr": tr,
+        "change_pct": s.change_pct,
+        "vals": [
+            str(rank),
+            s.code,
+            s.name[:13],
+            s.market or "",
+            f"{s.price:,.0f}" if s.price else "-",
+            f"{s.change_pct:+.2f}%" if s.change_pct is not None else "-",
+            f"{s.turnover_oku:,.0f}" if s.turnover_oku else "-",
+            f"{s.mktcap_oku:,.0f}" if s.mktcap_oku else "-",
+            f"{tr*100:.1f}%" if tr else "-",
+        ],
+    }
 
 
 def _draw_table(title: str, rows: list[dict]) -> Image.Image:
@@ -127,6 +132,9 @@ def _draw_table(title: str, rows: list[dict]) -> Image.Image:
     # データ行
     for i, row in enumerate(rows):
         tr = row["tr"] or 0
+        cp = row.get("change_pct")
+        highlighted = tr >= ORANGE_RATIO
+
         if tr >= HIGHLIGHT_RATIO:
             bg, tc = C_RED_BG, C_RED_TEXT
         elif tr >= ORANGE_RATIO:
@@ -138,7 +146,17 @@ def _draw_table(title: str, rows: list[dict]) -> Image.Image:
         draw.rectangle([0, y, total_w, y + ROW_H], fill=bg)
         x = PAD_X
         for j, (_, col_w, align) in enumerate(COLS):
-            _put(draw, row["vals"][j], x, col_w, y, font, tc, align)
+            if j == CHANGE_PCT_COL and cp is not None:
+                # 上昇=赤、下落=緑。強調行(赤/橙背景)では薄い色で視認性を確保
+                if cp > 0:
+                    cell_color = (255, 180, 180) if highlighted else (255, 90, 90)
+                elif cp < 0:
+                    cell_color = (130, 255, 190) if highlighted else (70, 210, 130)
+                else:
+                    cell_color = C_DIM
+            else:
+                cell_color = tc
+            _put(draw, row["vals"][j], x, col_w, y, font, cell_color, align)
             x += col_w
         draw.line([0, y + ROW_H - 1, total_w, y + ROW_H - 1], fill=C_GRID)
         y += ROW_H
@@ -150,10 +168,7 @@ def make_ranking_image(stocks: list[Stock]) -> str:
     """売買代金ランキング順（全銘柄）の画像を生成し、パスを返す。"""
     today = datetime.date.today().strftime("%Y/%m/%d")
     title = f"売買代金ランキング  {today}    赤=回転率10%超  橙=回転率5%超"
-    rows = [
-        {"tr": s.turnover_ratio, "vals": _stock_to_vals(s, s.rank)}
-        for s in stocks
-    ]
+    rows = [_stock_to_vals(s, s.rank) for s in stocks]
     img = _draw_table(title, rows)
     path = os.path.join(tempfile.gettempdir(), "ranking.png")
     img.save(path, "PNG")
@@ -171,10 +186,7 @@ def make_turnover_image(stocks: list[Stock]) -> str | None:
         return None
     today = datetime.date.today().strftime("%Y/%m/%d")
     title = f"回転率ランキング（5%以上）  {today}    赤=10%超  橙=5%超"
-    rows = [
-        {"tr": s.turnover_ratio, "vals": _stock_to_vals(s, i + 1)}
-        for i, s in enumerate(filtered)
-    ]
+    rows = [_stock_to_vals(s, i + 1) for i, s in enumerate(filtered)]
     img = _draw_table(title, rows)
     path = os.path.join(tempfile.gettempdir(), "turnover.png")
     img.save(path, "PNG")

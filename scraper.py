@@ -150,44 +150,56 @@ def _parse_ranking_table(soup: BeautifulSoup, start_rank: int) -> list[Stock]:
     return out
 
 
-def fetch_mktcap(code: str, session: requests.Session | None = None) -> float | None:
-    """個別銘柄ページから時価総額(円)を取得する。
-
-    Yahooの個別ページは『時価総額 X,XXX億円』『X.XX兆円』等の表記。
-    兆/億/百万 の単位を吸収して円に正規化する。
-    """
-    sess = session or requests.Session()
+def _fetch_quote_page(code: str,
+                      session: requests.Session) -> tuple[float | None, float | None]:
+    """個別銘柄ページを取得し (時価総額円, 現在値円) を返す。失敗は None。"""
     url = QUOTE_URL.format(code=code)
     try:
-        r = sess.get(url, headers=HEADERS, timeout=20)
+        r = session.get(url, headers=HEADERS, timeout=20)
         r.raise_for_status()
     except requests.RequestException:
-        return None
+        return None, None
     text = BeautifulSoup(r.text, "html.parser").get_text(" ", strip=True)
 
-    # 『時価総額』の近傍にある数値+単位を拾う
+    # 時価総額: 『時価総額 X,XXX百万円』等の表記を円に正規化
+    mktcap = None
     m = re.search(r"時価総額\D{0,6}([\d,\.]+)\s*(兆|億|百万)?\s*円?", text)
-    if not m:
-        return None
-    val = _to_float(m.group(1))
-    if val is None:
-        return None
-    unit = m.group(2)
-    if unit == "兆":
-        return val * 1e12
-    if unit == "億":
-        return val * 1e8
-    if unit == "百万":
-        return val * 1e6
-    return val  # 単位なしは円とみなす
+    if m:
+        val = _to_float(m.group(1))
+        if val is not None:
+            unit = m.group(2)
+            if unit == "兆":    mktcap = val * 1e12
+            elif unit == "億":  mktcap = val * 1e8
+            elif unit == "百万": mktcap = val * 1e6
+            else:               mktcap = val
+
+    # 現在値: 「数値 前日比」パターン (Yahoo個別ページ: 「81,200 前日比 +5,760」)
+    price = None
+    pm = re.search(r"([\d,]+\.?\d*)\s+前日比", text)
+    if pm:
+        candidate = _to_float(pm.group(1))
+        if candidate and 1 <= candidate <= 5_000_000:
+            price = candidate
+
+    return mktcap, price
+
+
+def fetch_mktcap(code: str, session: requests.Session | None = None) -> float | None:
+    """個別銘柄ページから時価総額(円)を取得する。"""
+    sess = session or requests.Session()
+    mktcap, _ = _fetch_quote_page(code, sess)
+    return mktcap
 
 
 def enrich_with_mktcap(stocks: list[Stock],
                        session: requests.Session | None = None) -> list[Stock]:
-    """各銘柄に時価総額を付与する(個別ページを順に叩く)。"""
+    """各銘柄に時価総額と現在値を付与する(個別ページを順に叩く)。"""
     sess = session or requests.Session()
     for s in stocks:
-        s.mktcap = fetch_mktcap(s.code, session=sess)
+        mktcap, price = _fetch_quote_page(s.code, sess)
+        s.mktcap = mktcap
+        if price is not None:
+            s.price = price
         time.sleep(SLEEP_BETWEEN)
     return stocks
 
