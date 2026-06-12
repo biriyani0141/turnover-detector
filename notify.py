@@ -1,36 +1,49 @@
-"""Discord Webhook への通知。"""
+"""Discord Webhook への通知（画像送信）。"""
 
+from __future__ import annotations
 import os
+import json
 import datetime
 import requests
 from detector import Signal, format_lines
+from scraper import Stock
 
 
-def post_to_discord(signals: list[Signal], webhook_url: str | None = None) -> None:
+def post_to_discord(
+    signals: list[Signal],
+    webhook_url: str | None = None,
+    stocks: list[Stock] | None = None,
+) -> None:
     webhook_url = webhook_url or os.environ.get("DISCORD_WEBHOOK_URL")
     if not webhook_url:
         raise RuntimeError("DISCORD_WEBHOOK_URL が未設定です")
 
-    today = datetime.date.today().strftime("%Y/%m/%d")
-    if not signals:
-        content = f"**売買代金×回転率 ランキング {today}**\n取得データなし"
-    else:
-        from detector import HIGHLIGHT_RATIO
-        body = "\n".join(format_lines(signals))
-        highlighted = sum(1 for s in signals if s.turnover_ratio >= HIGHLIGHT_RATIO)
-        up = sum(1 for s in signals if s.direction == "up")
-        down = sum(1 for s in signals if s.direction == "down")
-        header = (f"**売買代金×回転率 ランキング {today}**\n"
-                  f"{len(signals)}銘柄 🔴{highlighted}件(回転率10%超) / 🔺{up} 🔻{down}\n")
-        content = header + "```\n" + body + "\n```"
+    from image_notify import make_ranking_image, make_turnover_image
 
-    # Discordの1メッセージ上限2000字に収める
-    content = content[:1990]
-    resp = requests.post(webhook_url, json={"content": content}, timeout=20)
+    src = stocks or [sg.stock for sg in signals]
+    ranking_path = make_ranking_image(src)
+    turnover_path = make_turnover_image(src)
+
+    today = datetime.date.today().strftime("%Y/%m/%d")
+    content = f"**売買代金×回転率  {today}**"
+
+    files: list[tuple] = [
+        ("files[0]", ("ranking.png", open(ranking_path, "rb"), "image/png")),
+    ]
+    if turnover_path:
+        files.append(
+            ("files[1]", ("turnover.png", open(turnover_path, "rb"), "image/png"))
+        )
+
+    resp = requests.post(
+        webhook_url,
+        data={"payload_json": json.dumps({"content": content})},
+        files=files,
+        timeout=60,
+    )
     resp.raise_for_status()
 
 
 def print_to_console(signals: list[Signal]) -> None:
-    """Webhook未設定時のフォールバック(ログ確認用)。"""
     for line in format_lines(signals):
         print(line)

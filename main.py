@@ -83,7 +83,7 @@ def main() -> int:
     else:  # discord
         from notify import post_to_discord, print_to_console
         if os.environ.get("DISCORD_WEBHOOK_URL"):
-            post_to_discord(signals)
+            post_to_discord(signals, stocks=stocks)
             print("Discordへ通知しました。")
         else:
             print("DISCORD_WEBHOOK_URL未設定。コンソール出力:")
