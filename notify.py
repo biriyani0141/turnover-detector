@@ -13,13 +13,15 @@ def post_to_discord(signals: list[Signal], webhook_url: str | None = None) -> No
 
     today = datetime.date.today().strftime("%Y/%m/%d")
     if not signals:
-        content = f"**売買代金×回転率 異常検出 {today}**\n該当銘柄なし"
+        content = f"**売買代金×回転率 ランキング {today}**\n取得データなし"
     else:
+        from detector import HIGHLIGHT_RATIO
         body = "\n".join(format_lines(signals))
+        highlighted = sum(1 for s in signals if s.turnover_ratio >= HIGHLIGHT_RATIO)
         up = sum(1 for s in signals if s.direction == "up")
         down = sum(1 for s in signals if s.direction == "down")
-        header = (f"**売買代金×回転率 異常検出 {today}**\n"
-                  f"上位{len(signals)}銘柄 (🔺{up} / 🔻{down})\n")
+        header = (f"**売買代金×回転率 ランキング {today}**\n"
+                  f"{len(signals)}銘柄 🔴{highlighted}件(回転率10%超) / 🔺{up} 🔻{down}\n")
         content = header + "```\n" + body + "\n```"
 
     # Discordの1メッセージ上限2000字に収める

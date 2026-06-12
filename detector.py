@@ -21,8 +21,10 @@ class Signal:
 
 # 上昇/下落の判定しきい値(前日比率%)。これ以内はflat扱い。
 FLAT_BAND = 1.0
-# 回転率の下限フィルタ(これ未満は通知から除外)。0で無効。
-MIN_TURNOVER_RATIO = 0.05  # 5%
+# 回転率の下限フィルタ。0=全銘柄表示。
+MIN_TURNOVER_RATIO = 0.0
+# この回転率以上を🔴で強調表示
+HIGHLIGHT_RATIO = 0.10  # 10%
 
 
 def detect(stocks: list[Stock],
@@ -49,14 +51,15 @@ def detect(stocks: list[Stock],
 
 
 def format_lines(signals: list[Signal]) -> list[str]:
-    """通知用の整形済み行リストを返す。"""
+    """通知用の整形済み行リストを返す。回転率10%以上は🔴、未満は⚪。"""
     arrow = {"up": "🔺", "down": "🔻", "flat": "▪️"}
     lines = []
     for i, sg in enumerate(signals, 1):
         s = sg.stock
         chg = "" if s.change_pct is None else f"{s.change_pct:+.2f}%"
+        flag = "🔴" if sg.turnover_ratio >= HIGHLIGHT_RATIO else "⚪"
         lines.append(
-            f"{i:>2}. {arrow[sg.direction]} {s.code} {s.name[:12]}  "
+            f"{flag}{i:>2}. {arrow[sg.direction]} {s.code} {s.name[:12]}  "
             f"回転率{sg.turnover_ratio*100:.0f}%  "
             f"代金{(s.turnover_oku or 0):,.0f}億  "
             f"時総{(s.mktcap_oku or 0):,.0f}億  {chg}"

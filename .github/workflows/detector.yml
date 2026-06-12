@@ -33,7 +33,7 @@ jobs:
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
           TOP_N: "50"
-          TOP_K: "15"
+          TOP_K: "50"
           MARKET: "tokyo"
           FORCE_RUN: ${{ github.event.inputs.force_run }}
         run: python main.py
