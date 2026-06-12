@@ -16,17 +16,30 @@ def post_to_discord(
     stocks: list[Stock] | None = None,
     prev_data: dict[str, float] | None = None,
     watchlist: dict | None = None,
+    std_stocks: list[Stock] | None = None,
+    grt_stocks: list[Stock] | None = None,
+    market_summary: dict | None = None,
 ) -> None:
     webhook_url = webhook_url or os.environ.get("DISCORD_WEBHOOK_URL")
     if not webhook_url:
         raise RuntimeError("DISCORD_WEBHOOK_URL が未設定です")
 
-    from image_notify import make_ranking_images, make_turnover_image
+    from image_notify import (make_ranking_images, make_turnover_image,
+                               make_std_grt_image)
+    from market_data import format_prime_summary_lines, format_std_grt_summary_lines
     from watchlist import format_watchlist_text
 
     src = stocks or [sg.stock for sg in signals]
-    ranking1_path, ranking2_path = make_ranking_images(src, prev_data=prev_data)
-    turnover_path = make_turnover_image(src, prev_data=prev_data)
+    ms = market_summary or {}
+
+    prime_summary  = format_prime_summary_lines(ms) if ms else None
+    stdgrt_summary = format_std_grt_summary_lines(ms) if ms else None
+
+    ranking1_path, ranking2_path = make_ranking_images(src, prev_data=prev_data,
+                                                        summary_lines=prime_summary)
+    turnover_path   = make_turnover_image(src, prev_data=prev_data)
+    std_grt_path    = make_std_grt_image(std_stocks or [], grt_stocks or [],
+                                          prev_data=prev_data, summary_lines=stdgrt_summary)
 
     today = datetime.date.today().strftime("%Y/%m/%d")
     content = f"**売買代金×回転率  {today}**"
@@ -40,6 +53,9 @@ def post_to_discord(
         idx += 1
     if turnover_path:
         files.append((f"files[{idx}]", ("turnover.png", open(turnover_path, "rb"), "image/png")))
+        idx += 1
+    if std_grt_path:
+        files.append((f"files[{idx}]", ("ranking_std_grt.png", open(std_grt_path, "rb"), "image/png")))
         idx += 1
     if watchlist:
         txt = format_watchlist_text(watchlist)

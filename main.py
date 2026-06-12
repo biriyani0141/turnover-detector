@@ -4,16 +4,18 @@
 流れ:
   1) 平日かつ日本の祝日でないか判定(土日祝はスキップ)
   2) 売買代金ランキング取得 -> 時価総額付与
-  3) 回転率で異常検出
-  4) Discord通知(未設定ならコンソール出力)
+  3) STD/GRT売買代金ランキング取得(上位25件ずつ)
+  4) 市場別売買代金・日経平均サマリー取得
+  5) 回転率で異常検出
+  6) Discord通知(未設定ならコンソール出力)
 
 環境変数:
   NOTIFY               'discord'(既定) | 'line' | 'console'
   DISCORD_WEBHOOK_URL  Discord通知先
   LINE_CHANNEL_TOKEN   LINE Messaging APIトークン
   LINE_USER_ID         LINE送信先user ID
-  TOP_N                母集団の銘柄数(既定50)
-  TOP_K                通知する上位件数(既定15)
+  TOP_N                母集団の銘柄数(既定100)
+  TOP_K                通知する上位件数(既定100)
   MARKET               'tokyo'|'all' など(既定tokyo)
   FORCE_RUN            '1'なら土日祝でも実行(手動テスト用)
 """
@@ -28,19 +30,20 @@ from detector import detect
 from notify import post_to_discord, print_to_console
 from history import load_prev_data, save_today_data
 from watchlist import update_watchlist
+from market_data import fetch_market_summary
+
+STD_GRT_TOP_N = 25
 
 
 def is_jp_business_day(d: datetime.date) -> bool:
-    if d.weekday() >= 5:  # 土(5)日(6)
+    if d.weekday() >= 5:
         return False
     try:
         import jpholiday
         if jpholiday.is_holiday(d):
             return False
     except ImportError:
-        # jpholiday未導入でも動く。祝日は土日のみ判定にフォールバック。
         pass
-    # 年末年始(12/31-1/3)は取引所休場
     if (d.month, d.day) in [(12, 31), (1, 1), (1, 2), (1, 3)]:
         return False
     return True
@@ -53,11 +56,13 @@ def main() -> int:
         print(f"{today} は非営業日。スキップします。")
         return 0
 
-    top_n = int(os.environ.get("TOP_N", "50"))
-    top_k = int(os.environ.get("TOP_K", "15"))
+    top_n = int(os.environ.get("TOP_N", "100"))
+    top_k = int(os.environ.get("TOP_K", "100"))
     market = os.environ.get("MARKET", "tokyo")
 
     sess = requests.Session()
+
+    # ---- プライム/全体ランキング ----
     print(f"ランキング取得中 (market={market}, top_n={top_n}) ...")
     stocks = fetch_ranking(top_n=top_n, market=market, session=sess)
     print(f"  {len(stocks)}件取得")
@@ -67,6 +72,19 @@ def main() -> int:
     have_cap = sum(1 for s in stocks if s.mktcap)
     print(f"  時価総額取得: {have_cap}/{len(stocks)}件")
 
+    # ---- スタンダード/グロースランキング ----
+    print(f"STD/GRTランキング取得中 (各上位{STD_GRT_TOP_N}件) ...")
+    std_stocks = fetch_ranking(top_n=STD_GRT_TOP_N, market="tokyo2", session=sess)
+    grt_stocks = fetch_ranking(top_n=STD_GRT_TOP_N, market="tokyoM", session=sess)
+    print(f"  STD={len(std_stocks)}件 GRT={len(grt_stocks)}件")
+    enrich_with_mktcap(std_stocks + grt_stocks, session=sess)
+
+    # ---- 市場サマリー ----
+    print("市場サマリー取得中 ...")
+    market_summary = fetch_market_summary(session=sess)
+    print(f"  取得完了: {list(market_summary.keys())}")
+
+    # ---- 履歴・ウォッチリスト ----
     prev_data = load_prev_data()
     save_today_data(stocks)
     wl = update_watchlist(stocks)
@@ -85,12 +103,18 @@ def main() -> int:
             print("LINE設定が未完。コンソール出力:")
             print_to_console(signals)
     elif notify_to == "console":
-        from notify import print_to_console
         print_to_console(signals)
     else:  # discord
-        from notify import post_to_discord, print_to_console
         if os.environ.get("DISCORD_WEBHOOK_URL"):
-            post_to_discord(signals, stocks=stocks, prev_data=prev_data, watchlist=wl)
+            post_to_discord(
+                signals,
+                stocks=stocks,
+                prev_data=prev_data,
+                watchlist=wl,
+                std_stocks=std_stocks,
+                grt_stocks=grt_stocks,
+                market_summary=market_summary,
+            )
             print("Discordへ通知しました。")
         else:
             print("DISCORD_WEBHOOK_URL未設定。コンソール出力:")

@@ -118,17 +118,28 @@ def _stock_to_vals(s: Stock, rank: int, prev_turnover: float | None = None) -> d
     }
 
 
-def _draw_table(title: str, rows: list[dict], cols: list | None = None) -> Image.Image:
+SUMMARY_LINE_H = 22  # サマリー行1行の高さ
+
+
+def _draw_table(title: str, rows: list[dict], cols: list | None = None,
+                summary_lines: list[tuple[str, str]] | None = None) -> Image.Image:
     _cols = cols if cols is not None else COLS
     font = _find_font(FONT_SIZE)
+    n_summary = len(summary_lines) if summary_lines else 0
     total_w = sum(c[1] for c in _cols) + PAD_X * 2
-    total_h = TITLE_H + HEADER_H + ROW_H * len(rows) + 6
+    total_h = TITLE_H + n_summary * SUMMARY_LINE_H + HEADER_H + ROW_H * len(rows) + 6
 
     img = Image.new("RGB", (total_w, total_h), C_BG)
     draw = ImageDraw.Draw(img)
 
     draw.text((PAD_X, 8), title, fill=C_TITLE, font=font)
     y = TITLE_H
+
+    # サマリー行（タイトルとヘッダーの間）
+    if summary_lines:
+        for s_text, s_color in summary_lines:
+            draw.text((PAD_X, y + 4), s_text, fill=s_color, font=font)
+            y += SUMMARY_LINE_H
 
     draw.rectangle([0, y, total_w, y + HEADER_H], fill=C_HEADER_BG)
     x = PAD_X
@@ -187,18 +198,65 @@ def _make_ranking_part(stocks: list[Stock], title: str,
 
 
 def make_ranking_images(stocks: list[Stock],
-                        prev_data: dict[str, float] | None = None) -> tuple[str, str | None]:
+                        prev_data: dict[str, float] | None = None,
+                        summary_lines: list[tuple[str, str]] | None = None) -> tuple[str, str | None]:
     today = datetime.date.today().strftime("%Y/%m/%d")
     legend = "赤=回転率10%超  橙=回転率5%超"
-    path1 = _make_ranking_part(
-        stocks[:50], f"売買代金ランキング 1-50位  {today}    {legend}", prev_data, "ranking_1.png"
-    )
-    path2 = None
-    if len(stocks) > 50:
-        path2 = _make_ranking_part(
-            stocks[50:], f"売買代金ランキング 51-100位  {today}    {legend}", prev_data, "ranking_2.png"
-        )
+
+    def _part(part_stocks, label, fname):
+        title = f"売買代金ランキング {label}  {today}    {legend}"
+        rows = [
+            _stock_to_vals(s, s.rank, prev_data.get(s.code) if prev_data else None)
+            for s in part_stocks
+        ]
+        # サマリー行は1枚目のみに付ける
+        sl = summary_lines if fname == "ranking_1.png" else None
+        img = _draw_table(title, rows, summary_lines=sl)
+        path = os.path.join(tempfile.gettempdir(), fname)
+        img.save(path, "PNG")
+        return path
+
+    path1 = _part(stocks[:50], "1-50位", "ranking_1.png")
+    path2 = _part(stocks[50:], "51-100位", "ranking_2.png") if len(stocks) > 50 else None
     return path1, path2
+
+
+# ---- スタンダード/グロース 売買代金ランキング ----
+
+def make_std_grt_image(std_stocks: list[Stock], grt_stocks: list[Stock],
+                       prev_data: dict[str, float] | None = None,
+                       summary_lines: list[tuple[str, str]] | None = None) -> str | None:
+    """STD上位25位とGRT上位25位を1枚に縦積みした画像を生成してパスを返す。"""
+    if not std_stocks and not grt_stocks:
+        return None
+    today = datetime.date.today().strftime("%Y/%m/%d")
+    legend = "赤=回転率10%超  橙=回転率5%超"
+
+    parts: list[Image.Image] = []
+    if std_stocks:
+        title = f"売買代金ランキング スタンダード上位25位  {today}    {legend}"
+        rows = [_stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
+                for i, s in enumerate(std_stocks)]
+        parts.append(_draw_table(title, rows, summary_lines=summary_lines))
+    if grt_stocks:
+        title = f"売買代金ランキング グロース上位25位  {today}    {legend}"
+        rows = [_stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
+                for i, s in enumerate(grt_stocks)]
+        # 2枚目にはサマリー行を付けない
+        parts.append(_draw_table(title, rows))
+
+    GAP = 6
+    total_w = max(p.width for p in parts)
+    total_h = sum(p.height for p in parts) + GAP * (len(parts) - 1)
+    combined = Image.new("RGB", (total_w, total_h), C_BG)
+    y = 0
+    for p in parts:
+        combined.paste(p, (0, y))
+        y += p.height + GAP
+
+    path = os.path.join(tempfile.gettempdir(), "ranking_std_grt.png")
+    combined.save(path, "PNG")
+    return path
 
 
 # ---- 回転率画像（市場別1枚結合） ----
