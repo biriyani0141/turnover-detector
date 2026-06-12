@@ -1,0 +1,38 @@
+name: turnover-detector
+
+on:
+  schedule:
+    # JST 19:30 = UTC 10:30、平日(月-金)のみ。
+    # 祝日はmain.py内でスキップ判定する。
+    - cron: "30 10 * * 1-5"
+  workflow_dispatch:        # 手動実行ボタン(テスト用)
+    inputs:
+      force_run:
+        description: "土日祝でも強制実行する"
+        required: false
+        default: "0"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run detector
+        env:
+          NOTIFY: "discord"        # 'discord' | 'line' | 'console'
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
+          LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
+          TOP_N: "50"
+          TOP_K: "15"
+          MARKET: "tokyo"
+          FORCE_RUN: ${{ github.event.inputs.force_run }}
+        run: python main.py
