@@ -1,4 +1,4 @@
-"""売買代金ランキング・回転率ランキングをPNG画像で生成する。"""
+"""売買代金ランキング・回転率ランキング・ウォッチリストをPNG画像で生成する。"""
 
 from __future__ import annotations
 import os
@@ -23,11 +23,11 @@ C_GRID        = (38, 44, 66)
 C_TITLE       = (120, 165, 255)
 C_DIM         = (120, 125, 145)
 
-HIGHLIGHT_RATIO  = 0.10
-ORANGE_RATIO     = 0.05
-CHANGE_PCT_COL   = 5  # COLS内の「前日比%」列インデックス
+HIGHLIGHT_RATIO = 0.10
+ORANGE_RATIO    = 0.05
+CHANGE_PCT_COL  = 5   # COLS 内の「前日比%」列インデックス
 
-# ---- テーブル列定義 (ラベル, 幅px, 寄せ) ----
+# ---- ランキングテーブル列定義 ----
 COLS = [
     ("順位",         40, "r"),
     ("コード",       62, "l"),
@@ -41,6 +41,27 @@ COLS = [
     ("回転率%",      70, "r"),
 ]
 
+# ---- ウォッチリストテーブル列定義 ----
+WATCHLIST_COLS = [
+    ("コード",    62, "l"),
+    ("銘柄名",   140, "l"),
+    ("初登場日",   82, "l"),
+    ("初株価",     72, "r"),
+    ("現株価",     72, "r"),
+    ("株価変化",   68, "r"),
+    ("初時総(億)", 90, "r"),
+    ("現時総(億)", 90, "r"),
+    ("5%超回",    50, "r"),
+    ("10%超回",   54, "r"),
+]
+
+# ---- 市場別設定 ----
+MARKET_ORDER = [
+    ("東証PRM", "プライム"),
+    ("東証STD", "スタンダード"),
+    ("東証GRT", "グロース"),
+]
+
 ROW_H     = 27
 HEADER_H  = 32
 TITLE_H   = 38
@@ -50,11 +71,9 @@ FONT_SIZE = 13
 
 def _find_font(size: int):
     candidates = [
-        # Ubuntu (GitHub Actions: apt install fonts-noto-cjk)
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
         "/usr/share/fonts/truetype/noto/NotoSansCJKjp-Regular.ttf",
         "/usr/share/fonts/noto-cjk/NotoSansCJKjp-Regular.otf",
-        # Windows
         "C:/Windows/Fonts/meiryo.ttc",
         "C:/Windows/Fonts/msgothic.ttc",
         "C:/Windows/Fonts/YuGothM.ttc",
@@ -113,29 +132,27 @@ def _stock_to_vals(s: Stock, rank: int, prev_turnover: float | None = None) -> d
     }
 
 
-def _draw_table(title: str, rows: list[dict]) -> Image.Image:
+def _draw_table(title: str, rows: list[dict], cols: list | None = None) -> Image.Image:
+    _cols = cols if cols is not None else COLS
     font = _find_font(FONT_SIZE)
-    total_w = sum(c[1] for c in COLS) + PAD_X * 2
+    total_w = sum(c[1] for c in _cols) + PAD_X * 2
     total_h = TITLE_H + HEADER_H + ROW_H * len(rows) + 6
 
     img = Image.new("RGB", (total_w, total_h), C_BG)
     draw = ImageDraw.Draw(img)
 
-    # タイトル
     draw.text((PAD_X, 8), title, fill=C_TITLE, font=font)
     y = TITLE_H
 
-    # ヘッダー行
     draw.rectangle([0, y, total_w, y + HEADER_H], fill=C_HEADER_BG)
     x = PAD_X
-    for label, col_w, _ in COLS:
+    for label, col_w, _ in _cols:
         tw = _tw(draw, label, font)
         draw.text((x + max(0, (col_w - tw) // 2), y + 8), label, fill=C_HEADER_TEXT, font=font)
         x += col_w
     draw.line([0, y + HEADER_H - 1, total_w, y + HEADER_H - 1], fill=C_GRID)
     y += HEADER_H
 
-    # データ行
     for i, row in enumerate(rows):
         tr = row["tr"] or 0
         cp = row.get("change_pct")
@@ -151,9 +168,8 @@ def _draw_table(title: str, rows: list[dict]) -> Image.Image:
 
         draw.rectangle([0, y, total_w, y + ROW_H], fill=bg)
         x = PAD_X
-        for j, (_, col_w, align) in enumerate(COLS):
+        for j, (_, col_w, align) in enumerate(_cols):
             if j == CHANGE_PCT_COL and cp is not None:
-                # 上昇=赤、下落=緑。強調行(赤/橙背景)では薄い色で視認性を確保
                 if cp > 0:
                     cell_color = (255, 180, 180) if highlighted else (255, 90, 90)
                 elif cp < 0:
@@ -170,6 +186,8 @@ def _draw_table(title: str, rows: list[dict]) -> Image.Image:
     return img
 
 
+# ---- ランキング画像 ----
+
 def _make_ranking_part(stocks: list[Stock], title: str,
                        prev_data: dict[str, float] | None, fname: str) -> str:
     rows = [
@@ -184,44 +202,88 @@ def _make_ranking_part(stocks: list[Stock], title: str,
 
 def make_ranking_images(stocks: list[Stock],
                         prev_data: dict[str, float] | None = None) -> tuple[str, str | None]:
-    """1-50位と51-100位の2枚を生成してパスのタプルを返す。2枚目はstocksが50件以下なら None。"""
     today = datetime.date.today().strftime("%Y/%m/%d")
     legend = "赤=回転率10%超  橙=回転率5%超"
-
     path1 = _make_ranking_part(
-        stocks[:50],
-        f"売買代金ランキング 1-50位  {today}    {legend}",
-        prev_data,
-        "ranking_1.png",
+        stocks[:50], f"売買代金ランキング 1-50位  {today}    {legend}", prev_data, "ranking_1.png"
     )
     path2 = None
     if len(stocks) > 50:
         path2 = _make_ranking_part(
-            stocks[50:],
-            f"売買代金ランキング 51-100位  {today}    {legend}",
-            prev_data,
-            "ranking_2.png",
+            stocks[50:], f"売買代金ランキング 51-100位  {today}    {legend}", prev_data, "ranking_2.png"
         )
     return path1, path2
 
 
-def make_turnover_image(stocks: list[Stock],
-                        prev_data: dict[str, float] | None = None) -> str | None:
-    """回転率5%以上を回転率順に並べた画像を生成し、パスを返す。なければ None。"""
+# ---- 回転率画像（市場別） ----
+
+def make_turnover_images(stocks: list[Stock],
+                         prev_data: dict[str, float] | None = None) -> dict[str, str]:
+    """市場別に回転率5%以上の画像を生成。{市場ラベル: path} の dict を返す。"""
     filtered = sorted(
         [s for s in stocks if s.turnover_ratio and s.turnover_ratio >= ORANGE_RATIO],
         key=lambda s: s.turnover_ratio,
         reverse=True,
     )
     if not filtered:
-        return None
+        return {}
     today = datetime.date.today().strftime("%Y/%m/%d")
-    title = f"回転率ランキング（5%以上）  {today}    赤=10%超  橙=5%超"
-    rows = [
-        _stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
-        for i, s in enumerate(filtered)
-    ]
-    img = _draw_table(title, rows)
-    path = os.path.join(tempfile.gettempdir(), "turnover.png")
+    result: dict[str, str] = {}
+    for market_code, label in MARKET_ORDER:
+        market_stocks = [s for s in filtered if s.market == market_code]
+        if not market_stocks:
+            continue
+        title = f"回転率ランキング {label}（5%以上）  {today}    赤=10%超  橙=5%超"
+        rows = [
+            _stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
+            for i, s in enumerate(market_stocks)
+        ]
+        img = _draw_table(title, rows)
+        path = os.path.join(tempfile.gettempdir(), f"turnover_{label}.png")
+        img.save(path, "PNG")
+        result[label] = path
+    return result
+
+
+# ---- ウォッチリスト画像 ----
+
+def make_watchlist_image(watchlist: dict) -> str | None:
+    """ウォッチリストの画像を生成してパスを返す。エントリがなければ None。"""
+    if not watchlist:
+        return None
+
+    entries = sorted(
+        watchlist.items(),
+        key=lambda kv: (-kv[1].get("count_10pct", 0), -kv[1].get("count_5pct", 0)),
+    )[:50]
+
+    rows = []
+    for code, e in entries:
+        fp = e.get("first_price")
+        lp = e.get("last_price")
+        fm = e.get("first_mktcap")
+        lm = e.get("last_mktcap")
+        price_chg_str = f"{(lp - fp) / fp * 100:+.1f}%" if fp and lp else "-"
+        rows.append({
+            "tr": 0,
+            "change_pct": None,
+            "vals": [
+                code,
+                e["name"][:13],
+                e.get("first_date", "-"),
+                f"{fp:,.0f}" if fp else "-",
+                f"{lp:,.0f}" if lp else "-",
+                price_chg_str,
+                f"{fm/1e8:,.0f}" if fm else "-",
+                f"{lm/1e8:,.0f}" if lm else "-",
+                str(e.get("count_5pct", 0)),
+                str(e.get("count_10pct", 0)),
+            ],
+        })
+
+    today = datetime.date.today().strftime("%Y/%m/%d")
+    title = f"回転率異常ウォッチリスト  {today}"
+    img = _draw_table(title, rows, cols=WATCHLIST_COLS)
+    path = os.path.join(tempfile.gettempdir(), "watchlist.png")
     img.save(path, "PNG")
     return path
