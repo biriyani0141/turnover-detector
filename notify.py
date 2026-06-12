@@ -13,26 +13,33 @@ def post_to_discord(
     signals: list[Signal],
     webhook_url: str | None = None,
     stocks: list[Stock] | None = None,
+    prev_data: dict[str, float] | None = None,
 ) -> None:
     webhook_url = webhook_url or os.environ.get("DISCORD_WEBHOOK_URL")
     if not webhook_url:
         raise RuntimeError("DISCORD_WEBHOOK_URL が未設定です")
 
-    from image_notify import make_ranking_image, make_turnover_image
+    from image_notify import make_ranking_images, make_turnover_image
 
     src = stocks or [sg.stock for sg in signals]
-    ranking_path = make_ranking_image(src)
-    turnover_path = make_turnover_image(src)
+    ranking1_path, ranking2_path = make_ranking_images(src, prev_data=prev_data)
+    turnover_path = make_turnover_image(src, prev_data=prev_data)
 
     today = datetime.date.today().strftime("%Y/%m/%d")
     content = f"**売買代金×回転率  {today}**"
 
     files: list[tuple] = [
-        ("files[0]", ("ranking.png", open(ranking_path, "rb"), "image/png")),
+        ("files[0]", ("ranking_1-50.png", open(ranking1_path, "rb"), "image/png")),
     ]
+    idx = 1
+    if ranking2_path:
+        files.append(
+            (f"files[{idx}]", ("ranking_51-100.png", open(ranking2_path, "rb"), "image/png"))
+        )
+        idx += 1
     if turnover_path:
         files.append(
-            ("files[1]", ("turnover.png", open(turnover_path, "rb"), "image/png"))
+            (f"files[{idx}]", ("turnover.png", open(turnover_path, "rb"), "image/png"))
         )
 
     resp = requests.post(

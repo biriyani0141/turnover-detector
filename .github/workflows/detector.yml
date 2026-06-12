@@ -1,5 +1,5 @@
 name: turnover-detector
-# v2
+# v3
 
 on:
   schedule:
@@ -12,6 +12,9 @@ on:
         description: "土日祝でも強制実行する"
         required: false
         default: "0"
+
+permissions:
+  contents: write           # data/ への git push に必要
 
 jobs:
   run:
@@ -35,8 +38,18 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           LINE_CHANNEL_TOKEN: ${{ secrets.LINE_CHANNEL_TOKEN }}
           LINE_USER_ID: ${{ secrets.LINE_USER_ID }}
-          TOP_N: "50"
-          TOP_K: "50"
+          TOP_N: "100"
+          TOP_K: "100"
           MARKET: "tokyo"
           FORCE_RUN: ${{ github.event.inputs.force_run }}
         run: python main.py
+
+      - name: Save historical data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if ! git diff --staged --quiet; then
+            git commit -m "data: $(date -u +%Y-%m-%d)"
+            git push
+          fi

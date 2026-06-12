@@ -26,6 +26,7 @@ import requests
 from scraper import fetch_ranking, enrich_with_mktcap
 from detector import detect
 from notify import post_to_discord, print_to_console
+from history import load_prev_data, save_today_data
 
 
 def is_jp_business_day(d: datetime.date) -> bool:
@@ -65,6 +66,10 @@ def main() -> int:
     have_cap = sum(1 for s in stocks if s.mktcap)
     print(f"  時価総額取得: {have_cap}/{len(stocks)}件")
 
+    prev_data = load_prev_data()
+    save_today_data(stocks)
+    print(f"  前日データ: {len(prev_data)}件")
+
     signals = detect(stocks, top_k=top_k)
     print(f"検出: {len(signals)}件")
 
@@ -83,7 +88,7 @@ def main() -> int:
     else:  # discord
         from notify import post_to_discord, print_to_console
         if os.environ.get("DISCORD_WEBHOOK_URL"):
-            post_to_discord(signals, stocks=stocks)
+            post_to_discord(signals, stocks=stocks, prev_data=prev_data)
             print("Discordへ通知しました。")
         else:
             print("DISCORD_WEBHOOK_URL未設定。コンソール出力:")

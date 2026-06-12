@@ -36,6 +36,7 @@ COLS = [
     ("現在値",       78, "r"),
     ("前日比%",      70, "r"),
     ("売買代金(億)", 102, "r"),
+    ("代金前日比",    74, "r"),
     ("時価総額(億)", 108, "r"),
     ("回転率%",      70, "r"),
 ]
@@ -77,7 +78,6 @@ def _tw(draw: ImageDraw.ImageDraw, text: str, font) -> int:
 
 def _put(draw, text, x, col_w, y, font, color, align):
     text = str(text)
-    # はみ出す場合は末尾を切る
     while len(text) > 1 and _tw(draw, text, font) > col_w - 6:
         text = text[:-1]
     tw = _tw(draw, text, font)
@@ -88,8 +88,13 @@ def _put(draw, text, x, col_w, y, font, color, align):
         draw.text((x + 4, cell_y), text, fill=color, font=font)
 
 
-def _stock_to_vals(s: Stock, rank: int) -> dict:
+def _stock_to_vals(s: Stock, rank: int, prev_turnover: float | None = None) -> dict:
     tr = s.turnover_ratio
+    if prev_turnover and s.turnover and prev_turnover > 0:
+        chg = (s.turnover - prev_turnover) / prev_turnover * 100
+        turnover_chg_str = f"{chg:+.0f}%"
+    else:
+        turnover_chg_str = "-"
     return {
         "tr": tr,
         "change_pct": s.change_pct,
@@ -101,6 +106,7 @@ def _stock_to_vals(s: Stock, rank: int) -> dict:
             f"{s.price:,.0f}" if s.price else "-",
             f"{s.change_pct:+.2f}%" if s.change_pct is not None else "-",
             f"{s.turnover_oku:,.0f}" if s.turnover_oku else "-",
+            turnover_chg_str,
             f"{s.mktcap_oku:,.0f}" if s.mktcap_oku else "-",
             f"{tr*100:.1f}%" if tr else "-",
         ],
@@ -164,18 +170,43 @@ def _draw_table(title: str, rows: list[dict]) -> Image.Image:
     return img
 
 
-def make_ranking_image(stocks: list[Stock]) -> str:
-    """売買代金ランキング順（全銘柄）の画像を生成し、パスを返す。"""
-    today = datetime.date.today().strftime("%Y/%m/%d")
-    title = f"売買代金ランキング  {today}    赤=回転率10%超  橙=回転率5%超"
-    rows = [_stock_to_vals(s, s.rank) for s in stocks]
+def _make_ranking_part(stocks: list[Stock], title: str,
+                       prev_data: dict[str, float] | None, fname: str) -> str:
+    rows = [
+        _stock_to_vals(s, s.rank, prev_data.get(s.code) if prev_data else None)
+        for s in stocks
+    ]
     img = _draw_table(title, rows)
-    path = os.path.join(tempfile.gettempdir(), "ranking.png")
+    path = os.path.join(tempfile.gettempdir(), fname)
     img.save(path, "PNG")
     return path
 
 
-def make_turnover_image(stocks: list[Stock]) -> str | None:
+def make_ranking_images(stocks: list[Stock],
+                        prev_data: dict[str, float] | None = None) -> tuple[str, str | None]:
+    """1-50位と51-100位の2枚を生成してパスのタプルを返す。2枚目はstocksが50件以下なら None。"""
+    today = datetime.date.today().strftime("%Y/%m/%d")
+    legend = "赤=回転率10%超  橙=回転率5%超"
+
+    path1 = _make_ranking_part(
+        stocks[:50],
+        f"売買代金ランキング 1-50位  {today}    {legend}",
+        prev_data,
+        "ranking_1.png",
+    )
+    path2 = None
+    if len(stocks) > 50:
+        path2 = _make_ranking_part(
+            stocks[50:],
+            f"売買代金ランキング 51-100位  {today}    {legend}",
+            prev_data,
+            "ranking_2.png",
+        )
+    return path1, path2
+
+
+def make_turnover_image(stocks: list[Stock],
+                        prev_data: dict[str, float] | None = None) -> str | None:
     """回転率5%以上を回転率順に並べた画像を生成し、パスを返す。なければ None。"""
     filtered = sorted(
         [s for s in stocks if s.turnover_ratio and s.turnover_ratio >= ORANGE_RATIO],
@@ -186,7 +217,10 @@ def make_turnover_image(stocks: list[Stock]) -> str | None:
         return None
     today = datetime.date.today().strftime("%Y/%m/%d")
     title = f"回転率ランキング（5%以上）  {today}    赤=10%超  橙=5%超"
-    rows = [_stock_to_vals(s, i + 1) for i, s in enumerate(filtered)]
+    rows = [
+        _stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
+        for i, s in enumerate(filtered)
+    ]
     img = _draw_table(title, rows)
     path = os.path.join(tempfile.gettempdir(), "turnover.png")
     img.save(path, "PNG")
