@@ -120,52 +120,73 @@ def fetch_market_summary(session: requests.Session | None = None) -> dict:
     return result
 
 
-def format_prime_summary_lines(ms: dict) -> list[tuple[str, str]]:
+_C_GREEN = (70, 210, 130)
+
+
+def _pct_color(pct: float | None) -> tuple:
+    from image_notify import C_TEXT, C_RED_TEXT
+    if pct is None:
+        return C_TEXT
+    if pct > 0:
+        return C_RED_TEXT
+    if pct < 0:
+        return _C_GREEN
+    return C_TEXT
+
+
+def _mkt_segments(label: str, mkt: dict) -> list[tuple[str, tuple]]:
+    from image_notify import C_TEXT
+    v, c, p = mkt["value"], mkt["change"], mkt["change_pct"]
+    a5, a5d, a5r = mkt["avg5"], mkt["avg5_diff"], mkt["avg5_ratio"]
+    segs: list[tuple[str, tuple]] = [(f"{label}  {_fmt_oku(v)}", C_TEXT)]
+    if c is not None and p is not None:
+        segs.append((f"  前日比 {_fmt_diff_oku(c)}(", C_TEXT))
+        segs.append((f"{p:+.1f}%", _pct_color(p)))
+        segs.append((")", C_TEXT))
+    if a5:
+        segs.append((f"  5日平均 {_fmt_oku(a5)}", C_TEXT))
+    if a5d is not None and a5r is not None:
+        segs.append((f"  5日平均比 {_fmt_diff_oku(a5d)}(", C_TEXT))
+        segs.append((f"{a5r:+.1f}%", _pct_color(a5r)))
+        segs.append((")", C_TEXT))
+    return segs
+
+
+def format_prime_summary_lines(ms: dict) -> list[list[tuple[str, tuple]]]:
     """プライム用サマリーライン（メインランキング画像向け）を返す。"""
-    from image_notify import C_DIM, C_TEXT
-    lines = []
+    from image_notify import C_TEXT
+    lines: list[list[tuple[str, tuple]]] = []
 
     nk = ms.get("nikkei")
     if nk and nk.get("price"):
         chg = nk.get("change")
         pct = nk.get("change_pct")
-        nk_str = (
-            f"日経平均  {nk['price']:,.2f}"
-            + (f"  変動 {chg:+,.2f}" if chg is not None else "")
-            + (f"  騰落率 {pct:+.2f}%" if pct is not None else "")
-        )
-        lines.append((nk_str, C_TEXT))
+        segs: list[tuple[str, tuple]] = [(f"日経平均  {nk['price']:,.2f}", C_TEXT)]
+        if chg is not None:
+            segs.append((f"  変動 {chg:+,.2f}", C_TEXT))
+        if pct is not None:
+            segs.append(("  騰落率 ", C_TEXT))
+            segs.append((f"{pct:+.2f}%", _pct_color(pct)))
+        lines.append(segs)
 
     pr = ms.get("prime")
     if pr and pr.get("value") is not None:
-        v, c, p = pr["value"], pr["change"], pr["change_pct"]
-        a5, a5d, a5r = pr["avg5"], pr["avg5_diff"], pr["avg5_ratio"]
-        pr_str = (
-            f"プライム  {_fmt_oku(v)}"
-            + (f"  前日比 {_fmt_diff_oku(c)}({p:+.1f}%)" if c is not None and p is not None else "")
-            + (f"  5日平均 {_fmt_oku(a5)}" if a5 else "")
-            + (f"  5日比 {_fmt_diff_oku(a5d)}({a5r:+.1f}%)" if a5d is not None and a5r is not None else "")
-        )
-        lines.append((pr_str, C_DIM))
+        lines.append(_mkt_segments("プライム", pr))
 
     return lines
 
 
-def format_std_grt_summary_lines(ms: dict) -> list[tuple[str, str]]:
-    """スタンダード/グロース用サマリーライン（STD/GRT画像向け）を返す。"""
-    from image_notify import C_DIM
-    lines = []
-    for key, label in [("standard", "スタンダード"), ("growth", "グロース")]:
-        mkt = ms.get(key)
-        if not mkt or mkt.get("value") is None:
-            continue
-        v, c, p = mkt["value"], mkt["change"], mkt["change_pct"]
-        a5, a5d, a5r = mkt["avg5"], mkt["avg5_diff"], mkt["avg5_ratio"]
-        line = (
-            f"{label}  {_fmt_oku(v)}"
-            + (f"  前日比 {_fmt_diff_oku(c)}({p:+.1f}%)" if c is not None and p is not None else "")
-            + (f"  5日平均 {_fmt_oku(a5)}" if a5 else "")
-            + (f"  5日比 {_fmt_diff_oku(a5d)}({a5r:+.1f}%)" if a5d is not None and a5r is not None else "")
-        )
-        lines.append((line, C_DIM))
-    return lines
+def format_std_summary_lines(ms: dict) -> list[list[tuple[str, tuple]]]:
+    """スタンダード用サマリーライン（STD/GRT画像向け）を返す。"""
+    mkt = ms.get("standard")
+    if not mkt or mkt.get("value") is None:
+        return []
+    return [_mkt_segments("スタンダード", mkt)]
+
+
+def format_grt_summary_lines(ms: dict) -> list[list[tuple[str, tuple]]]:
+    """グロース用サマリーライン（STD/GRT画像向け）を返す。"""
+    mkt = ms.get("growth")
+    if not mkt or mkt.get("value") is None:
+        return []
+    return [_mkt_segments("グロース", mkt)]

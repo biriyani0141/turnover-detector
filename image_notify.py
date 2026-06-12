@@ -120,9 +120,13 @@ def _stock_to_vals(s: Stock, rank: int, prev_turnover: float | None = None) -> d
 
 SUMMARY_LINE_H = 22  # サマリー行1行の高さ
 
+# summary_lines の型: list[list[tuple[str, tuple]]]
+#   各エントリが1行、1行はカラーセグメントのリスト (テキスト, RGBタプル)
+
 
 def _draw_table(title: str, rows: list[dict], cols: list | None = None,
-                summary_lines: list[tuple[str, str]] | None = None) -> Image.Image:
+                summary_lines: list[list[tuple[str, tuple]]] | None = None,
+                highlight_turnover: bool = True) -> Image.Image:
     _cols = cols if cols is not None else COLS
     font = _find_font(FONT_SIZE)
     n_summary = len(summary_lines) if summary_lines else 0
@@ -135,10 +139,13 @@ def _draw_table(title: str, rows: list[dict], cols: list | None = None,
     draw.text((PAD_X, 8), title, fill=C_TITLE, font=font)
     y = TITLE_H
 
-    # サマリー行（タイトルとヘッダーの間）
+    # サマリー行（タイトルとヘッダーの間）: カラーセグメント形式
     if summary_lines:
-        for s_text, s_color in summary_lines:
-            draw.text((PAD_X, y + 4), s_text, fill=s_color, font=font)
+        for line_segments in summary_lines:
+            x_pos = PAD_X
+            for seg_text, seg_color in line_segments:
+                draw.text((x_pos, y + 4), seg_text, fill=seg_color, font=font)
+                x_pos += _tw(draw, seg_text, font)
             y += SUMMARY_LINE_H
 
     draw.rectangle([0, y, total_w, y + HEADER_H], fill=C_HEADER_BG)
@@ -155,9 +162,9 @@ def _draw_table(title: str, rows: list[dict], cols: list | None = None,
         cp = row.get("change_pct")
         highlighted = tr >= ORANGE_RATIO
 
-        if tr >= HIGHLIGHT_RATIO:
+        if highlight_turnover and tr >= HIGHLIGHT_RATIO:
             bg, tc = C_RED_BG, C_RED_TEXT
-        elif tr >= ORANGE_RATIO:
+        elif highlight_turnover and tr >= ORANGE_RATIO:
             bg, tc = C_ORANGE_BG, C_ORANGE_TEXT
         else:
             bg = C_ROW_EVEN if i % 2 == 0 else C_ROW_ODD
@@ -225,7 +232,8 @@ def make_ranking_images(stocks: list[Stock],
 
 def make_std_grt_image(std_stocks: list[Stock], grt_stocks: list[Stock],
                        prev_data: dict[str, float] | None = None,
-                       summary_lines: list[tuple[str, str]] | None = None) -> str | None:
+                       std_summary: list | None = None,
+                       grt_summary: list | None = None) -> str | None:
     """STD上位25位とGRT上位25位を1枚に縦積みした画像を生成してパスを返す。"""
     if not std_stocks and not grt_stocks:
         return None
@@ -237,13 +245,12 @@ def make_std_grt_image(std_stocks: list[Stock], grt_stocks: list[Stock],
         title = f"売買代金ランキング スタンダード上位25位  {today}    {legend}"
         rows = [_stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
                 for i, s in enumerate(std_stocks)]
-        parts.append(_draw_table(title, rows, summary_lines=summary_lines))
+        parts.append(_draw_table(title, rows, summary_lines=std_summary, highlight_turnover=False))
     if grt_stocks:
         title = f"売買代金ランキング グロース上位25位  {today}    {legend}"
         rows = [_stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
                 for i, s in enumerate(grt_stocks)]
-        # 2枚目にはサマリー行を付けない
-        parts.append(_draw_table(title, rows))
+        parts.append(_draw_table(title, rows, summary_lines=grt_summary, highlight_turnover=False))
 
     GAP = 6
     total_w = max(p.width for p in parts)

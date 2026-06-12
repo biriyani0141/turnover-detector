@@ -26,20 +26,23 @@ def post_to_discord(
 
     from image_notify import (make_ranking_images, make_turnover_image,
                                make_std_grt_image)
-    from market_data import format_prime_summary_lines, format_std_grt_summary_lines
+    from market_data import (format_prime_summary_lines,
+                              format_std_summary_lines, format_grt_summary_lines)
     from watchlist import format_watchlist_text
 
     src = stocks or [sg.stock for sg in signals]
     ms = market_summary or {}
 
-    prime_summary  = format_prime_summary_lines(ms) if ms else None
-    stdgrt_summary = format_std_grt_summary_lines(ms) if ms else None
+    prime_summary = format_prime_summary_lines(ms) if ms else None
+    std_summary   = format_std_summary_lines(ms) if ms else None
+    grt_summary   = format_grt_summary_lines(ms) if ms else None
 
     ranking1_path, ranking2_path = make_ranking_images(src, prev_data=prev_data,
                                                         summary_lines=prime_summary)
-    turnover_path   = make_turnover_image(src, prev_data=prev_data)
-    std_grt_path    = make_std_grt_image(std_stocks or [], grt_stocks or [],
-                                          prev_data=prev_data, summary_lines=stdgrt_summary)
+    turnover_path = make_turnover_image(src, prev_data=prev_data)
+    std_grt_path  = make_std_grt_image(std_stocks or [], grt_stocks or [],
+                                        prev_data=prev_data,
+                                        std_summary=std_summary, grt_summary=grt_summary)
 
     today = datetime.date.today().strftime("%Y/%m/%d")
     content = f"**売買代金×回転率  {today}**"
