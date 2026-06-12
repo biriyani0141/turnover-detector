@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import json
 import datetime
+import tempfile
 import requests
 from detector import Signal, format_lines
 from scraper import Stock
@@ -20,12 +21,12 @@ def post_to_discord(
     if not webhook_url:
         raise RuntimeError("DISCORD_WEBHOOK_URL が未設定です")
 
-    from image_notify import make_ranking_images, make_turnover_images, make_watchlist_image
+    from image_notify import make_ranking_images, make_turnover_image
+    from watchlist import format_watchlist_text
 
     src = stocks or [sg.stock for sg in signals]
     ranking1_path, ranking2_path = make_ranking_images(src, prev_data=prev_data)
-    turnover_paths = make_turnover_images(src, prev_data=prev_data)
-    watchlist_path = make_watchlist_image(watchlist) if watchlist else None
+    turnover_path = make_turnover_image(src, prev_data=prev_data)
 
     today = datetime.date.today().strftime("%Y/%m/%d")
     content = f"**売買代金×回転率  {today}**"
@@ -37,11 +38,15 @@ def post_to_discord(
     if ranking2_path:
         files.append((f"files[{idx}]", ("ranking_51-100.png", open(ranking2_path, "rb"), "image/png")))
         idx += 1
-    for label, path in turnover_paths.items():
-        files.append((f"files[{idx}]", (f"turnover_{label}.png", open(path, "rb"), "image/png")))
+    if turnover_path:
+        files.append((f"files[{idx}]", ("turnover.png", open(turnover_path, "rb"), "image/png")))
         idx += 1
-    if watchlist_path:
-        files.append((f"files[{idx}]", ("watchlist.png", open(watchlist_path, "rb"), "image/png")))
+    if watchlist:
+        txt = format_watchlist_text(watchlist)
+        txt_path = os.path.join(tempfile.gettempdir(), "watchlist.txt")
+        with open(txt_path, "w", encoding="utf-8") as f:
+            f.write(txt)
+        files.append((f"files[{idx}]", ("watchlist.txt", open(txt_path, "rb"), "text/plain")))
         idx += 1
 
     resp = requests.post(

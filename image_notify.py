@@ -41,20 +41,6 @@ COLS = [
     ("回転率%",      70, "r"),
 ]
 
-# ---- ウォッチリストテーブル列定義 ----
-WATCHLIST_COLS = [
-    ("コード",    62, "l"),
-    ("銘柄名",   140, "l"),
-    ("初登場日",   82, "l"),
-    ("初株価",     72, "r"),
-    ("現株価",     72, "r"),
-    ("株価変化",   68, "r"),
-    ("初時総(億)", 90, "r"),
-    ("現時総(億)", 90, "r"),
-    ("5%超回",    50, "r"),
-    ("10%超回",   54, "r"),
-]
-
 # ---- 市場別設定 ----
 MARKET_ORDER = [
     ("東証PRM", "プライム"),
@@ -215,75 +201,45 @@ def make_ranking_images(stocks: list[Stock],
     return path1, path2
 
 
-# ---- 回転率画像（市場別） ----
+# ---- 回転率画像（市場別1枚結合） ----
 
-def make_turnover_images(stocks: list[Stock],
-                         prev_data: dict[str, float] | None = None) -> dict[str, str]:
-    """市場別に回転率5%以上の画像を生成。{市場ラベル: path} の dict を返す。"""
+def make_turnover_image(stocks: list[Stock],
+                        prev_data: dict[str, float] | None = None) -> str | None:
+    """市場別（プライム/スタンダード/グロース）を1枚に縦積みした画像を生成してパスを返す。"""
     filtered = sorted(
         [s for s in stocks if s.turnover_ratio and s.turnover_ratio >= ORANGE_RATIO],
         key=lambda s: s.turnover_ratio,
         reverse=True,
     )
     if not filtered:
-        return {}
+        return None
     today = datetime.date.today().strftime("%Y/%m/%d")
-    result: dict[str, str] = {}
+    legend = "赤=10%超  橙=5%超"
+
+    parts: list[Image.Image] = []
     for market_code, label in MARKET_ORDER:
         market_stocks = [s for s in filtered if s.market == market_code]
         if not market_stocks:
             continue
-        title = f"回転率ランキング {label}（5%以上）  {today}    赤=10%超  橙=5%超"
+        title = f"回転率ランキング {label}（5%以上）  {today}    {legend}"
         rows = [
             _stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
             for i, s in enumerate(market_stocks)
         ]
-        img = _draw_table(title, rows)
-        path = os.path.join(tempfile.gettempdir(), f"turnover_{label}.png")
-        img.save(path, "PNG")
-        result[label] = path
-    return result
+        parts.append(_draw_table(title, rows))
 
-
-# ---- ウォッチリスト画像 ----
-
-def make_watchlist_image(watchlist: dict) -> str | None:
-    """ウォッチリストの画像を生成してパスを返す。エントリがなければ None。"""
-    if not watchlist:
+    if not parts:
         return None
 
-    entries = sorted(
-        watchlist.items(),
-        key=lambda kv: (-kv[1].get("count_10pct", 0), -kv[1].get("count_5pct", 0)),
-    )[:50]
+    GAP = 6
+    total_w = max(p.width for p in parts)
+    total_h = sum(p.height for p in parts) + GAP * (len(parts) - 1)
+    combined = Image.new("RGB", (total_w, total_h), C_BG)
+    y = 0
+    for p in parts:
+        combined.paste(p, (0, y))
+        y += p.height + GAP
 
-    rows = []
-    for code, e in entries:
-        fp = e.get("first_price")
-        lp = e.get("last_price")
-        fm = e.get("first_mktcap")
-        lm = e.get("last_mktcap")
-        price_chg_str = f"{(lp - fp) / fp * 100:+.1f}%" if fp and lp else "-"
-        rows.append({
-            "tr": 0,
-            "change_pct": None,
-            "vals": [
-                code,
-                e["name"][:13],
-                e.get("first_date", "-"),
-                f"{fp:,.0f}" if fp else "-",
-                f"{lp:,.0f}" if lp else "-",
-                price_chg_str,
-                f"{fm/1e8:,.0f}" if fm else "-",
-                f"{lm/1e8:,.0f}" if lm else "-",
-                str(e.get("count_5pct", 0)),
-                str(e.get("count_10pct", 0)),
-            ],
-        })
-
-    today = datetime.date.today().strftime("%Y/%m/%d")
-    title = f"回転率異常ウォッチリスト  {today}"
-    img = _draw_table(title, rows, cols=WATCHLIST_COLS)
-    path = os.path.join(tempfile.gettempdir(), "watchlist.png")
-    img.save(path, "PNG")
+    path = os.path.join(tempfile.gettempdir(), "turnover.png")
+    combined.save(path, "PNG")
     return path
