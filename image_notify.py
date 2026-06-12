@@ -238,16 +238,15 @@ def make_std_grt_image(std_stocks: list[Stock], grt_stocks: list[Stock],
     if not std_stocks and not grt_stocks:
         return None
     today = datetime.date.today().strftime("%Y/%m/%d")
-    legend = "赤=回転率10%超  橙=回転率5%超"
 
     parts: list[Image.Image] = []
     if std_stocks:
-        title = f"売買代金ランキング スタンダード上位25位  {today}    {legend}"
+        title = f"売買代金ランキング スタンダード上位25位  {today}"
         rows = [_stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
                 for i, s in enumerate(std_stocks)]
         parts.append(_draw_table(title, rows, summary_lines=std_summary, highlight_turnover=False))
     if grt_stocks:
-        title = f"売買代金ランキング グロース上位25位  {today}    {legend}"
+        title = f"売買代金ランキング グロース上位25位  {today}"
         rows = [_stock_to_vals(s, i + 1, prev_data.get(s.code) if prev_data else None)
                 for i, s in enumerate(grt_stocks)]
         parts.append(_draw_table(title, rows, summary_lines=grt_summary, highlight_turnover=False))
