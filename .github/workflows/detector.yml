@@ -3,9 +3,9 @@ name: turnover-detector
 
 on:
   schedule:
-    # JST 19:30 = UTC 10:30、平日(月-金)のみ。
+    # JST 17:00 = UTC 08:00、平日(月-金)のみ。
     # 祝日はmain.py内でスキップ判定する。
-    - cron: "30 10 * * 1-5"
+    - cron: "0 8 * * 1-5"
   workflow_dispatch:        # 手動実行ボタン(テスト用)
     inputs:
       force_run:
