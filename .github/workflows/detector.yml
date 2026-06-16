@@ -53,3 +53,18 @@ jobs:
             git commit -m "data: $(date -u +%Y-%m-%d)"
             git push
           fi
+
+      - name: Publish ranking images to Pages
+        run: |
+          mkdir -p docs/images/latest
+          for f in ranking_1.png ranking_2.png ranking_std_grt.png turnover.png; do
+            [ -f /tmp/$f ] && cp /tmp/$f docs/images/latest/$f
+          done
+          if [ -f docs/images/latest/ranking_1.png ]; then
+            date -u +"%Y-%m-%dT%H:%M:%SZ" > docs/images/latest/updated_ranking.txt
+          fi
+          git add docs/images/latest/
+          if ! git diff --staged --quiet; then
+            git commit -m "docs: ranking images $(date -u +%Y-%m-%d)"
+            git push
+          fi

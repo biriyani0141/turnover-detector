@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>マーケットダッシュボード</title>
+<style>
+  body{background:#0f111a;color:#cdd2e4;font-family:sans-serif;margin:0;padding:24px}
+  h1{color:#78a5ff;margin:0 0 4px}
+  h2{color:#78a5ff;border-bottom:1px solid #26304c;padding-bottom:6px;margin-top:36px}
+  .images{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+  .images img{max-width:100%;height:auto;border:1px solid #26304c;border-radius:4px}
+  .meta{color:#6e7387;font-size:0.82em;margin-top:4px}
+</style>
+</head>
+<body>
+<h1>マーケットダッシュボード</h1>
+<p class="meta" id="page-ts"></p>
+
+<section>
+  <h2>売買代金ランキング</h2>
+  <p class="meta" id="ts-ranking"></p>
+  <div class="images">
+    <img src="images/latest/ranking_1.png" alt="ランキング 1-50位">
+    <img src="images/latest/ranking_2.png" alt="ランキング 51-100位">
+    <img src="images/latest/ranking_std_grt.png" alt="STD/GRT">
+    <img src="images/latest/turnover.png" alt="回転率">
+  </div>
+</section>
+
+<section>
+  <h2>米国テーマ動向</h2>
+  <p class="meta" id="ts-themes"></p>
+  <div class="images">
+    <img src="images/latest/themes_4class.png" alt="4分類">
+    <img src="images/latest/themes_rank_1d.png" alt="1日ランキング">
+    <img src="images/latest/themes_rank_5d.png" alt="5日ランキング">
+  </div>
+</section>
+
+<script>
+document.getElementById('page-ts').textContent =
+  'ページ読み込み: ' + new Date().toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo'});
+
+async function loadTs(url, elId) {
+  try {
+    const r = await fetch(url + '?t=' + Date.now());
+    if (r.ok) {
+      const t = (await r.text()).trim();
+      const d = new Date(t);
+      document.getElementById(elId).textContent =
+        '更新: ' + d.toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo'});
+    }
+  } catch(e) {}
+}
+loadTs('images/latest/updated_ranking.txt', 'ts-ranking');
+loadTs('images/latest/updated_themes.txt', 'ts-themes');
+</script>
+</body>
+</html>
