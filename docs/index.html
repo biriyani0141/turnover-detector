@@ -5,20 +5,49 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>マーケットダッシュボード</title>
 <style>
-  body{background:#0f111a;color:#cdd2e4;font-family:sans-serif;margin:0;padding:24px}
-  h1{color:#78a5ff;margin:0 0 4px}
-  h2{color:#78a5ff;border-bottom:1px solid #26304c;padding-bottom:6px;margin-top:36px}
-  .images{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0f111a;color:#cdd2e4;font-family:sans-serif}
+
+  header{padding:16px 16px 0;background:#0f111a}
+  h1{color:#78a5ff;font-size:1.2rem;margin-bottom:12px}
+
+  .tabs{display:flex;gap:4px;border-bottom:2px solid #26304c;padding:0 16px}
+  .tab-btn{
+    padding:10px 20px;font-size:1rem;border:none;cursor:pointer;
+    background:transparent;color:#6e7387;border-radius:6px 6px 0 0;
+    transition:background 0.15s,color 0.15s;white-space:nowrap;
+  }
+  .tab-btn.active{background:#1a1f33;color:#78a5ff;border-bottom:2px solid #78a5ff;margin-bottom:-2px}
+  .tab-btn:hover:not(.active){background:#161b2c;color:#cdd2e4}
+
+  .panel{display:none;padding:16px}
+  .panel.active{display:block}
+
+  .meta{color:#6e7387;font-size:0.82em;margin-bottom:10px}
+  .images{display:flex;flex-wrap:wrap;gap:10px}
   .images img{max-width:100%;height:auto;border:1px solid #26304c;border-radius:4px}
-  .meta{color:#6e7387;font-size:0.82em;margin-top:4px}
 </style>
 </head>
 <body>
-<h1>マーケットダッシュボード</h1>
-<p class="meta" id="page-ts"></p>
 
-<section>
-  <h2>売買代金ランキング</h2>
+<header>
+  <h1>マーケットダッシュボード</h1>
+  <div class="tabs">
+    <button class="tab-btn" data-tab="themes" onclick="switchTab('themes')">米テーマ</button>
+    <button class="tab-btn" data-tab="ranking" onclick="switchTab('ranking')">売買代金</button>
+  </div>
+</header>
+
+<div id="panel-themes" class="panel">
+  <p class="meta" id="ts-themes"></p>
+  <div class="images">
+    <img src="images/latest/themes_4class.png" alt="4分類">
+    <img src="images/latest/themes_rank_1d.png" alt="1日ランキング">
+    <img src="images/latest/themes_rank_5d.png" alt="5日ランキング">
+  </div>
+</div>
+
+<div id="panel-ranking" class="panel">
   <p class="meta" id="ts-ranking"></p>
   <div class="images">
     <img src="images/latest/ranking_1.png" alt="ランキング 1-50位">
@@ -26,21 +55,13 @@
     <img src="images/latest/ranking_std_grt.png" alt="STD/GRT">
     <img src="images/latest/turnover.png" alt="回転率">
   </div>
-</section>
-
-<section>
-  <h2>米国テーマ動向</h2>
-  <p class="meta" id="ts-themes"></p>
-  <div class="images">
-    <img src="images/latest/themes_4class.png" alt="4分類">
-    <img src="images/latest/themes_rank_1d.png" alt="1日ランキング">
-    <img src="images/latest/themes_rank_5d.png" alt="5日ランキング">
-  </div>
-</section>
+</div>
 
 <script>
-document.getElementById('page-ts').textContent =
-  'ページ読み込み: ' + new Date().toLocaleString('ja-JP', {timeZone: 'Asia/Tokyo'});
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+}
 
 async function loadTs(url, elId) {
   try {
@@ -53,8 +74,10 @@ async function loadTs(url, elId) {
     }
   } catch(e) {}
 }
-loadTs('images/latest/updated_ranking.txt', 'ts-ranking');
+
+switchTab('themes');
 loadTs('images/latest/updated_themes.txt', 'ts-themes');
+loadTs('images/latest/updated_ranking.txt', 'ts-ranking');
 </script>
 </body>
 </html>
