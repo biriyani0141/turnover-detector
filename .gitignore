@@ -1,5 +1,21 @@
 __pycache__/
 *.pyc
 .env
+.env.*
 .venv/
 *.csv
+
+# 秘密情報を含む可能性があるファイル
+*.ps1
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+token.json
+service_account.json
+*_secret.json
+*_credentials.json
+.netrc
+auth.json
