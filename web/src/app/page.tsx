@@ -11,6 +11,12 @@ type Row = {
   ret_3m: number | null;
 };
 
+type Excluded = {
+  code: string;
+  name: string;
+  reason: string;
+};
+
 function pct(v: number | null): string {
   return v === null || v === undefined ? "-" : v.toFixed(1) + "%";
 }
@@ -24,17 +30,35 @@ function colorOf(v: number | null): string {
 export default function Home() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [meta, setMeta] = useState<any>(null);
+  const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/data/ranking.json")
-      .then((r) => {
+    Promise.all([
+      fetch("/data/ranking.json").then((r) => {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
-      })
-      .then((d) => {
-        setMeta(d._meta);
-        setRows(d.ranking.slice(0, 30));
+      }),
+      fetch("/data/excluded.json")
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .catch((e) => {
+          console.error("excluded.json fetch failed:", e);
+          return { excluded: [] };
+        }),
+    ])
+      .then(([rankingData, excludedData]) => {
+        setMeta(rankingData._meta);
+        const excludedCodes = new Set<string>(
+          (excludedData.excluded ?? []).map((e: Excluded) => e.code)
+        );
+        setExcluded(excludedData.excluded ?? []);
+        const filtered = (rankingData.ranking as Row[])
+          .filter((r) => !excludedCodes.has(r.code))
+          .slice(0, 30);
+        setRows(filtered);
       })
       .catch((e) => setErr(String(e)));
   }, []);
@@ -81,6 +105,18 @@ export default function Home() {
           </tbody>
         </table>
       </div>
+
+      {excluded.length > 0 && (
+        <div className="mt-8 pt-4 border-t border-gray-200">
+          <p className="text-xs font-medium text-gray-500 mb-1">除外銘柄（手動）</p>
+          <p className="text-[10px] text-gray-400 mb-2">以下は構造的ノイズとして一覧から除外中</p>
+          {excluded.map((e) => (
+            <div key={e.code} className="text-[10px] text-gray-400 leading-5">
+              {e.code} {e.name} ― {e.reason}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
