@@ -19,3 +19,7 @@ service_account.json
 *_credentials.json
 .netrc
 auth.json
+
+# jquants 中間データ（webは読まない・容量大のため除外）
+data/jquants/daily/
+data/jquants/meta.json
