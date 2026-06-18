@@ -56,10 +56,10 @@ const STATE_CONFIG: {
   label: StateLabel;
   headerBg: string;
 }[] = [
+  { label: "加速中",    headerBg: "bg-emerald-700" },
+  { label: "短期押し目", headerBg: "bg-teal-700"    },
   { label: "調整",      headerBg: "bg-blue-700"    },
   { label: "調整予備軍", headerBg: "bg-sky-700"     },
-  { label: "短期押し目", headerBg: "bg-teal-700"    },
-  { label: "加速中",    headerBg: "bg-emerald-700" },
   { label: "失速",      headerBg: "bg-red-700"     },
 ];
 
@@ -93,12 +93,12 @@ function pct(v: number | null): string {
   return v === null || v === undefined ? "-" : v.toFixed(1) + "%";
 }
 
-// 日本式：プラス=赤、マイナス=緑（暗背景向け明度）
+// 日本式：プラス=赤、マイナス=緑（符号ベース・±2%中立グレーなし）
 function retColor(v: number | null): string {
   if (v === null || v === undefined) return "text-gray-500";
-  if (v >= NEUTRAL_PCT)  return "text-red-400";
-  if (v <= -NEUTRAL_PCT) return "text-green-400";
-  return "text-gray-500";
+  if (v > 0) return "text-red-400";
+  if (v < 0) return "text-green-400";
+  return "text-gray-300";
 }
 
 // 株価：10000円以上は万表記でコンパクト化
@@ -112,6 +112,11 @@ function fmtClose(v: number | null): string {
 function fmtCap(v: number | null): string {
   if (v === null || v === undefined) return "-";
   return Math.round(v).toLocaleString("ja-JP");
+}
+
+// コード4桁表示：末尾0を除去（5桁→4桁）
+function shortCode(code: string): string {
+  return code.endsWith("0") ? code.slice(0, -1) : code;
 }
 
 // 銘柄名短縮：HD化・G化・8文字超を省略
@@ -249,7 +254,7 @@ export default function PullbackPage() {
                     <tr key={r.code} className="border-b border-slate-700">
                       <td className="px-1 py-0.5 text-left">
                         <div className="text-gray-100 leading-tight">{shortName(r.name)}</div>
-                        <div className="text-[9px] text-gray-500 leading-tight">{r.code}</div>
+                        <div className="text-[9px] text-gray-500 leading-tight">{shortCode(r.code)}</div>
                       </td>
                       <td className="px-1 py-0.5 text-right whitespace-nowrap text-gray-200">
                         {fmtClose(r.close)}
