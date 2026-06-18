@@ -38,6 +38,11 @@ function fmtPctNoplus(v: number | null): string {
   if (v === null || v === undefined) return "-";
   return v.toFixed(1) + "%";
 }
+function fmtPctInt(v: number | null): string {
+  if (v === null || v === undefined) return "-";
+  const r = Math.round(v);
+  return (r === 0 ? 0 : r) + "%";
+}
 function colorOf(v: number | null): string {
   if (v === null || v === undefined) return "text-gray-400";
   if (v > 0) return "text-green-600";
@@ -193,7 +198,7 @@ export default function PopularPage() {
             銘柄
           </div>
           <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
-          <div style={{ width: COL_CENTER, fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+          <div style={{ width: COL_CENTER, fontSize: 11, fontFamily: "monospace", color: "#71717A", textAlign: "right" }}>
             1d
           </div>
           <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
@@ -313,20 +318,13 @@ export default function PopularPage() {
               />
 
               {/* 中央カラム */}
-              <div
-                style={{
-                  width: COL_CENTER,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  textAlign: "right",
-                }}
-              >
+              <div style={{ width: COL_CENTER }}>
                 <div
                   style={{
                     fontSize: 14,
                     fontWeight: 700,
                     fontVariantNumeric: "tabular-nums",
+                    textAlign: "right",
                     ...darkColorStyle(r.ret_1d),
                   }}
                 >
@@ -338,6 +336,7 @@ export default function PopularPage() {
                     fontWeight: 600,
                     color: "#E4E4E7",
                     fontVariantNumeric: "tabular-nums",
+                    textAlign: "right",
                   }}
                 >
                   {r.close !== null ? r.close.toLocaleString("ja-JP") : "-"}
@@ -374,14 +373,14 @@ export default function PopularPage() {
                       key={i}
                       style={{
                         ...gridCellStyle,
-                        fontSize: 10.5,
+                        fontSize: 11,
                         fontWeight: 600,
                         fontFamily: "monospace",
                         fontVariantNumeric: "tabular-nums",
                         ...darkColorStyle(v),
                       }}
                     >
-                      {fmtPctNoplus(v)}
+                      {fmtPctInt(v)}
                     </span>
                   ))}
                 </div>
