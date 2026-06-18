@@ -64,6 +64,13 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   return true;
 }
 
+const matrixGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+  columnGap: 8,
+  width: "100%",
+} as const;
+
 export default function PopularPage() {
   const [allData, setAllData] = useState<Row[] | null>(null);
   const [meta, setMeta] = useState<any>(null);
@@ -156,6 +163,41 @@ export default function PopularPage() {
 
       {/* リスト */}
       <div>
+        {/* ヘッダ行 */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            paddingLeft: 16,
+            paddingRight: 12,
+            marginBottom: 4,
+          }}
+        >
+          <div style={{ width: "40%", fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+            銘柄
+          </div>
+          <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
+          <div style={{ width: "20%", fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+            1d
+          </div>
+          <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+            <div style={matrixGridStyle}>
+              {["5d", "1m", "3m", "1y"].map((label) => (
+                <span
+                  key={label}
+                  style={{ fontSize: 11, fontFamily: "monospace", color: "#71717A", textAlign: "right" }}
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+            <div style={{ textAlign: "right", width: "100%", fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+              出現
+            </div>
+          </div>
+        </div>
+
         {rows.map((r) => {
           const t = (r as any)[`turnover_${win}`] ?? 0;
           const s = (r as any)[`stophigh_${win}`] ?? 0;
@@ -272,6 +314,18 @@ export default function PopularPage() {
                 </div>
               </div>
 
+              {/* 縦ディバイダ2: 中央-右間 */}
+              <div
+                style={{
+                  width: 1,
+                  height: 32,
+                  backgroundColor: "#27272A",
+                  flexShrink: 0,
+                  marginLeft: 8,
+                  marginRight: 8,
+                }}
+              />
+
               {/* 右カラム */}
               <div
                 style={{
@@ -281,29 +335,8 @@ export default function PopularPage() {
                   alignItems: "flex-end",
                 }}
               >
-                {/* 4列等幅グリッド：ラベル行 + 数値行 */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    columnGap: 8,
-                    width: "100%",
-                  }}
-                >
-                  {["5d", "1m", "3m", "1y"].map((label) => (
-                    <span
-                      key={label}
-                      style={{
-                        fontSize: 11,
-                        fontFamily: "monospace",
-                        fontWeight: 500,
-                        color: "#71717A",
-                        textAlign: "right",
-                      }}
-                    >
-                      {label}
-                    </span>
-                  ))}
+                {/* 4列等幅グリッド：数値のみ */}
+                <div style={matrixGridStyle}>
                   {(
                     [r.ret_5d, r.ret_1m, r.ret_3m, r.ret_1y] as (number | null)[]
                   ).map((v, i) => (
