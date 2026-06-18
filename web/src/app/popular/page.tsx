@@ -45,6 +45,10 @@ function darkColorStyle(v: number | null) {
   if (cls === "text-red-600") return { color: "#EF4444" };
   return { color: "#71717A" };
 }
+function fmtCode(code: string): string {
+  if (/^\d{5}$/.test(code) && code.endsWith("0")) return code.slice(0, 4);
+  return code;
+}
 function fmtCap(v: number | null): string {
   if (v === null || v === undefined) return "-";
   return v.toLocaleString("ja-JP", { maximumFractionDigits: 0 }) + "億";
@@ -211,7 +215,17 @@ export default function PopularPage() {
                   {r.name}
                 </div>
                 <div style={{ fontSize: 11, color: "#71717A" }}>
-                  {r.code} ・ {fmtCap(r.mktcap_oku)}
+                  <span
+                    style={{
+                      fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                      color: "#A1A1AA",
+                      letterSpacing: "0.03em",
+                    }}
+                  >
+                    {fmtCode(r.code)}
+                  </span>
+                  {" ・ "}
+                  {fmtCap(r.mktcap_oku)}
                 </div>
               </div>
 
@@ -248,8 +262,8 @@ export default function PopularPage() {
                 </div>
                 <div
                   style={{
-                    fontSize: 13,
-                    fontWeight: 500,
+                    fontSize: 14,
+                    fontWeight: 600,
                     color: "#E4E4E7",
                     fontVariantNumeric: "tabular-nums",
                   }}
@@ -267,7 +281,29 @@ export default function PopularPage() {
                   alignItems: "flex-end",
                 }}
               >
-                <div style={{ display: "flex", gap: 8 }}>
+                {/* 4列等幅グリッド：ラベル行 + 数値行 */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    columnGap: 8,
+                    width: "100%",
+                  }}
+                >
+                  {["5d", "1m", "3m", "1y"].map((label) => (
+                    <span
+                      key={label}
+                      style={{
+                        fontSize: 11,
+                        fontFamily: "monospace",
+                        fontWeight: 500,
+                        color: "#71717A",
+                        textAlign: "right",
+                      }}
+                    >
+                      {label}
+                    </span>
+                  ))}
                   {(
                     [r.ret_5d, r.ret_1m, r.ret_3m, r.ret_1y] as (number | null)[]
                   ).map((v, i) => (
@@ -275,7 +311,9 @@ export default function PopularPage() {
                       key={i}
                       style={{
                         fontSize: 12,
+                        fontFamily: "monospace",
                         fontVariantNumeric: "tabular-nums",
+                        textAlign: "right",
                         ...darkColorStyle(v),
                       }}
                     >
@@ -283,12 +321,17 @@ export default function PopularPage() {
                     </span>
                   ))}
                 </div>
-                <div style={{ fontSize: 12, fontFamily: "monospace" }}>
-                  <span style={{ color: "#71717A" }}>{t}:</span>
+                {/* 出現:S高 */}
+                <div style={{ textAlign: "right", width: "100%" }}>
+                  <span style={{ fontSize: 10, color: "#71717A", fontFamily: "monospace" }}>
+                    {t}:
+                  </span>
                   <span
                     style={{
-                      color: s >= 1 ? "#F59E0B" : "#71717A",
+                      fontSize: 13,
                       fontWeight: s >= 1 ? 700 : 400,
+                      fontFamily: "monospace",
+                      color: s >= 1 ? "#F59E0B" : "#71717A",
                     }}
                   >
                     {s}
