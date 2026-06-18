@@ -10,6 +10,8 @@ type Row = {
   ret_5d: number | null;
   ret_1m: number | null;
   ret_3m: number | null;
+  ret_1y: number | null;
+  close: number | null;
   [key: string]: any;
 };
 
@@ -36,6 +38,12 @@ function colorOf(v: number | null): string {
   if (v > 0) return "text-green-600";
   if (v < 0) return "text-red-600";
   return "text-gray-600";
+}
+function darkColorStyle(v: number | null) {
+  const cls = colorOf(v);
+  if (cls === "text-green-600") return { color: "#10B981" };
+  if (cls === "text-red-600") return { color: "#EF4444" };
+  return { color: "#71717A" };
 }
 function fmtCap(v: number | null): string {
   if (v === null || v === undefined) return "-";
@@ -97,12 +105,14 @@ export default function PopularPage() {
   if (err) return <pre className="p-4 text-red-600">ERROR: {err}</pre>;
   if (!rows) return <div className="p-4">loading...</div>;
 
-  const headers = ["銘柄", "出現:S高", "1d", "5d", "1m", "3m", "時価総額"];
-
   return (
-    <div className="p-3">
-      <h1 className="text-base font-bold mb-1">人気継続（出現＋S高）</h1>
-      <p className="text-xs text-gray-500 mb-3">{meta?.date} ／ 上位50件</p>
+    <div className="p-3" style={{ backgroundColor: "#09090B", minHeight: "100vh" }}>
+      <h1 className="text-base font-bold mb-1" style={{ color: "#F4F4F5" }}>
+        人気継続（出現＋S高）
+      </h1>
+      <p className="text-xs mb-3" style={{ color: "#71717A" }}>
+        {meta?.date} ／ 上位50件
+      </p>
 
       {/* 窓切替 */}
       <div className="flex flex-wrap gap-1 mb-2">
@@ -110,11 +120,12 @@ export default function PopularPage() {
           <button
             key={w}
             onClick={() => setWin(w)}
-            className={`px-3 py-1 text-xs rounded border ${
+            className="px-3 py-1 text-xs rounded border"
+            style={
               win === w
-                ? "bg-gray-800 text-white border-gray-800"
-                : "bg-white text-gray-600 border-gray-300"
-            }`}
+                ? { backgroundColor: "#F4F4F5", color: "#09090B", borderColor: "#F4F4F5" }
+                : { backgroundColor: "#121214", color: "#71717A", borderColor: "#27272A" }
+            }
           >
             {w}日
           </button>
@@ -127,67 +138,179 @@ export default function PopularPage() {
           <button
             key={f.key}
             onClick={() => setCapFilter(f.key)}
-            className={`px-3 py-1 text-xs rounded border ${
+            className="px-3 py-1 text-xs rounded border"
+            style={
               capFilter === f.key
-                ? "bg-blue-600 text-white border-blue-600"
-                : "bg-white text-gray-600 border-gray-300"
-            }`}
+                ? { backgroundColor: "#2563EB", color: "#F4F4F5", borderColor: "#2563EB" }
+                : { backgroundColor: "#121214", color: "#71717A", borderColor: "#27272A" }
+            }
           >
             {f.label}
           </button>
         ))}
       </div>
 
-      {/* テーブル */}
-      <div className="overflow-x-auto">
-        <table className="text-xs border-collapse w-full">
-          <thead>
-            <tr className="border-b border-gray-300 text-gray-600">
-              {headers.map((h) => (
-                <th
-                  key={h}
-                  className="px-2 py-1 text-right whitespace-nowrap first:text-left"
+      {/* リスト */}
+      <div>
+        {rows.map((r) => {
+          const t = (r as any)[`turnover_${win}`] ?? 0;
+          const s = (r as any)[`stophigh_${win}`] ?? 0;
+          return (
+            <div
+              key={r.code}
+              style={{
+                backgroundColor: "#121214",
+                marginBottom: 2,
+                borderRadius: 8,
+                position: "relative",
+                overflow: "hidden",
+                height: 64,
+                display: "flex",
+                alignItems: "center",
+                paddingLeft: 16,
+                paddingRight: 12,
+              }}
+            >
+              {/* 左端カラーバー */}
+              <div
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  width: 3.5,
+                  height: "100%",
+                  backgroundColor:
+                    r.ret_1d !== null && r.ret_1d > 0
+                      ? "#10B981"
+                      : r.ret_1d !== null && r.ret_1d < 0
+                      ? "#EF4444"
+                      : "transparent",
+                }}
+              />
+
+              {/* 左カラム 40% */}
+              <div
+                style={{
+                  width: "40%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 15,
+                    fontWeight: 600,
+                    color: "#F4F4F5",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
                 >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => {
-              const t = (r as any)[`turnover_${win}`] ?? 0;
-              const s = (r as any)[`stophigh_${win}`] ?? 0;
-              return (
-                <tr key={r.code} className="border-b border-gray-100">
-                  <td className="px-2 py-1 text-left whitespace-nowrap">
-                    <div className="font-medium">{r.name}</div>
-                    <div className="text-[10px] text-gray-400">{r.code}</div>
-                  </td>
-                  <td className="px-2 py-1 text-right whitespace-nowrap">
-                    <span>{t}:</span>
-                    <span className={s >= 1 ? "text-orange-500 font-semibold" : ""}>
-                      {s}
+                  {r.name}
+                </div>
+                <div style={{ fontSize: 11, color: "#71717A" }}>
+                  {r.code} ・ {fmtCap(r.mktcap_oku)}
+                </div>
+              </div>
+
+              {/* 縦ディバイダ */}
+              <div
+                style={{
+                  width: 1,
+                  height: 32,
+                  backgroundColor: "#1F1F23",
+                  flexShrink: 0,
+                  marginLeft: 8,
+                  marginRight: 8,
+                }}
+              />
+
+              {/* 中央カラム 20% */}
+              <div
+                style={{
+                  width: "20%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    fontVariantNumeric: "tabular-nums",
+                    ...darkColorStyle(r.ret_1d),
+                  }}
+                >
+                  {pct(r.ret_1d)}
+                </div>
+                <div
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: "#E4E4E7",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {r.close !== null ? r.close.toLocaleString("ja-JP") : "-"}
+                </div>
+              </div>
+
+              {/* 右カラム */}
+              <div
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
+                }}
+              >
+                <div style={{ display: "flex", gap: 8 }}>
+                  {(
+                    [r.ret_5d, r.ret_1m, r.ret_3m, r.ret_1y] as (number | null)[]
+                  ).map((v, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        fontSize: 12,
+                        fontVariantNumeric: "tabular-nums",
+                        ...darkColorStyle(v),
+                      }}
+                    >
+                      {pct(v)}
                     </span>
-                  </td>
-                  <td className={"px-2 py-1 text-right " + colorOf(r.ret_1d)}>{pct(r.ret_1d)}</td>
-                  <td className={"px-2 py-1 text-right " + colorOf(r.ret_5d)}>{pct(r.ret_5d)}</td>
-                  <td className={"px-2 py-1 text-right " + colorOf(r.ret_1m)}>{pct(r.ret_1m)}</td>
-                  <td className={"px-2 py-1 text-right " + colorOf(r.ret_3m)}>{pct(r.ret_3m)}</td>
-                  <td className="px-2 py-1 text-right whitespace-nowrap">{fmtCap(r.mktcap_oku)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                  ))}
+                </div>
+                <div style={{ fontSize: 12, fontFamily: "monospace" }}>
+                  <span style={{ color: "#71717A" }}>{t}:</span>
+                  <span
+                    style={{
+                      color: s >= 1 ? "#F59E0B" : "#71717A",
+                      fontWeight: s >= 1 ? 700 : 400,
+                    }}
+                  >
+                    {s}
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* 除外銘柄注記 */}
       {excluded.length > 0 && (
-        <div className="mt-8 pt-4 border-t border-gray-200">
-          <p className="text-xs font-medium text-gray-500 mb-1">除外銘柄（手動）</p>
-          <p className="text-[10px] text-gray-400 mb-2">以下は構造的ノイズとして一覧から除外中</p>
+        <div className="mt-8 pt-4" style={{ borderTop: "1px solid #1F1F23" }}>
+          <p className="text-xs font-medium mb-1" style={{ color: "#71717A" }}>
+            除外銘柄（手動）
+          </p>
+          <p className="text-[10px] mb-2" style={{ color: "#52525B" }}>
+            以下は構造的ノイズとして一覧から除外中
+          </p>
           {excluded.map((e) => (
-            <div key={e.code} className="text-[10px] text-gray-400 leading-5">
+            <div key={e.code} className="text-[10px] leading-5" style={{ color: "#52525B" }}>
               {e.code} {e.name} ― {e.reason}
             </div>
           ))}
