@@ -30,8 +30,13 @@ const CAP_FILTERS = [
 ] as const;
 type CapFilter = (typeof CAP_FILTERS)[number]["key"];
 
+// pct は他画面での流用に備えて残置（popular では fmtNum を使う）
 function pct(v: number | null): string {
   return v === null || v === undefined ? "-" : v.toFixed(1) + "%";
+}
+function fmtNum(v: number | null): string {
+  if (v === null || v === undefined) return "-";
+  return v.toFixed(1);
 }
 function colorOf(v: number | null): string {
   if (v === null || v === undefined) return "text-gray-400";
@@ -64,12 +69,23 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   return true;
 }
 
+const COL_LEFT = "32%";
+const COL_CENTER = "18%";
+
 const matrixGridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
   columnGap: 8,
   width: "100%",
 } as const;
+
+const gridCellStyle = {
+  minWidth: 0,
+  overflow: "hidden" as const,
+  textOverflow: "ellipsis" as const,
+  whiteSpace: "nowrap" as const,
+  textAlign: "right" as const,
+};
 
 export default function PopularPage() {
   const [allData, setAllData] = useState<Row[] | null>(null);
@@ -173,11 +189,11 @@ export default function PopularPage() {
             marginBottom: 4,
           }}
         >
-          <div style={{ width: "40%", fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+          <div style={{ width: COL_LEFT, fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
             銘柄
           </div>
           <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
-          <div style={{ width: "20%", fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+          <div style={{ width: COL_CENTER, fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
             1d
           </div>
           <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
@@ -186,13 +202,26 @@ export default function PopularPage() {
               {["5d", "1m", "3m", "1y"].map((label) => (
                 <span
                   key={label}
-                  style={{ fontSize: 11, fontFamily: "monospace", color: "#71717A", textAlign: "right" }}
+                  style={{
+                    ...gridCellStyle,
+                    fontSize: 11,
+                    fontFamily: "monospace",
+                    color: "#71717A",
+                  }}
                 >
                   {label}
                 </span>
               ))}
             </div>
-            <div style={{ textAlign: "right", width: "100%", fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
+            <div
+              style={{
+                textAlign: "right",
+                width: "100%",
+                fontSize: 11,
+                fontFamily: "monospace",
+                color: "#71717A",
+              }}
+            >
               出現
             </div>
           </div>
@@ -234,10 +263,10 @@ export default function PopularPage() {
                 }}
               />
 
-              {/* 左カラム 40% */}
+              {/* 左カラム */}
               <div
                 style={{
-                  width: "40%",
+                  width: COL_LEFT,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -271,7 +300,7 @@ export default function PopularPage() {
                 </div>
               </div>
 
-              {/* 縦ディバイダ */}
+              {/* 縦ディバイダ1: 左-中央間 */}
               <div
                 style={{
                   width: 1,
@@ -283,10 +312,10 @@ export default function PopularPage() {
                 }}
               />
 
-              {/* 中央カラム 20% */}
+              {/* 中央カラム */}
               <div
                 style={{
-                  width: "20%",
+                  width: COL_CENTER,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -300,7 +329,7 @@ export default function PopularPage() {
                     ...darkColorStyle(r.ret_1d),
                   }}
                 >
-                  {pct(r.ret_1d)}
+                  {fmtNum(r.ret_1d)}
                 </div>
                 <div
                   style={{
@@ -343,14 +372,15 @@ export default function PopularPage() {
                     <span
                       key={i}
                       style={{
-                        fontSize: 12,
+                        ...gridCellStyle,
+                        fontSize: 11,
+                        fontWeight: 600,
                         fontFamily: "monospace",
                         fontVariantNumeric: "tabular-nums",
-                        textAlign: "right",
                         ...darkColorStyle(v),
                       }}
                     >
-                      {pct(v)}
+                      {fmtNum(v)}
                     </span>
                   ))}
                 </div>
