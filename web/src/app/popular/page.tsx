@@ -30,13 +30,13 @@ const CAP_FILTERS = [
 ] as const;
 type CapFilter = (typeof CAP_FILTERS)[number]["key"];
 
-// pct は他画面での流用に備えて残置（popular では fmtNum を使う）
+// pct は他画面での流用に備えて残置（popular では fmtPctNoplus を使う）
 function pct(v: number | null): string {
   return v === null || v === undefined ? "-" : v.toFixed(1) + "%";
 }
-function fmtNum(v: number | null): string {
+function fmtPctNoplus(v: number | null): string {
   if (v === null || v === undefined) return "-";
-  return v.toFixed(1);
+  return v.toFixed(1) + "%";
 }
 function colorOf(v: number | null): string {
   if (v === null || v === undefined) return "text-gray-400";
@@ -69,8 +69,8 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   return true;
 }
 
-const COL_LEFT = "32%";
-const COL_CENTER = "18%";
+const COL_LEFT = "28%";
+const COL_CENTER = "15%";
 
 const matrixGridStyle = {
   display: "grid",
@@ -319,6 +319,7 @@ export default function PopularPage() {
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
+                  textAlign: "right",
                 }}
               >
                 <div
@@ -329,7 +330,7 @@ export default function PopularPage() {
                     ...darkColorStyle(r.ret_1d),
                   }}
                 >
-                  {fmtNum(r.ret_1d)}
+                  {fmtPctNoplus(r.ret_1d)}
                 </div>
                 <div
                   style={{
@@ -373,14 +374,14 @@ export default function PopularPage() {
                       key={i}
                       style={{
                         ...gridCellStyle,
-                        fontSize: 11,
+                        fontSize: 10.5,
                         fontWeight: 600,
                         fontFamily: "monospace",
                         fontVariantNumeric: "tabular-nums",
                         ...darkColorStyle(v),
                       }}
                     >
-                      {fmtNum(v)}
+                      {fmtPctNoplus(v)}
                     </span>
                   ))}
                 </div>
