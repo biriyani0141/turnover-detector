@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
+import { StockRow, StockRowHeader } from "../_components/StockRow";
 
 // ─── 定数（判定ロジック・変更禁止） ───────────────────────────────────────────
 const NEUTRAL_PCT = 2.0;
@@ -86,47 +87,6 @@ function classify(r: Row): StateLabel {
   if (s1y === "+" && s3m === "-")                                               return "失速";
 
   return "対象外";
-}
-
-// ─── 表示ユーティリティ ───────────────────────────────────────────────────────
-function pct(v: number | null): string {
-  return v === null || v === undefined ? "-" : v.toFixed(1) + "%";
-}
-
-// 日本式：プラス=赤、マイナス=緑（符号ベース・±2%中立グレーなし）
-function retColor(v: number | null): string {
-  if (v === null || v === undefined) return "text-gray-500";
-  if (v > 0) return "text-red-400";
-  if (v < 0) return "text-green-400";
-  return "text-gray-300";
-}
-
-// 株価：10000円以上は万表記でコンパクト化
-function fmtClose(v: number | null): string {
-  if (v === null || v === undefined) return "-";
-  if (v >= 10000) return (v / 10000).toFixed(1) + "万";
-  return Math.round(v).toLocaleString("ja-JP");
-}
-
-// 時価総額：億のみ表示（カンマなし）
-function fmtCap(v: number | null): string {
-  if (v === null || v === undefined) return "-";
-  return Math.round(v).toLocaleString("ja-JP");
-}
-
-// コード4桁表示：末尾0を除去（5桁→4桁）
-function shortCode(code: string): string {
-  return code.endsWith("0") ? code.slice(0, -1) : code;
-}
-
-// 銘柄名短縮：HD化・G化・8文字超を省略
-function shortName(name: string): string {
-  let s = name
-    .replace(/ホールディングス/g, "HD")
-    .replace(/ホールディング/g, "HD")
-    .replace(/グループ/g, "G");
-  if (s.length > 9) s = s.slice(0, 8) + "…";
-  return s;
 }
 
 // ─── メインコンポーネント ─────────────────────────────────────────────────────
@@ -234,53 +194,26 @@ export default function PullbackPage() {
               <span>{label}</span>
               <span className="font-normal text-[10px] opacity-80">{rows.length} 件</span>
             </div>
-            {/* テーブル */}
-            <div className="bg-slate-800">
-              <table className="text-[11px] border-collapse w-full">
-                <thead>
-                  <tr className="border-b border-slate-700 text-gray-400">
-                    <th className="px-1 py-0.5 text-left">銘柄</th>
-                    <th className="px-1 py-0.5 text-right whitespace-nowrap">株価</th>
-                    <th className="px-1 py-0.5 text-right">1d</th>
-                    <th className="px-1 py-0.5 text-right">5d</th>
-                    <th className="px-1 py-0.5 text-right">1m</th>
-                    <th className="px-1 py-0.5 text-right">3m</th>
-                    <th className="px-1 py-0.5 text-right">1y</th>
-                    <th className="px-1 py-0.5 text-right whitespace-nowrap">億</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((r) => (
-                    <tr key={r.code} className="border-b border-slate-700">
-                      <td className="px-1 py-0.5 text-left">
-                        <div className="text-gray-100 leading-tight">{shortName(r.name)}</div>
-                        <div className="text-[9px] text-gray-500 leading-tight">{shortCode(r.code)}</div>
-                      </td>
-                      <td className="px-1 py-0.5 text-right whitespace-nowrap text-gray-200">
-                        {fmtClose(r.close)}
-                      </td>
-                      <td className={"px-1 py-0.5 text-right whitespace-nowrap " + retColor(r.ret_1d)}>
-                        {pct(r.ret_1d)}
-                      </td>
-                      <td className={"px-1 py-0.5 text-right whitespace-nowrap " + retColor(r.ret_5d)}>
-                        {pct(r.ret_5d)}
-                      </td>
-                      <td className={"px-1 py-0.5 text-right whitespace-nowrap " + retColor(r.ret_1m)}>
-                        {pct(r.ret_1m)}
-                      </td>
-                      <td className={"px-1 py-0.5 text-right whitespace-nowrap " + retColor(r.ret_3m)}>
-                        {pct(r.ret_3m)}
-                      </td>
-                      <td className={"px-1 py-0.5 text-right whitespace-nowrap " + retColor(r.ret_1y)}>
-                        {pct(r.ret_1y)}
-                      </td>
-                      <td className="px-1 py-0.5 text-right whitespace-nowrap text-gray-400">
-                        {fmtCap(r.mktcap_oku)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* v3行 */}
+            <div style={{ backgroundColor: "#121214" }}>
+              <StockRowHeader />
+              {rows.map((r, i) => (
+                <StockRow
+                  key={r.code}
+                  name={r.name}
+                  code={r.code}
+                  mktcap_oku={r.mktcap_oku}
+                  close={r.close}
+                  ret_1d={r.ret_1d}
+                  ret_5d={r.ret_5d}
+                  ret_1m={r.ret_1m}
+                  ret_3m={r.ret_3m}
+                  ret_1y={r.ret_1y}
+                  occLeft={r.turnover_50}
+                  occRight={0}
+                  isEven={i % 2 === 1}
+                />
+              ))}
             </div>
           </div>
         );

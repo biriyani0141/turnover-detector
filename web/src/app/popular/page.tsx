@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
+import { StockRow, StockRowHeader } from "../_components/StockRow";
 
 type Row = {
   code: string;
@@ -30,39 +31,6 @@ const CAP_FILTERS = [
 ] as const;
 type CapFilter = (typeof CAP_FILTERS)[number]["key"];
 
-// pct は他画面での流用に備えて残置（popular では fmtPctNoplus を使う）
-function pct(v: number | null): string {
-  return v === null || v === undefined ? "-" : v.toFixed(1) + "%";
-}
-function fmtPctNoplus(v: number | null): string {
-  if (v === null || v === undefined) return "-";
-  return v.toFixed(1) + "%";
-}
-function fmtPctInt(v: number | null): string {
-  if (v === null || v === undefined) return "-";
-  const r = Math.round(v);
-  return (r === 0 ? 0 : r) + "%";
-}
-function colorOf(v: number | null): string {
-  if (v === null || v === undefined) return "text-gray-400";
-  if (v > 0) return "text-green-600";
-  if (v < 0) return "text-red-600";
-  return "text-gray-600";
-}
-function darkColorStyle(v: number | null) {
-  const cls = colorOf(v);
-  if (cls === "text-green-600") return { color: "#10B981" };
-  if (cls === "text-red-600") return { color: "#EF4444" };
-  return { color: "#71717A" };
-}
-function fmtCode(code: string): string {
-  if (/^\d{5}$/.test(code) && code.endsWith("0")) return code.slice(0, 4);
-  return code;
-}
-function fmtCap(v: number | null): string {
-  if (v === null || v === undefined) return "-";
-  return v.toLocaleString("ja-JP", { maximumFractionDigits: 0 }) + "億";
-}
 function applyCapFilter(row: Row, cap: CapFilter): boolean {
   if (cap === "all") return true;
   if (row.mktcap_oku === null) return false;
@@ -73,24 +41,6 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   if (cap === "ge2000") return row.mktcap_oku >= 2000;
   return true;
 }
-
-const COL_LEFT = "28%";
-const COL_CENTER = "15%";
-
-const matrixGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-  columnGap: 8,
-  width: "100%",
-} as const;
-
-const gridCellStyle = {
-  minWidth: 0,
-  overflow: "hidden" as const,
-  textOverflow: "ellipsis" as const,
-  whiteSpace: "nowrap" as const,
-  textAlign: "right" as const,
-};
 
 export default function PopularPage() {
   const [allData, setAllData] = useState<Row[] | null>(null);
@@ -183,227 +133,25 @@ export default function PopularPage() {
       </div>
 
       {/* リスト */}
-      <div>
-        {/* ヘッダ行 */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            paddingLeft: 16,
-            paddingRight: 12,
-            marginBottom: 4,
-          }}
-        >
-          <div style={{ width: COL_LEFT, fontSize: 11, fontFamily: "monospace", color: "#71717A" }}>
-            銘柄
-          </div>
-          <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
-          <div style={{ width: COL_CENTER, fontSize: 11, fontFamily: "monospace", color: "#71717A", textAlign: "right" }}>
-            1d
-          </div>
-          <div style={{ width: 1, flexShrink: 0, marginLeft: 8, marginRight: 8 }} />
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
-            <div style={matrixGridStyle}>
-              {["5d", "1m", "3m", "1y"].map((label) => (
-                <span
-                  key={label}
-                  style={{
-                    ...gridCellStyle,
-                    fontSize: 11,
-                    fontFamily: "monospace",
-                    color: "#71717A",
-                  }}
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <div
-              style={{
-                textAlign: "right",
-                width: "100%",
-                fontSize: 11,
-                fontFamily: "monospace",
-                color: "#71717A",
-              }}
-            >
-              出現
-            </div>
-          </div>
-        </div>
-
-        {rows.map((r) => {
-          const t = (r as any)[`turnover_${win}`] ?? 0;
-          const s = (r as any)[`stophigh_${win}`] ?? 0;
-          return (
-            <div
-              key={r.code}
-              style={{
-                backgroundColor: "#121214",
-                marginBottom: 2,
-                borderRadius: 8,
-                position: "relative",
-                overflow: "hidden",
-                height: 64,
-                display: "flex",
-                alignItems: "center",
-                paddingLeft: 16,
-                paddingRight: 12,
-              }}
-            >
-              {/* 左端カラーバー */}
-              <div
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: 0,
-                  width: 3.5,
-                  height: "100%",
-                  backgroundColor:
-                    r.ret_1d !== null && r.ret_1d > 0
-                      ? "#10B981"
-                      : r.ret_1d !== null && r.ret_1d < 0
-                      ? "#EF4444"
-                      : "transparent",
-                }}
-              />
-
-              {/* 左カラム */}
-              <div
-                style={{
-                  width: COL_LEFT,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 15,
-                    fontWeight: 600,
-                    color: "#F4F4F5",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {r.name}
-                </div>
-                <div style={{ fontSize: 11, color: "#71717A" }}>
-                  <span
-                    style={{
-                      fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                      color: "#A1A1AA",
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    {fmtCode(r.code)}
-                  </span>
-                  {" ・ "}
-                  {fmtCap(r.mktcap_oku)}
-                </div>
-              </div>
-
-              {/* 縦ディバイダ1: 左-中央間 */}
-              <div
-                style={{
-                  width: 1,
-                  height: 32,
-                  backgroundColor: "#1F1F23",
-                  flexShrink: 0,
-                  marginLeft: 8,
-                  marginRight: 8,
-                }}
-              />
-
-              {/* 中央カラム */}
-              <div style={{ width: COL_CENTER }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 700,
-                    fontVariantNumeric: "tabular-nums",
-                    textAlign: "right",
-                    ...darkColorStyle(r.ret_1d),
-                  }}
-                >
-                  {fmtPctNoplus(r.ret_1d)}
-                </div>
-                <div
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: "#E4E4E7",
-                    fontVariantNumeric: "tabular-nums",
-                    textAlign: "right",
-                  }}
-                >
-                  {r.close !== null ? r.close.toLocaleString("ja-JP") : "-"}
-                </div>
-              </div>
-
-              {/* 縦ディバイダ2: 中央-右間 */}
-              <div
-                style={{
-                  width: 1,
-                  height: 32,
-                  backgroundColor: "#27272A",
-                  flexShrink: 0,
-                  marginLeft: 8,
-                  marginRight: 8,
-                }}
-              />
-
-              {/* 右カラム */}
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                }}
-              >
-                {/* 4列等幅グリッド：数値のみ */}
-                <div style={matrixGridStyle}>
-                  {(
-                    [r.ret_5d, r.ret_1m, r.ret_3m, r.ret_1y] as (number | null)[]
-                  ).map((v, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        ...gridCellStyle,
-                        fontSize: 11,
-                        fontWeight: 600,
-                        fontFamily: "monospace",
-                        fontVariantNumeric: "tabular-nums",
-                        ...darkColorStyle(v),
-                      }}
-                    >
-                      {fmtPctInt(v)}
-                    </span>
-                  ))}
-                </div>
-                {/* 出現:S高 */}
-                <div style={{ textAlign: "right", width: "100%" }}>
-                  <span style={{ fontSize: 10, color: "#71717A", fontFamily: "monospace" }}>
-                    {t}:
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 13,
-                      fontWeight: s >= 1 ? 700 : 400,
-                      fontFamily: "monospace",
-                      color: s >= 1 ? "#F59E0B" : "#71717A",
-                    }}
-                  >
-                    {s}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div style={{ backgroundColor: "#121214", borderRadius: 8, overflow: "hidden" }}>
+        <StockRowHeader />
+        {rows.map((r, i) => (
+          <StockRow
+            key={r.code}
+            name={r.name}
+            code={r.code}
+            mktcap_oku={r.mktcap_oku}
+            close={r.close}
+            ret_1d={r.ret_1d}
+            ret_5d={r.ret_5d}
+            ret_1m={r.ret_1m}
+            ret_3m={r.ret_3m}
+            ret_1y={r.ret_1y}
+            occLeft={(r as any)[`turnover_${win}`] ?? 0}
+            occRight={(r as any)[`stophigh_${win}`] ?? 0}
+            isEven={i % 2 === 1}
+          />
+        ))}
       </div>
 
       {/* 除外銘柄注記 */}
