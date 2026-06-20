@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { href: "/", label: "回転率" },
-  { href: "/popular", label: "人気継続" },
-  { href: "/pullback", label: "押し目" },
+  { href: "/", icon: "cycle" },
+  { href: "/popular", icon: "finance_mode" },
+  { href: "/pullback", icon: "electric_bolt" },
 ];
 
 export function TabBar() {
@@ -17,18 +17,34 @@ export function TabBar() {
       className="flex border-b"
       style={{ borderColor: "#1F1F23", backgroundColor: "#09090B" }}
     >
-      {tabs.map(({ href, label }) => {
+      {tabs.map(({ href, icon }) => {
         const isActive = pathname === href;
         return (
           <Link
             key={href}
             href={href}
-            className={`flex-1 text-center py-3 text-sm font-medium border-b-2 ${
-              isActive ? "border-[#F4F4F5]" : "border-transparent"
-            }`}
-            style={{ color: isActive ? "#F4F4F5" : "#71717A" }}
+            className="flex-1 flex flex-col items-center py-3"
+            style={{ gap: 4 }}
           >
-            {label}
+            <span
+              className="material-symbols-rounded"
+              style={{
+                fontSize: 24,
+                color: isActive ? "#e3e3e3" : "#5f6368",
+                fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24",
+              }}
+            >
+              {icon}
+            </span>
+            <span
+              style={{
+                width: 28,
+                height: 2,
+                borderRadius: 2,
+                backgroundColor: isActive ? "#e3e3e3" : "transparent",
+                display: "block",
+              }}
+            />
           </Link>
         );
       })}

@@ -22,14 +22,12 @@ const WIN_OPTIONS = [25, 50, 100, 200] as const;
 type Win = (typeof WIN_OPTIONS)[number];
 
 const CAP_FILTERS = [
-  { label: "全部", key: "all" },
-  { label: "100億以下", key: "le100" },
-  { label: "300億以下", key: "le300" },
-  { label: "1000億以下", key: "le1000" },
-  { label: "2000億以下", key: "le2000" },
-  { label: "2000億以上", key: "ge2000" },
+  { label: "100↓", key: "le100" },
+  { label: "300↓", key: "le300" },
+  { label: "1000↓", key: "le1000" },
+  { label: "1000↑", key: "ge1000" },
 ] as const;
-type CapFilter = (typeof CAP_FILTERS)[number]["key"];
+type CapFilter = "all" | (typeof CAP_FILTERS)[number]["key"];
 
 function applyCapFilter(row: Row, cap: CapFilter): boolean {
   if (cap === "all") return true;
@@ -37,8 +35,7 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   if (cap === "le100")  return row.mktcap_oku <= 100;
   if (cap === "le300")  return row.mktcap_oku <= 300;
   if (cap === "le1000") return row.mktcap_oku <= 1000;
-  if (cap === "le2000") return row.mktcap_oku <= 2000;
-  if (cap === "ge2000") return row.mktcap_oku >= 2000;
+  if (cap === "ge1000") return row.mktcap_oku >= 1000;
   return true;
 }
 
@@ -89,43 +86,54 @@ export default function PopularPage() {
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <h1 className="text-base font-bold mb-1" style={{ color: "#F4F4F5", paddingLeft: 16, paddingRight: 16 }}>
-        人気継続（出現＋S高）
-      </h1>
       <p className="text-xs mb-3" style={{ color: "#71717A", paddingLeft: 16, paddingRight: 16 }}>
-        {meta?.date} ／ 上位50件
+        {meta?.date}
       </p>
 
       {/* 窓切替 */}
-      <div className="flex flex-wrap gap-1 mb-2" style={{ paddingLeft: 16, paddingRight: 16 }}>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
         {WIN_OPTIONS.map((w) => (
           <button
             key={w}
             onClick={() => setWin(w)}
-            className="px-3 py-1 text-xs rounded border"
-            style={
-              win === w
-                ? { backgroundColor: "#F4F4F5", color: "#09090B", borderColor: "#F4F4F5" }
-                : { backgroundColor: "#121214", color: "#71717A", borderColor: "#27272A" }
-            }
+            style={{
+              flex: 1,
+              padding: "9px 0",
+              borderRadius: 9999,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 14,
+              transition: "background 0.15s, color 0.15s, border-color 0.15s",
+              background: win === w ? "#3c4043" : "#282a2d",
+              border: `1px solid ${win === w ? "#5f6368" : "#3c4043"}`,
+              color: win === w ? "#e8eaed" : "#8e8e93",
+              fontWeight: win === w ? 600 : 500,
+            }}
           >
-            {w}日
+            {w}
           </button>
         ))}
       </div>
 
       {/* 時価総額フィルタ */}
-      <div className="flex flex-wrap gap-1 mb-3" style={{ paddingLeft: 16, paddingRight: 16 }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
         {CAP_FILTERS.map((f) => (
           <button
             key={f.key}
-            onClick={() => setCapFilter(f.key)}
-            className="px-3 py-1 text-xs rounded border"
-            style={
-              capFilter === f.key
-                ? { backgroundColor: "#2563EB", color: "#F4F4F5", borderColor: "#2563EB" }
-                : { backgroundColor: "#121214", color: "#71717A", borderColor: "#27272A" }
-            }
+            onClick={() => setCapFilter(capFilter === f.key ? "all" : f.key)}
+            style={{
+              flex: 1,
+              padding: "7px 0",
+              borderRadius: 8,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 13,
+              fontWeight: 600,
+              transition: "background 0.15s, color 0.15s",
+              background: capFilter === f.key ? "#fff" : "#2c2c2e",
+              color: capFilter === f.key ? "#000" : "#8e8e93",
+              border: "none",
+            }}
           >
             {f.label}
           </button>

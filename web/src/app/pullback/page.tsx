@@ -32,14 +32,12 @@ type Excluded = { code: string; name: string; reason: string };
 
 // ─── 時価総額フィルタ ─────────────────────────────────────────────────────────
 const CAP_FILTERS = [
-  { label: "全部",       key: "all"    },
-  { label: "100億以下",  key: "le100"  },
-  { label: "300億以下",  key: "le300"  },
-  { label: "1000億以下", key: "le1000" },
-  { label: "2000億以下", key: "le2000" },
-  { label: "2000億以上", key: "ge2000" },
+  { label: "100↓", key: "le100"  },
+  { label: "300↓", key: "le300"  },
+  { label: "1000↓", key: "le1000" },
+  { label: "1000↑", key: "ge1000" },
 ] as const;
-type CapFilter = (typeof CAP_FILTERS)[number]["key"];
+type CapFilter = "all" | (typeof CAP_FILTERS)[number]["key"];
 
 function applyCapFilter(row: Row, cap: CapFilter): boolean {
   if (cap === "all") return true;
@@ -47,8 +45,7 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   if (cap === "le100")  return row.mktcap_oku <= 100;
   if (cap === "le300")  return row.mktcap_oku <= 300;
   if (cap === "le1000") return row.mktcap_oku <= 1000;
-  if (cap === "le2000") return row.mktcap_oku <= 2000;
-  if (cap === "ge2000") return row.mktcap_oku >= 2000;
+  if (cap === "ge1000") return row.mktcap_oku >= 1000;
   return true;
 }
 
@@ -167,16 +164,24 @@ export default function PullbackPage() {
       </p>
 
       {/* 時価総額フィルタ */}
-      <div className="flex flex-wrap gap-1 mb-3" style={{ paddingLeft: 16, paddingRight: 16 }}>
+      <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
         {CAP_FILTERS.map((f) => (
           <button
             key={f.key}
-            onClick={() => setCapFilter(f.key)}
-            className={`px-2 py-0.5 text-[10px] rounded border ${
-              capFilter === f.key
-                ? "bg-blue-600 text-white border-blue-500"
-                : "bg-slate-700 text-gray-300 border-slate-600"
-            }`}
+            onClick={() => setCapFilter(capFilter === f.key ? "all" : f.key)}
+            style={{
+              flex: 1,
+              padding: "7px 0",
+              borderRadius: 8,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 13,
+              fontWeight: 600,
+              transition: "background 0.15s, color 0.15s",
+              background: capFilter === f.key ? "#fff" : "#2c2c2e",
+              color: capFilter === f.key ? "#000" : "#8e8e93",
+              border: "none",
+            }}
           >
             {f.label}
           </button>
