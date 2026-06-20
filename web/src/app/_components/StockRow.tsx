@@ -57,7 +57,7 @@ const rowGrid: CSSProperties = {
 export function StockRowHeader() {
   return (
     <div style={{ ...rowGrid, paddingTop: 6, paddingBottom: 6 }}>
-      <div style={{ fontSize: 11, color: "#525252", fontFamily: monoFont }}>銘柄</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: "#525252", fontFamily: monoFont }}>銘柄</div>
       <div style={{ display: "flex", width: "13rem" }}>
         {["1d", "5d", "1m", "3m", "1y"].map((label, i, arr) => (
           <div
@@ -67,6 +67,7 @@ export function StockRowHeader() {
               textAlign: "right",
               paddingRight: 3,
               fontSize: 11,
+              fontWeight: 700,
               fontFamily: monoFont,
               color: "#525252",
               borderRight:
@@ -83,6 +84,7 @@ export function StockRowHeader() {
           flexDirection: "column",
           alignItems: "flex-end",
           fontSize: 11,
+          fontWeight: 700,
           fontFamily: monoFont,
           color: "#525252",
         }}
