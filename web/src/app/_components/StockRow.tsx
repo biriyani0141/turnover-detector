@@ -43,7 +43,7 @@ function perfColor(v: number | null): string {
 
 const metaFont =
   '-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI","Noto Sans JP",sans-serif';
-const monoFont = '"SF Mono",ui-monospace,monospace';
+const monoFont = 'ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace';
 
 const rowGrid: CSSProperties = {
   display: "grid",

@@ -160,7 +160,7 @@ export default function PullbackPage() {
   const offCount  = sections.get("対象外")?.length ?? 0;
 
   return (
-    <div style={{ backgroundColor: "#121214", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+    <div style={{ backgroundColor: "#0d0d0f", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
       <h1 className="text-sm font-bold mb-0.5 text-gray-100" style={{ paddingLeft: 16, paddingRight: 16 }}>押し目発見（状態別）</h1>
       <p className="text-[10px] text-gray-500 mb-2" style={{ paddingLeft: 16, paddingRight: 16 }}>
         {meta?.date}　母集団 {totalBase} 銘柄（t50≥20）

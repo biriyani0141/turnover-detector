@@ -88,7 +88,7 @@ export default function PopularPage() {
   if (!rows) return <div className="p-4">loading...</div>;
 
   return (
-    <div style={{ backgroundColor: "#121214", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+    <div style={{ backgroundColor: "#0d0d0f", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
       <h1 className="text-base font-bold mb-1" style={{ color: "#F4F4F5", paddingLeft: 16, paddingRight: 16 }}>
         人気継続（出現＋S高）
       </h1>
