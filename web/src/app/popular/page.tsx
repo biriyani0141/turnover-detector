@@ -21,6 +21,9 @@ type Excluded = { code: string; name: string; reason: string };
 const WIN_OPTIONS = [25, 50, 100, 200] as const;
 type Win = (typeof WIN_OPTIONS)[number];
 
+type SortKey = "turnover" | "d1" | "d5" | "m1" | "m3" | "y1" | "occ";
+type SortDir = "asc" | "desc";
+
 const CAP_FILTERS = [
   { label: "100↓", key: "le100" },
   { label: "300↓", key: "le300" },
@@ -46,6 +49,8 @@ export default function PopularPage() {
   const [err, setErr] = useState<string | null>(null);
   const [win, setWin] = useState<Win>(25);
   const [capFilter, setCapFilter] = useState<CapFilter>("all");
+  const [sortKey, setSortKey] = useState<SortKey>("turnover");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
 
   useEffect(() => {
     Promise.all([
@@ -71,15 +76,47 @@ export default function PopularPage() {
       .catch((e) => setErr(String(e)));
   }, []);
 
+  const handleSort = (key: string) => {
+    const k = key as SortKey;
+    if (k === "turnover") {
+      setSortKey("turnover");
+      setSortDir("desc");
+    } else if (k === sortKey) {
+      setSortDir((d) => (d === "desc" ? "asc" : "desc"));
+    } else {
+      setSortKey(k);
+      setSortDir("desc");
+    }
+  };
+
   const rows = useMemo(() => {
     if (!allData) return null;
     const excludedCodes = new Set(excluded.map((e) => e.code));
-    return allData
+    const filtered = allData
       .filter((r) => !excludedCodes.has(r.code))
-      .filter((r) => applyCapFilter(r, capFilter))
-      .sort((a, b) => (b[`turnover_${win}`] ?? 0) - (a[`turnover_${win}`] ?? 0))
-      .slice(0, 50);
-  }, [allData, excluded, win, capFilter]);
+      .filter((r) => applyCapFilter(r, capFilter));
+
+    const KEY_MAP: Record<SortKey, (r: Row) => number | null> = {
+      turnover: (r) => r[`turnover_${win}`] ?? null,
+      occ:      (r) => r[`stophigh_${win}`] ?? null,
+      d1:       (r) => r.ret_1d,
+      d5:       (r) => r.ret_5d,
+      m1:       (r) => r.ret_1m,
+      m3:       (r) => r.ret_3m,
+      y1:       (r) => r.ret_1y,
+    };
+
+    const nullFallback = sortKey === "turnover" || sortDir === "desc" ? -Infinity : Infinity;
+    const getter = KEY_MAP[sortKey];
+
+    filtered.sort((a, b) => {
+      const va = getter(a) ?? nullFallback;
+      const vb = getter(b) ?? nullFallback;
+      return sortDir === "desc" ? vb - va : va - vb;
+    });
+
+    return filtered.slice(0, 50);
+  }, [allData, excluded, win, capFilter, sortKey, sortDir]);
 
   if (err) return <pre className="p-4 text-red-600">ERROR: {err}</pre>;
   if (!rows) return <div className="p-4">loading...</div>;
@@ -142,7 +179,7 @@ export default function PopularPage() {
 
       {/* リスト */}
       <div style={{ backgroundColor: "#17171a" }}>
-        <StockRowHeader />
+        <StockRowHeader sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
         {rows.map((r, i) => (
           <StockRow
             key={r.code}

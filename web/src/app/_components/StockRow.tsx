@@ -54,14 +54,41 @@ const rowGrid: CSSProperties = {
   borderBottom: "1px solid rgba(255,255,255,0.04)",
 };
 
-export function StockRowHeader() {
+export interface StockRowHeaderProps {
+  sortKey?: string;
+  sortDir?: "asc" | "desc";
+  onSort?: (key: string) => void;
+}
+
+const PERIOD_COLS = [
+  { label: "1d", key: "d1" },
+  { label: "5d", key: "d5" },
+  { label: "1m", key: "m1" },
+  { label: "3m", key: "m3" },
+  { label: "1y", key: "y1" },
+] as const;
+
+export function StockRowHeader({ sortKey, sortDir, onSort }: StockRowHeaderProps = {}) {
+  const arrow = (key: string) => {
+    if (sortKey !== key) return "";
+    return sortDir === "desc" ? "▼" : "▲";
+  };
+  const col = (key: string): string => (sortKey === key ? "#f5f5f5" : "#525252");
+  const ptr: CSSProperties = onSort ? { cursor: "pointer", userSelect: "none" } : {};
+
   return (
     <div style={{ ...rowGrid, paddingTop: 6, paddingBottom: 6 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, color: "#525252", fontFamily: monoFont }}>銘柄</div>
+      <div
+        style={{ fontSize: 11, fontWeight: 700, color: col("turnover"), fontFamily: monoFont, ...ptr }}
+        onClick={() => onSort?.("turnover")}
+      >
+        銘柄{sortKey === "turnover" ? "▼" : ""}
+      </div>
       <div style={{ display: "flex", width: "13rem" }}>
-        {["1d", "5d", "1m", "3m", "1y"].map((label, i, arr) => (
+        {PERIOD_COLS.map(({ label, key }, i, arr) => (
           <div
-            key={label}
+            key={key}
+            onClick={() => onSort?.(key)}
             style={{
               width: "2.6rem",
               textAlign: "right",
@@ -69,12 +96,12 @@ export function StockRowHeader() {
               fontSize: 11,
               fontWeight: 700,
               fontFamily: monoFont,
-              color: "#525252",
-              borderRight:
-                i < arr.length - 1 ? "1px solid rgba(255,255,255,0.04)" : undefined,
+              color: col(key),
+              borderRight: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.04)" : undefined,
+              ...ptr,
             }}
           >
-            {label}
+            {label}{arrow(key)}
           </div>
         ))}
       </div>
@@ -86,11 +113,15 @@ export function StockRowHeader() {
           fontSize: 11,
           fontWeight: 700,
           fontFamily: monoFont,
-          color: "#525252",
         }}
       >
-        <span>株価</span>
-        <span>出現</span>
+        <span style={{ color: "#525252" }}>株価</span>
+        <span
+          style={{ color: col("occ"), ...ptr }}
+          onClick={() => onSort?.("occ")}
+        >
+          出現{arrow("occ")}
+        </span>
       </div>
     </div>
   );
