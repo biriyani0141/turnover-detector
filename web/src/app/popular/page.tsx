@@ -88,16 +88,16 @@ export default function PopularPage() {
   if (!rows) return <div className="p-4">loading...</div>;
 
   return (
-    <div className="p-3" style={{ backgroundColor: "#09090B", minHeight: "100vh" }}>
-      <h1 className="text-base font-bold mb-1" style={{ color: "#F4F4F5" }}>
+    <div style={{ backgroundColor: "#121214", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+      <h1 className="text-base font-bold mb-1" style={{ color: "#F4F4F5", paddingLeft: 16, paddingRight: 16 }}>
         人気継続（出現＋S高）
       </h1>
-      <p className="text-xs mb-3" style={{ color: "#71717A" }}>
+      <p className="text-xs mb-3" style={{ color: "#71717A", paddingLeft: 16, paddingRight: 16 }}>
         {meta?.date} ／ 上位50件
       </p>
 
       {/* 窓切替 */}
-      <div className="flex flex-wrap gap-1 mb-2">
+      <div className="flex flex-wrap gap-1 mb-2" style={{ paddingLeft: 16, paddingRight: 16 }}>
         {WIN_OPTIONS.map((w) => (
           <button
             key={w}
@@ -115,7 +115,7 @@ export default function PopularPage() {
       </div>
 
       {/* 時価総額フィルタ */}
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="flex flex-wrap gap-1 mb-3" style={{ paddingLeft: 16, paddingRight: 16 }}>
         {CAP_FILTERS.map((f) => (
           <button
             key={f.key}
@@ -133,7 +133,7 @@ export default function PopularPage() {
       </div>
 
       {/* リスト */}
-      <div style={{ backgroundColor: "#121214", borderRadius: 8, overflow: "hidden" }}>
+      <div style={{ backgroundColor: "#121214" }}>
         <StockRowHeader />
         {rows.map((r, i) => (
           <StockRow

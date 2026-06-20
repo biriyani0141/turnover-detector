@@ -160,14 +160,14 @@ export default function PullbackPage() {
   const offCount  = sections.get("対象外")?.length ?? 0;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-gray-100 p-2">
-      <h1 className="text-sm font-bold mb-0.5 text-gray-100">押し目発見（状態別）</h1>
-      <p className="text-[10px] text-gray-500 mb-2">
+    <div style={{ backgroundColor: "#121214", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+      <h1 className="text-sm font-bold mb-0.5 text-gray-100" style={{ paddingLeft: 16, paddingRight: 16 }}>押し目発見（状態別）</h1>
+      <p className="text-[10px] text-gray-500 mb-2" style={{ paddingLeft: 16, paddingRight: 16 }}>
         {meta?.date}　母集団 {totalBase} 銘柄（t50≥20）
       </p>
 
       {/* 時価総額フィルタ */}
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="flex flex-wrap gap-1 mb-3" style={{ paddingLeft: 16, paddingRight: 16 }}>
         {CAP_FILTERS.map((f) => (
           <button
             key={f.key}
@@ -188,9 +188,9 @@ export default function PullbackPage() {
         const rows = sections.get(label) ?? [];
         if (rows.length === 0) return null;
         return (
-          <div key={label} className="mb-4 rounded overflow-hidden border border-slate-700">
+          <div key={label} className="mb-4">
             {/* 色帯ヘッダ */}
-            <div className={`px-2 py-1 ${headerBg} text-white text-xs font-bold flex items-center gap-2`}>
+            <div className={`py-1 ${headerBg} text-white text-xs font-bold flex items-center gap-2`} style={{ paddingLeft: 16, paddingRight: 16 }}>
               <span>{label}</span>
               <span className="font-normal text-[10px] opacity-80">{rows.length} 件</span>
             </div>
@@ -220,7 +220,7 @@ export default function PullbackPage() {
       })}
 
       {/* 対象外 件数注記 */}
-      <p className="text-[10px] text-gray-600 mt-1">
+      <p className="text-[10px] text-gray-600 mt-1" style={{ paddingLeft: 16, paddingRight: 16 }}>
         対象外（中期データ不足・中立帯等）: {offCount} 件
       </p>
     </div>
