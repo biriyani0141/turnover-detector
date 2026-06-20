@@ -36,8 +36,8 @@ function perfColor(v: number | null): string {
   if (v === null || v === undefined) return "#525252";
   const r = Math.round(v);
   if (r >= 100) return "#ffa500";
-  if (r > 0) return "#ff5b5b";
-  if (r < 0) return "#3ad29f";
+  if (r > 0) return "#ff6b6b";
+  if (r < 0) return "#4ade80";
   return "#777";
 }
 
