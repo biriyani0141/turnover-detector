@@ -822,6 +822,164 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
     print(f"popular.json 出力: {len(popular)}銘柄 / 除外(全窓0): {skipped}銘柄 / {file_kb:.1f}KB")
 
 
+_MARKET_NAME_MAP = {
+    "プライム": "東証P",
+    "スタンダード": "東証S",
+    "グロース": "東証G",
+}
+
+RANKING_CARDS_FILE_DATA = Path(__file__).parent / "data" / "jquants" / "ranking_cards.json"
+RANKING_CARDS_FILE_WEB  = Path(__file__).parent / "web" / "public" / "data" / "ranking_cards.json"
+
+
+def _format_mktcap(mktcap: float) -> str:
+    if mktcap >= 1e12:
+        s = f"{mktcap / 1e12:.2f}".rstrip("0").rstrip(".")
+        return s + "兆円"
+    elif mktcap >= 1e8:
+        return f"{mktcap / 1e8:.0f}億円"
+    else:
+        return f"{mktcap / 1e4:.0f}万円"
+
+
+def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
+    """
+    回転率上位100件のカード用JSONを生成する。
+    candles / volumes に直近60営業日分の日足を含む。
+    出力先: data/jquants/ranking_cards.json と web/public/data/ranking_cards.json
+    """
+    if not META_FILE.exists():
+        print(f"エラー: meta.json が見つかりません: {META_FILE}")
+        raise SystemExit(1)
+    meta = json.loads(META_FILE.read_text(encoding="utf-8"))
+    stocks_meta: dict[str, dict] = meta["stocks"]
+
+    targets = {
+        code: s
+        for code, s in stocks_meta.items()
+        if s.get("prodcat") == "011" and s.get("shares")
+    }
+
+    date_str, code_to_close, code_to_va = _latest_daily_close()
+
+    # --- 回転率計算 ---
+    results: list[dict] = []
+    for code, stock in targets.items():
+        shares = get_adjusted_shares(code, date_str, stock, split_events)
+        if shares is None:
+            continue
+        c = code_to_close.get(code)
+        if c is None:
+            continue
+        mktcap = c * shares
+        va = code_to_va.get(code)
+        if va is None or mktcap == 0:
+            continue
+        results.append({
+            "code": code,
+            "C": c,
+            "mktcap": mktcap,
+            "va": va,
+            "turnover_pct": va / mktcap * 100,
+            "_stock": stock,
+        })
+
+    results.sort(key=lambda x: x["turnover_pct"], reverse=True)
+
+    returns_all = calc_returns()
+    for r in results:
+        ret = returns_all.get(r["code"])
+        r["ret_1d"] = ret.get("1d") if ret else None
+
+    top100 = results[:100]
+    top_codes = {r["code"] for r in top100}
+
+    # --- 直近60営業日の日足収集 ---
+    json_files = sorted(DAILY_DIR.glob("*.json"))
+    recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
+
+    candles_map: dict[str, list] = {code: [] for code in top_codes}
+    volumes_map: dict[str, list] = {code: [] for code in top_codes}
+
+    for path in recent_files:
+        day_date = path.stem
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for code in top_codes:
+            rec = data.get(code)
+            if rec is None:
+                continue
+            o, h, l, c, vo = rec.get("O"), rec.get("H"), rec.get("L"), rec.get("C"), rec.get("Vo")
+            if any(v is None or v == "" for v in [o, h, l, c, vo]):
+                continue
+            try:
+                candles_map[code].append({
+                    "time": day_date,
+                    "open": float(o),
+                    "high": float(h),
+                    "low": float(l),
+                    "close": float(c),
+                })
+                volumes_map[code].append({
+                    "time": day_date,
+                    "value": float(vo),
+                })
+            except (TypeError, ValueError):
+                pass
+
+    # --- 出力データ構築 ---
+    ranking_cards: list[dict] = []
+    for r in top100:
+        code = r["code"]
+        stock = r["_stock"]
+        c = r["C"]
+        ret_1d = r["ret_1d"]
+        mktcap = r["mktcap"]
+
+        change = round(c * ret_1d / 100, 1) if ret_1d is not None else 0.0
+        change_pct = round(ret_1d, 2) if ret_1d is not None else 0.0
+
+        market_raw = stock.get("market", "")
+        market = _MARKET_NAME_MAP.get(market_raw, market_raw)
+        sector = stock.get("sector33", "")
+
+        ranking_cards.append({
+            "code": code,
+            "name": stock.get("name", ""),
+            "market": market,
+            "sector": sector,
+            "creditType": "-",
+            "price": c,
+            "change": change,
+            "changePct": change_pct,
+            "marketCap": _format_mktcap(mktcap),
+            "turnover": round(r["turnover_pct"], 2),
+            "candles": candles_map.get(code, []),
+            "volumes": volumes_map.get(code, []),
+        })
+
+    output = {
+        "_meta": {
+            "generated": datetime.datetime.now().isoformat(),
+            "date": date_str,
+            "count": len(ranking_cards),
+        },
+        "ranking": ranking_cards,
+    }
+
+    json_str = json.dumps(output, ensure_ascii=False)
+
+    RANKING_CARDS_FILE_DATA.parent.mkdir(parents=True, exist_ok=True)
+    RANKING_CARDS_FILE_DATA.write_text(json_str, encoding="utf-8")
+
+    RANKING_CARDS_FILE_WEB.parent.mkdir(parents=True, exist_ok=True)
+    RANKING_CARDS_FILE_WEB.write_text(json_str, encoding="utf-8")
+
+    file_kb = RANKING_CARDS_FILE_WEB.stat().st_size / 1024
+    print(f"ranking_cards.json 出力: {len(ranking_cards)}件 / {file_kb:.1f}KB")
+    print(f"  -> {RANKING_CARDS_FILE_DATA}")
+    print(f"  -> {RANKING_CARDS_FILE_WEB}")
+
+
 if __name__ == "__main__":
     import sys
     split_events = build_split_events(sorted(DAILY_DIR.glob("*.json")))
@@ -835,5 +993,7 @@ if __name__ == "__main__":
         build_window_scores()
     elif len(sys.argv) > 1 and sys.argv[1] == "build_popular":
         build_popular(split_events)
+    elif len(sys.argv) > 1 and sys.argv[1] == "build_ranking_cards":
+        build_ranking_cards(split_events)
     else:
         main(split_events)
