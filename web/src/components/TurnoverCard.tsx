@@ -113,6 +113,29 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     });
     candleSeries.setData(stock.candles);
 
+    // 移動平均線（5日・25日・75日）
+    function sma(period: number) {
+      const out: { time: string; value: number }[] = [];
+      for (let i = period - 1; i < stock.candles.length; i++) {
+        const avg =
+          stock.candles.slice(i - period + 1, i + 1).reduce((s, c) => s + c.close, 0) / period;
+        out.push({ time: stock.candles[i].time, value: avg });
+      }
+      return out;
+    }
+    const ma5 = candleChart.addLineSeries({
+      color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false,
+    });
+    ma5.setData(sma(5));
+    const ma25 = candleChart.addLineSeries({
+      color: "#22AB94", lineWidth: 1, priceLineVisible: false, lastValueVisible: false,
+    });
+    ma25.setData(sma(25));
+    const ma75 = candleChart.addLineSeries({
+      color: "#9C27B0", lineWidth: 1, priceLineVisible: false, lastValueVisible: false,
+    });
+    ma75.setData(sma(75));
+
     // 直近50本を初期表示
     const total = stock.candles.length;
     const visibleFrom = Math.max(0, total - 50);
@@ -134,6 +157,10 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         color: "#5B8DEF99",
       }))
     );
+    // 出来高バーを下端に貼り付ける
+    volSeries.priceScale().applyOptions({
+      scaleMargins: { top: 0.7, bottom: 0 },
+    });
     // 出来高も同じ範囲を表示
     volChart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
 
