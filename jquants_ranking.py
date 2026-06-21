@@ -894,12 +894,22 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
     top100 = results[:100]
     top_codes = {r["code"] for r in top100}
 
+    # --- appearance.json から出現回数・S高回数を取得 ---
+    appearance_by_code: dict[str, dict] = {}
+    if APPEARANCE_FILE.exists():
+        try:
+            app_data = json.loads(APPEARANCE_FILE.read_text(encoding="utf-8"))
+            appearance_by_code = app_data.get("by_code", {})
+        except Exception:
+            pass
+
     # --- 直近60営業日の日足収集 ---
     json_files = sorted(DAILY_DIR.glob("*.json"))
     recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
 
     candles_map: dict[str, list] = {code: [] for code in top_codes}
     volumes_map: dict[str, list] = {code: [] for code in top_codes}
+    limitup_map: dict[str, list] = {code: [] for code in top_codes}
 
     for path in recent_files:
         day_date = path.stem
@@ -908,6 +918,9 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             rec = data.get(code)
             if rec is None:
                 continue
+            # S高チェック（OHLCV欠損とは独立して実施）
+            if rec.get("UL") == "1":
+                limitup_map[code].append(day_date)
             o, h, l, c, vo = rec.get("O"), rec.get("H"), rec.get("L"), rec.get("C"), rec.get("Vo")
             if any(v is None or v == "" for v in [o, h, l, c, vo]):
                 continue
@@ -947,6 +960,10 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
         market = _MARKET_NAME_MAP.get(market_raw, market_raw)
         sector = stock.get("sector33", "")
 
+        limit_up_dates = limitup_map.get(code, [])
+        is_limit_up = date_str in limit_up_dates
+        app_entry = appearance_by_code.get(code, {})
+
         ranking_cards.append({
             "code": code,
             "name": stock.get("name", ""),
@@ -958,6 +975,10 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "changePct": change_pct,
             "marketCap": _format_mktcap(mktcap),
             "turnover": round(r["turnover_pct"], 2),
+            "isLimitUp": is_limit_up,
+            "limitUpDates": limit_up_dates,
+            "occCount": int(app_entry.get("turnover_25", 0)),
+            "stophighCount": int(app_entry.get("stophigh_25", 0)),
             "candles": candles,
             "volumes": volumes_map.get(code, []),
         })
