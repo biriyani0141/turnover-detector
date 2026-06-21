@@ -99,25 +99,33 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     });
     candleSeries.setData(stock.candles);
 
-    // S高マーカー（☆=終値ストップ引け、○=ザラ場タッチのみ）
-    const closedSet = new Set(closedDates);
-    const allMarkerDates = [
-      ...closedDates,
-      ...touchedDates.filter((d) => !closedSet.has(d)),
-    ].filter((d) => stock.candles.some((c) => c.time === d));
-
-    if (allMarkerDates.length > 0) {
-      const markers = allMarkerDates
-        .sort()
+    // S高マーカー（1日1個・☆優先）
+    // ★ = 終値ストップ引け（shape:circle + text:'★'）
+    // ● = ザラ場タッチのみ（shape:circle、text なし）
+    const candleDates = new Set(stock.candles.map((c) => c.time));
+    const starDays = new Set(closedDates);
+    const markers = [
+      ...closedDates
+        .filter((d) => candleDates.has(d))
         .map((d) => ({
           time: d as `${number}-${number}-${number}`,
           position: "aboveBar" as const,
           color: "#F5A623",
-          shape: (closedSet.has(d) ? "circle" : "circle") as "circle",
-          text: closedSet.has(d) ? "★" : "○",
-        }));
-      candleSeries.setMarkers(markers);
-    }
+          shape: "circle" as const,
+          text: "★",
+        })),
+      ...touchedDates
+        .filter((d) => !starDays.has(d) && candleDates.has(d))
+        .map((d) => ({
+          time: d as `${number}-${number}-${number}`,
+          position: "aboveBar" as const,
+          color: "#F5A62388",
+          shape: "circle" as const,
+          text: "",
+        })),
+    ].sort((a, b) => (a.time < b.time ? -1 : 1));
+
+    if (markers.length > 0) candleSeries.setMarkers(markers);
 
     // 移動平均線（5日・25日・75日）
     function sma(period: number) {

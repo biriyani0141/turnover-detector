@@ -55,8 +55,52 @@ export default function Home() {
 
   return (
     <div className="p-3">
-      <h1 className="text-base font-bold mb-1">今日の資金流入（回転率）</h1>
-      <p className="text-xs text-gray-500 mb-3">{meta?.date} ／ 上位30件</p>
+      {/* ヘッダー */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 12,
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span
+            className="material-symbols-rounded"
+            style={{
+              fontSize: 18,
+              color: "#131722",
+              fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20",
+              lineHeight: 1,
+            }}
+          >
+            cycle
+          </span>
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 700,
+              color: "#131722",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            回転率
+          </span>
+        </div>
+        <div
+          style={{
+            fontSize: 11,
+            color: "#707A8A",
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "0.01em",
+          }}
+        >
+          {meta?.date}
+          <span style={{ margin: "0 4px" }}>·</span>
+          <span style={{ fontWeight: 600 }}>TOP30</span>
+        </div>
+      </div>
 
       <TurnoverCardList stocks={rows} />
 
