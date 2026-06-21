@@ -24,7 +24,7 @@ function fmtCode(code: string): string {
 function fmtCap(v: number | null): string {
   if (v === null || v === undefined) return "";
   if (v >= 10000) return (v / 10000).toFixed(1) + "兆";
-  return v.toLocaleString("ja-JP") + "億";
+  return Math.round(v).toLocaleString("ja-JP") + "億";
 }
 
 function fmt(v: number | null): string {
