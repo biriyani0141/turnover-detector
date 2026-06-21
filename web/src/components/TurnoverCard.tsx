@@ -27,7 +27,8 @@ export type CardStock = {
   marketCap: string;
   turnover: number;
   isLimitUp?: boolean;
-  limitUpDates?: string[];
+  touchedLimitUpDates?: string[];
+  closedLimitUpDates?: string[];
   occCount?: number;
   stophighCount?: number;
   candles: Candle[];
@@ -46,22 +47,21 @@ function fmtPrice(p: number): string {
 }
 
 export default function TurnoverCard({ stock }: { stock: CardStock }) {
-  const candleRef = useRef<HTMLDivElement>(null);
-  const volRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<HTMLDivElement>(null);
 
   const isUp = stock.change >= 0;
   const color = isUp ? UP : DOWN;
   const sign = isUp ? "+" : "";
   const isLimitUp = stock.isLimitUp ?? false;
-  const limitUpDates = stock.limitUpDates ?? [];
+  const touchedDates = stock.touchedLimitUpDates ?? [];
+  const closedDates = stock.closedLimitUpDates ?? [];
   const occCount = stock.occCount ?? 0;
   const stophighCount = stock.stophighCount ?? 0;
 
   useEffect(() => {
-    if (!candleRef.current || !volRef.current) return;
+    if (!chartRef.current) return;
 
-    // ローソク足チャート用オプション
-    const candleChartOpts = {
+    const chart = createChart(chartRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: "#FFFFFF" },
         textColor: "#9098A9",
@@ -78,40 +78,17 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.1, bottom: 0.1 },
+        scaleMargins: { top: 0.1, bottom: 0.25 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
       handleScale: false,
-    };
-
-    // 出来高チャート用オプション
-    const volChartOpts = {
-      layout: {
-        background: { type: ColorType.Solid, color: "#FFFFFF" },
-        textColor: "transparent",
-        attributionLogo: false,
-      },
-      grid: {
-        vertLines: { color: "#F0F3FA" },
-        horzLines: { color: "#F0F3FA" },
-      },
-      crosshair: { mode: CrosshairMode.Normal },
-      timeScale: { visible: false, borderVisible: false },
-      rightPriceScale: { visible: false, borderVisible: false },
-      leftPriceScale: { visible: false },
-      handleScroll: false,
-      handleScale: false,
-    };
-
-    const candleChart = createChart(candleRef.current, {
-      ...candleChartOpts,
-      width: candleRef.current.offsetWidth,
-      height: candleRef.current.offsetHeight || 200,
+      width: chartRef.current.offsetWidth,
+      height: chartRef.current.offsetHeight || 248,
     });
 
-    // priceFormat で価格軸ラベルを整数表示
-    const candleSeries = candleChart.addCandlestickSeries({
+    // ローソク足シリーズ（価格軸：整数表示）
+    const candleSeries = chart.addCandlestickSeries({
       upColor: UP,
       downColor: DOWN,
       borderUpColor: UP,
@@ -122,18 +99,24 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     });
     candleSeries.setData(stock.candles);
 
-    // S高マーカー（☆）
-    if (limitUpDates.length > 0) {
-      const markers = limitUpDates
-        .filter((d) => stock.candles.some((c) => c.time === d))
+    // S高マーカー（☆=終値ストップ引け、○=ザラ場タッチのみ）
+    const closedSet = new Set(closedDates);
+    const allMarkerDates = [
+      ...closedDates,
+      ...touchedDates.filter((d) => !closedSet.has(d)),
+    ].filter((d) => stock.candles.some((c) => c.time === d));
+
+    if (allMarkerDates.length > 0) {
+      const markers = allMarkerDates
+        .sort()
         .map((d) => ({
           time: d as `${number}-${number}-${number}`,
           position: "aboveBar" as const,
           color: "#F5A623",
-          shape: "circle" as const,
-          text: "★",
+          shape: (closedSet.has(d) ? "circle" : "circle") as "circle",
+          text: closedSet.has(d) ? "★" : "○",
         }));
-      if (markers.length > 0) candleSeries.setMarkers(markers);
+      candleSeries.setMarkers(markers);
     }
 
     // 移動平均線（5日・25日・75日）
@@ -148,41 +131,17 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       }
       return out;
     }
-    const ma5 = candleChart.addLineSeries({
-      color: "#2962FF",
-      lineWidth: 1,
-      priceLineVisible: false,
-      lastValueVisible: false,
-    });
+    const ma5 = chart.addLineSeries({ color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma5.setData(sma(5));
-    const ma25 = candleChart.addLineSeries({
-      color: "#22AB94",
-      lineWidth: 1,
-      priceLineVisible: false,
-      lastValueVisible: false,
-    });
+    const ma25 = chart.addLineSeries({ color: "#22AB94", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma25.setData(sma(25));
-    const ma75 = candleChart.addLineSeries({
-      color: "#9C27B0",
-      lineWidth: 1,
-      priceLineVisible: false,
-      lastValueVisible: false,
-    });
+    const ma75 = chart.addLineSeries({ color: "#9C27B0", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma75.setData(sma(75));
 
-    // 直近50本を初期表示
-    const total = stock.candles.length;
-    const visibleFrom = Math.max(0, total - 50);
-    candleChart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
-
-    const volChart = createChart(volRef.current, {
-      ...volChartOpts,
-      width: volRef.current.offsetWidth,
-      height: volRef.current.offsetHeight || 55,
-    });
-    const volSeries = volChart.addHistogramSeries({
+    // 出来高（同一チャート内オーバーレイ、下20%に配置）
+    const volSeries = chart.addHistogramSeries({
       priceFormat: { type: "volume" as const },
-      priceScaleId: "",
+      priceScaleId: "volume",
     });
     volSeries.setData(
       stock.volumes.map((v) => ({
@@ -191,37 +150,34 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         color: "#5B8DEF99",
       }))
     );
-    // 出来高バーを下端に貼り付ける（縮めたエリア内の下端）
-    volSeries.priceScale().applyOptions({
-      scaleMargins: { top: 0.05, bottom: 0 },
+    chart.priceScale("volume").applyOptions({
+      scaleMargins: { top: 0.8, bottom: 0 },
     });
-    volChart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
+
+    // 直近50本を初期表示（全シリーズ共通の時間軸）
+    const total = stock.candles.length;
+    const visibleFrom = Math.max(0, total - 50);
+    chart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
 
     const ro = new ResizeObserver(() => {
-      if (candleRef.current) {
-        candleChart.applyOptions({
-          width: candleRef.current.offsetWidth,
-          height: candleRef.current.offsetHeight || 200,
-        });
-      }
-      if (volRef.current) {
-        volChart.applyOptions({
-          width: volRef.current.offsetWidth,
-          height: volRef.current.offsetHeight || 55,
+      if (chartRef.current) {
+        chart.applyOptions({
+          width: chartRef.current.offsetWidth,
+          height: chartRef.current.offsetHeight || 248,
         });
       }
     });
-    ro.observe(candleRef.current);
-    ro.observe(volRef.current);
+    ro.observe(chartRef.current);
 
     return () => {
       ro.disconnect();
-      candleChart.remove();
-      volChart.remove();
+      chart.remove();
     };
   }, [stock]);
 
+  // タグ並び順: コード / 市場 / 信用or貸借 / 業種
   const tags = [
+    stock.code.slice(0, 4),
     stock.market,
     stock.creditType !== "-" ? stock.creditType : null,
     stock.sector,
@@ -247,7 +203,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         style={{
           flex: "0 0 112px",
           background: "#F4F6FB",
-          padding: "8px 14px 8px",
+          padding: "8px 14px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -255,44 +211,22 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           overflow: "hidden",
         }}
       >
-        {/* 行1: 銘柄名 + コード */}
+        {/* 行1: 銘柄名（単独・ellipsis） */}
         <div
           style={{
-            display: "flex",
-            alignItems: "baseline",
-            gap: 6,
+            fontSize: 14,
+            fontWeight: 700,
+            color: "#131722",
+            letterSpacing: "-0.01em",
+            whiteSpace: "nowrap",
             overflow: "hidden",
+            textOverflow: "ellipsis",
           }}
         >
-          <span
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#131722",
-              letterSpacing: "-0.01em",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              flex: "1 1 0",
-              minWidth: 0,
-            }}
-          >
-            {stock.name}
-          </span>
-          <span
-            style={{
-              fontSize: 10,
-              fontWeight: 500,
-              color: "#707A8A",
-              fontVariantNumeric: "tabular-nums",
-              flexShrink: 0,
-            }}
-          >
-            {stock.code.slice(0, 4)}
-          </span>
+          {stock.name}
         </div>
 
-        {/* 行2: タグ（常に2行目固定） */}
+        {/* 行2: コード/市場/信用/業種 タグ（常に2行目固定） */}
         <div style={{ display: "flex", gap: 3, flexWrap: "wrap", lineHeight: 1 }}>
           {tags.map((t) => (
             <span
@@ -326,17 +260,8 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           <span style={{ fontSize: 18, fontWeight: 700, color }}>
             {fmtPrice(stock.price)}
           </span>
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              color,
-              letterSpacing: "-0.01em",
-            }}
-          >
-            {sign}
-            {fmtNum(stock.change)} ({sign}
-            {stock.changePct.toFixed(2)}%)
+          <span style={{ fontSize: 12, fontWeight: 600, color, letterSpacing: "-0.01em" }}>
+            {sign}{fmtNum(stock.change)} ({sign}{stock.changePct.toFixed(2)}%)
           </span>
           {isLimitUp && (
             <span
@@ -387,23 +312,16 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         </div>
       </div>
 
-      {/* チャートエリア */}
+      {/* チャートエリア（単一チャート・ローソク足+出来高統合） */}
       <div
+        ref={chartRef}
         style={{
           flex: "1 1 0",
-          display: "flex",
-          flexDirection: "column",
           overflow: "hidden",
           pointerEvents: "none",
           userSelect: "none",
-          background: "#FFFFFF",
         }}
-      >
-        {/* ローソク足（主役：残り全高さ） */}
-        <div ref={candleRef} style={{ flex: "1 1 0", width: "100%" }} />
-        {/* 出来高（20〜25%に縮める：固定55px） */}
-        <div ref={volRef} style={{ flex: "0 0 55px", width: "100%" }} />
-      </div>
+      />
     </div>
   );
 }

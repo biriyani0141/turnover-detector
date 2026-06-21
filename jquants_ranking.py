@@ -909,7 +909,8 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
 
     candles_map: dict[str, list] = {code: [] for code in top_codes}
     volumes_map: dict[str, list] = {code: [] for code in top_codes}
-    limitup_map: dict[str, list] = {code: [] for code in top_codes}
+    limitup_touch_map: dict[str, list] = {code: [] for code in top_codes}  # ザラ場タッチのみ
+    limitup_closed_map: dict[str, list] = {code: [] for code in top_codes}  # 終値ストップ引け
 
     for path in recent_files:
         day_date = path.stem
@@ -920,7 +921,15 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
                 continue
             # S高チェック（OHLCV欠損とは独立して実施）
             if rec.get("UL") == "1":
-                limitup_map[code].append(day_date)
+                try:
+                    h_val = float(rec.get("H") or 0)
+                    c_val = float(rec.get("C") or 0)
+                except (TypeError, ValueError):
+                    h_val, c_val = 0.0, 0.0
+                if h_val > 0 and c_val == h_val:
+                    limitup_closed_map[code].append(day_date)  # 終値=高値=ストップ引け
+                else:
+                    limitup_touch_map[code].append(day_date)   # ザラ場タッチのみ
             o, h, l, c, vo = rec.get("O"), rec.get("H"), rec.get("L"), rec.get("C"), rec.get("Vo")
             if any(v is None or v == "" for v in [o, h, l, c, vo]):
                 continue
@@ -960,8 +969,9 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
         market = _MARKET_NAME_MAP.get(market_raw, market_raw)
         sector = stock.get("sector33", "")
 
-        limit_up_dates = limitup_map.get(code, [])
-        is_limit_up = date_str in limit_up_dates
+        touch_dates = limitup_touch_map.get(code, [])
+        closed_dates = limitup_closed_map.get(code, [])
+        is_limit_up = date_str in touch_dates or date_str in closed_dates
         app_entry = appearance_by_code.get(code, {})
 
         ranking_cards.append({
@@ -976,9 +986,10 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "marketCap": _format_mktcap(mktcap),
             "turnover": round(r["turnover_pct"], 2),
             "isLimitUp": is_limit_up,
-            "limitUpDates": limit_up_dates,
-            "occCount": int(app_entry.get("turnover_25", 0)),
-            "stophighCount": int(app_entry.get("stophigh_25", 0)),
+            "touchedLimitUpDates": touch_dates,   # ザラ場タッチのみ
+            "closedLimitUpDates": closed_dates,   # 終値ストップ引け
+            "occCount": int(app_entry.get("turnover_50", 0)),   # 50日窓
+            "stophighCount": int(app_entry.get("stophigh_50", 0)),  # 50日窓
             "candles": candles,
             "volumes": volumes_map.get(code, []),
         })
