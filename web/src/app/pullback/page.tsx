@@ -25,6 +25,7 @@ type StateLabel =
   | "調整予備軍"
   | "短期押し目"
   | "加速中"
+  | "中立帯"
   | "失速"
   | "対象外";
 
@@ -58,6 +59,7 @@ const STATE_CONFIG: {
   { label: "短期押し目", headerBg: "bg-teal-700"    },
   { label: "調整",      headerBg: "bg-blue-700"    },
   { label: "調整予備軍", headerBg: "bg-sky-700"     },
+  { label: "中立帯",    headerBg: "bg-gray-700"    },
   { label: "失速",      headerBg: "bg-red-700"     },
 ];
 
@@ -81,6 +83,7 @@ function classify(r: Row): StateLabel {
   if (s1y === "+" && s3m === "+" && s1m === "0")                               return "調整予備軍";
   if (s1y === "+" && s3m === "+" && s1m === "+" && s5d === "-")                return "短期押し目";
   if (s1y === "+" && s3m === "+" && s1m === "+" && (s5d === "+" || s5d === "0")) return "加速中";
+  if (s1y === "+" && s3m === "0")                                               return "中立帯";
   if (s1y === "+" && s3m === "-")                                               return "失速";
 
   return "対象外";
@@ -153,14 +156,13 @@ export default function PullbackPage() {
   if (err)       return <pre className="p-4 text-red-400 bg-slate-900 min-h-screen">ERROR: {err}</pre>;
   if (!sections) return <div className="p-4 bg-slate-900 text-gray-400 min-h-screen">loading...</div>;
 
-  const totalBase = [...(classified?.values() ?? [])].flat().length;
   const offCount  = sections.get("対象外")?.length ?? 0;
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <h1 className="text-sm font-bold mb-0.5 text-gray-100" style={{ paddingLeft: 16, paddingRight: 16 }}>押し目発見（状態別）</h1>
+      <h1 className="text-sm font-bold mb-0.5 text-gray-100" style={{ paddingLeft: 16, paddingRight: 16 }}>pickup</h1>
       <p className="text-[10px] text-gray-500 mb-2" style={{ paddingLeft: 16, paddingRight: 16 }}>
-        {meta?.date}　母集団 {totalBase} 銘柄（t50≥20）
+        {meta?.date}
       </p>
 
       {/* 時価総額フィルタ */}
@@ -226,7 +228,7 @@ export default function PullbackPage() {
 
       {/* 対象外 件数注記 */}
       <p className="text-[10px] text-gray-600 mt-1" style={{ paddingLeft: 16, paddingRight: 16 }}>
-        対象外（中期データ不足・中立帯等）: {offCount} 件
+        対象外（中期データ不足等）: {offCount} 件
       </p>
     </div>
   );
