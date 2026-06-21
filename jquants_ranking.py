@@ -935,8 +935,13 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
         ret_1d = r["ret_1d"]
         mktcap = r["mktcap"]
 
-        change = round(c * ret_1d / 100, 1) if ret_1d is not None else 0.0
-        change_pct = round(ret_1d, 2) if ret_1d is not None else 0.0
+        candles = candles_map.get(code, [])
+        if len(candles) >= 2:
+            change = round(candles[-1]["close"] - candles[-2]["close"])
+            change_pct = round((change / candles[-2]["close"]) * 100, 2)
+        else:
+            change = 0
+            change_pct = 0.0
 
         market_raw = stock.get("market", "")
         market = _MARKET_NAME_MAP.get(market_raw, market_raw)
@@ -953,7 +958,7 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "changePct": change_pct,
             "marketCap": _format_mktcap(mktcap),
             "turnover": round(r["turnover_pct"], 2),
-            "candles": candles_map.get(code, []),
+            "candles": candles,
             "volumes": volumes_map.get(code, []),
         })
 

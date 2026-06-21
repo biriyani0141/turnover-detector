@@ -33,10 +33,14 @@ export type CardStock = {
 const UP = "#E03A2F";
 const DOWN = "#1B8C7D";
 
+function fmtNum(n: number): string {
+  return n % 1 === 0 ? n.toFixed(0) : n.toFixed(1);
+}
+
 function fmtPrice(p: number): string {
   return p >= 1000
-    ? p.toLocaleString("ja-JP")
-    : p.toLocaleString("ja-JP", { minimumFractionDigits: 1 });
+    ? Math.round(p).toLocaleString("ja-JP")
+    : fmtNum(p);
 }
 
 export default function TurnoverCard({ stock }: { stock: CardStock }) {
@@ -57,6 +61,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         textColor: "#9098A9",
         fontSize: 10,
         fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: "#F0F3FA" },
@@ -79,6 +84,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       layout: {
         background: { type: ColorType.Solid, color: "#FFFFFF" },
         textColor: "transparent",
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: "#F0F3FA" },
@@ -122,14 +128,11 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       priceScaleId: "",
     });
     volSeries.setData(
-      stock.volumes.map((v, i) => {
-        const c = stock.candles[i];
-        return {
-          time: v.time as `${number}-${number}-${number}`,
-          value: v.value,
-          color: c && c.close >= c.open ? UP + "44" : DOWN + "44",
-        };
-      })
+      stock.volumes.map((v) => ({
+        time: v.time as `${number}-${number}-${number}`,
+        value: v.value,
+        color: "#5B8DEF99",
+      }))
     );
     // 出来高も同じ範囲を表示
     volChart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
@@ -219,7 +222,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
               fontVariantNumeric: "tabular-nums",
             }}
           >
-            {stock.code}
+            {stock.code.slice(0, 4)}
           </span>
           <div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>
             {tags.map((t) => (
@@ -264,9 +267,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
             }}
           >
             {sign}
-            {stock.change.toLocaleString("ja-JP", {
-              minimumFractionDigits: 1,
-            })}{" "}
+            {fmtNum(stock.change)}{" "}
             ({sign}
             {stock.changePct.toFixed(2)}%)
           </span>
