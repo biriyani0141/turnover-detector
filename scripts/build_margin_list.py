@@ -58,12 +58,23 @@ def detect_columns(ws):
 
     if header_row:
         row_vals = list(ws.iter_rows(min_row=header_row, max_row=header_row, values_only=True))[0]
+        # コード列を検出
         for i, v in enumerate(row_vals):
             s = str(v) if v is not None else ""
             if ("コード" in s or "code" in s.lower()) and code_col is None:
                 code_col = i
-            if ("区分" in s or "信用" in s or "貸借" in s or "種別" in s) and type_col is None:
+        # 信用区分列を検出（「市場区分」より「信用区分」を優先）
+        # 1st pass: 「信用区分」「貸借区分」などの正確な信用列を探す
+        for i, v in enumerate(row_vals):
+            s = str(v) if v is not None else ""
+            if ("信用区分" in s or "貸借区分" in s) and type_col is None:
                 type_col = i
+        # 2nd pass: それでも見つからなければ「信用」「貸借」「種別」を含む列にフォールバック
+        if type_col is None:
+            for i, v in enumerate(row_vals):
+                s = str(v) if v is not None else ""
+                if ("信用" in s or "貸借" in s or "種別" in s) and "市場" not in s and type_col is None:
+                    type_col = i
         if code_col is not None and type_col is not None:
             return code_col, type_col, header_row
 

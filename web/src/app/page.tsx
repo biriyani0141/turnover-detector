@@ -20,6 +20,13 @@ export default function Home() {
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [err, setErr] = useState<string | null>(null);
 
+  // 信用区分の表示ラベルへのマッピング（文字列完全一致）
+  const CREDIT_LABEL: Record<string, string> = {
+    "貸借銘柄": "貸借",
+    "制度信用銘柄": "信用",
+    // "非制度信用銘柄" は表示しない
+  };
+
   useEffect(() => {
     Promise.all([
       fetch("/data/ranking_cards.json").then((r) => {
@@ -31,20 +38,27 @@ export default function Home() {
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
-        .catch((e) => {
-          console.error("excluded.json fetch failed:", e);
-          return { excluded: [] };
-        }),
+        .catch(() => ({ excluded: [] })),
+      fetch("/data/margin_list.json")
+        .then((r) => (r.ok ? r.json() : { stocks: {} }))
+        .catch(() => ({ stocks: {} })),
     ])
-      .then(([cardsData, excludedData]) => {
+      .then(([cardsData, excludedData, marginData]) => {
         setMeta(cardsData._meta);
         const excludedCodes = new Set<string>(
           (excludedData.excluded ?? []).map((e: Excluded) => e.code)
         );
         setExcluded(excludedData.excluded ?? []);
+        const marginStocks: Record<string, string> = marginData.stocks ?? {};
         const filtered = (cardsData.ranking as CardStock[])
           .filter((r) => !excludedCodes.has(r.code))
-          .slice(0, 30);
+          .slice(0, 30)
+          .map((r) => ({
+            ...r,
+            // J-Quants側は5文字(例:35590)、JPX側は4文字(例:3559)のため先頭4文字でjoin
+            // 数値変換は一切しない（文字列スライスのみ）
+            creditType: CREDIT_LABEL[marginStocks[r.code.slice(0, 4)]] ?? "-",
+          }));
         setRows(filtered);
       })
       .catch((e) => setErr(String(e)));
