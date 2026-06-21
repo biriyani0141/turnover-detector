@@ -50,7 +50,32 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
   useEffect(() => {
     if (!candleRef.current || !volRef.current) return;
 
-    const commonOpts = {
+    // ローソク足チャート用オプション（価格軸あり・小フォント）
+    const candleChartOpts = {
+      layout: {
+        background: { type: ColorType.Solid, color: "#FFFFFF" },
+        textColor: "#9098A9",
+        fontSize: 10,
+        fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+      },
+      grid: {
+        vertLines: { color: "#F0F3FA" },
+        horzLines: { color: "#F0F3FA" },
+      },
+      crosshair: { mode: CrosshairMode.Normal },
+      timeScale: { visible: false, borderVisible: false },
+      rightPriceScale: {
+        visible: true,
+        borderVisible: false,
+        scaleMargins: { top: 0.1, bottom: 0.1 },
+      },
+      leftPriceScale: { visible: false },
+      handleScroll: false,
+      handleScale: false,
+    };
+
+    // 出来高チャート用オプション（価格軸非表示）
+    const volChartOpts = {
       layout: {
         background: { type: ColorType.Solid, color: "#FFFFFF" },
         textColor: "transparent",
@@ -68,7 +93,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     };
 
     const candleChart = createChart(candleRef.current, {
-      ...commonOpts,
+      ...candleChartOpts,
       width: candleRef.current.offsetWidth,
       height: candleRef.current.offsetHeight || 178,
     });
@@ -81,10 +106,14 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       wickDownColor: DOWN,
     });
     candleSeries.setData(stock.candles);
-    candleChart.timeScale().fitContent();
+
+    // 直近50本を初期表示
+    const total = stock.candles.length;
+    const visibleFrom = Math.max(0, total - 50);
+    candleChart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
 
     const volChart = createChart(volRef.current, {
-      ...commonOpts,
+      ...volChartOpts,
       width: volRef.current.offsetWidth,
       height: volRef.current.offsetHeight || 60,
     });
@@ -102,7 +131,8 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         };
       })
     );
-    volChart.timeScale().fitContent();
+    // 出来高も同じ範囲を表示
+    volChart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
 
     const ro = new ResizeObserver(() => {
       if (candleRef.current) {
