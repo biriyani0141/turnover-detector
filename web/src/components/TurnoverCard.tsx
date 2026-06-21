@@ -99,7 +99,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     });
     candleSeries.setData(stock.candles);
 
-    // S高マーカー（バックエンドで排他済み・フィルター不要）
+    // S高マーカー（方針A: text文字を主役・size:0でshape非表示）
     // ★ = 終値ストップ引け（closedLimitUpDates）
     // ● = ザラ場タッチのみ（touchedOnlyDates）
     const candleDateSet = new Set(stock.candles.map((c) => c.time));
@@ -111,6 +111,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           position: "aboveBar" as const,
           color: "#F5A623",
           shape: "circle" as const,
+          size: 0,
           text: "★",
         })),
       ...touchedOnlyDates
@@ -120,7 +121,8 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           position: "aboveBar" as const,
           color: "#F5A623",
           shape: "circle" as const,
-          text: "",
+          size: 0,
+          text: "●",
         })),
     ].sort((a, b) => (a.time < b.time ? -1 : 1));
 
