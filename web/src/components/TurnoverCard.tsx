@@ -27,7 +27,7 @@ export type CardStock = {
   marketCap: string;
   turnover: number;
   isLimitUp?: boolean;
-  touchedLimitUpDates?: string[];
+  touchedOnlyDates?: string[];
   closedLimitUpDates?: string[];
   occCount?: number;
   stophighCount?: number;
@@ -53,7 +53,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
   const color = isUp ? UP : DOWN;
   const sign = isUp ? "+" : "";
   const isLimitUp = stock.isLimitUp ?? false;
-  const touchedDates = stock.touchedLimitUpDates ?? [];
+  const touchedOnlyDates = stock.touchedOnlyDates ?? [];
   const closedDates = stock.closedLimitUpDates ?? [];
   const occCount = stock.occCount ?? 0;
   const stophighCount = stock.stophighCount ?? 0;
@@ -99,14 +99,13 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     });
     candleSeries.setData(stock.candles);
 
-    // S高マーカー（1日1個・☆優先）
-    // ★ = 終値ストップ引け（shape:circle + text:'★'）
-    // ● = ザラ場タッチのみ（shape:circle、text なし）
-    const candleDates = new Set(stock.candles.map((c) => c.time));
-    const starDays = new Set(closedDates);
+    // S高マーカー（バックエンドで排他済み・フィルター不要）
+    // ★ = 終値ストップ引け（closedLimitUpDates）
+    // ● = ザラ場タッチのみ（touchedOnlyDates）
+    const candleDateSet = new Set(stock.candles.map((c) => c.time));
     const markers = [
       ...closedDates
-        .filter((d) => candleDates.has(d))
+        .filter((d) => candleDateSet.has(d))
         .map((d) => ({
           time: d as `${number}-${number}-${number}`,
           position: "aboveBar" as const,
@@ -114,12 +113,12 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           shape: "circle" as const,
           text: "★",
         })),
-      ...touchedDates
-        .filter((d) => !starDays.has(d) && candleDates.has(d))
+      ...touchedOnlyDates
+        .filter((d) => candleDateSet.has(d))
         .map((d) => ({
           time: d as `${number}-${number}-${number}`,
           position: "aboveBar" as const,
-          color: "#F5A62388",
+          color: "#F5A623",
           shape: "circle" as const,
           text: "",
         })),

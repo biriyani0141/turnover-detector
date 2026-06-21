@@ -65,29 +65,16 @@ export default function Home() {
           fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span
-            className="material-symbols-rounded"
-            style={{
-              fontSize: 18,
-              color: "#131722",
-              fontVariationSettings: "'FILL' 1,'wght' 500,'GRAD' 0,'opsz' 20",
-              lineHeight: 1,
-            }}
-          >
-            cycle
-          </span>
-          <span
-            style={{
-              fontSize: 15,
-              fontWeight: 700,
-              color: "#131722",
-              letterSpacing: "-0.02em",
-            }}
-          >
-            回転率
-          </span>
-        </div>
+        <span
+          style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: "#FFFFFF",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          回転率
+        </span>
         <div
           style={{
             fontSize: 11,

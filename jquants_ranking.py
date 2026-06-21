@@ -986,8 +986,8 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "marketCap": _format_mktcap(mktcap),
             "turnover": round(r["turnover_pct"], 2),
             "isLimitUp": is_limit_up,
-            "touchedLimitUpDates": touch_dates,   # ザラ場タッチのみ
-            "closedLimitUpDates": closed_dates,   # 終値ストップ引け
+            "touchedOnlyDates": touch_dates,    # ザラ場タッチのみ（引け日は含まない）
+            "closedLimitUpDates": closed_dates, # 終値ストップ引け
             "occCount": int(app_entry.get("turnover_50", 0)),   # 50日窓
             "stophighCount": int(app_entry.get("stophigh_50", 0)),  # 50日窓
             "candles": candles,
