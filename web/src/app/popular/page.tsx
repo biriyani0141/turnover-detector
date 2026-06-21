@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
+import { PageHeader } from "../_components/PageHeader";
 
 type Row = {
   code: string;
@@ -123,9 +124,17 @@ export default function PopularPage() {
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <p className="text-xs mb-3" style={{ color: "#71717A", paddingLeft: 16, paddingRight: 16 }}>
-        {meta?.date}
-      </p>
+      <PageHeader
+        title="Long"
+        date={meta?.date}
+        description={
+          "選んだ期間（25／50／100／200日）の中で、売買代金回転率が5%以上をつけた銘柄を抽出しています。\n\n" +
+          "・「出現」欄：左の数字は、期間内に回転率5%以上をつけた日数（出現回数）。右の数字は、その期間中のストップ高（S高）の回数です。\n" +
+          "・上部の数字ボタンは2種類。「25／50／100／200」は集計期間（日数）の切り替え、「100↓／300↓／1000↓／1000↑」は時価総額フィルターです。\n" +
+          "・各銘柄に並ぶ数値（例：51.7兆）は時価総額を表します。\n" +
+          "・「1d／5d／1m／3m／1y」のカラム見出しをタップすると、その期間の騰落率でソートできます。"
+        }
+      />
 
       {/* 窓切替 */}
       <div style={{ display: "flex", gap: 8, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>

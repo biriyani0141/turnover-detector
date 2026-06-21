@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
+import { PageHeader } from "../_components/PageHeader";
 
 // ─── 定数（判定ロジック・変更禁止） ───────────────────────────────────────────
 const NEUTRAL_PCT = 2.0;
@@ -160,10 +161,14 @@ export default function PullbackPage() {
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <h1 className="text-sm font-bold mb-0.5 text-gray-100" style={{ paddingLeft: 16, paddingRight: 16 }}>pickup</h1>
-      <p className="text-[10px] text-gray-500 mb-2" style={{ paddingLeft: 16, paddingRight: 16 }}>
-        {meta?.date}
-      </p>
+      <PageHeader
+        title="Pickup"
+        date={meta?.date}
+        description={
+          "長期（1年）で上昇トレンドにある銘柄を、直近の値動きで状態分類しています。\n\n" +
+          "「加速中／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
+        }
+      />
 
       {/* 時価総額フィルタ */}
       <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
