@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, CrosshairMode } from "lightweight-charts";
+import { createChart, ColorType, CrosshairMode, AutoscaleInfo } from "lightweight-charts";
 
 type Candle = {
   time: string;
@@ -162,6 +162,15 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     chart.priceScale("volume").applyOptions({
       scaleMargins: { top: 0.8, bottom: 0 },
     });
+    volSeries.applyOptions({
+      autoscaleInfoProvider: (original: () => AutoscaleInfo | null) => {
+        const res = original();
+        if (res !== null) {
+          res.priceRange.minValue = 0;
+        }
+        return res;
+      },
+    });
 
     // 直近50本を初期表示（全シリーズ共通の時間軸）
     const total = stock.candles.length;
@@ -210,7 +219,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       {/* 情報エリア（固定高さ） */}
       <div
         style={{
-          flex: "0 0 112px",
+          flex: "0 0 96px",
           background: "#F4F6FB",
           padding: "8px 14px",
           display: "flex",
@@ -220,39 +229,42 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           overflow: "hidden",
         }}
       >
-        {/* 行1: 銘柄名（単独・ellipsis） */}
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: "#131722",
-            letterSpacing: "-0.01em",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {stock.name}
-        </div>
-
-        {/* 行2: コード/市場/信用/業種 タグ（常に2行目固定） */}
-        <div style={{ display: "flex", gap: 3, flexWrap: "wrap", lineHeight: 1 }}>
-          {tags.map((t) => (
-            <span
-              key={t}
-              style={{
-                fontSize: 9,
-                fontWeight: 500,
-                color: "#707A8A",
-                border: "1px solid rgba(112,122,138,0.28)",
-                borderRadius: 3,
-                padding: "1px 4px",
-                background: "rgba(112,122,138,0.06)",
-              }}
-            >
-              {t}
-            </span>
-          ))}
+        {/* 行1: 銘柄名 + コード/市場/信用/業種 タグ（インライン配置） */}
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              color: "#131722",
+              letterSpacing: "-0.01em",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              minWidth: 0,
+              flexShrink: 1,
+              maxWidth: "65%",
+            }}
+          >
+            {stock.name}
+          </span>
+          <div style={{ display: "flex", gap: 3, flexWrap: "wrap", lineHeight: 1, flexShrink: 0 }}>
+            {tags.map((t) => (
+              <span
+                key={t}
+                style={{
+                  fontSize: 9,
+                  fontWeight: 500,
+                  color: "#707A8A",
+                  border: "1px solid rgba(112,122,138,0.28)",
+                  borderRadius: 3,
+                  padding: "1px 4px",
+                  background: "rgba(112,122,138,0.06)",
+                }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* 行3: 株価・前日比・S高バッジ */}
