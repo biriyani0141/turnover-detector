@@ -80,14 +80,26 @@ export default function Home() {
       {/* ヘッダー */}
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          marginBottom: 12,
           fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+          marginBottom: 12,
         }}
       >
-        <div style={{ display: "flex", gap: 8, flex: 1, marginRight: 12 }}>
+        <div
+          style={{
+            fontSize: 11,
+            color: "#707A8A",
+            fontVariantNumeric: "tabular-nums",
+            letterSpacing: "0.01em",
+            marginBottom: 8,
+          }}
+        >
+          {meta?.date}
+          <span style={{ margin: "0 4px" }}>·</span>
+          <span style={{ fontWeight: 600 }}>
+            {mode === "turnover" ? "TOP30" : `${displayRows.length}件`}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => setMode("turnover")}
             style={{
@@ -97,6 +109,7 @@ export default function Home() {
               fontFamily: "ui-monospace, monospace",
               fontVariantNumeric: "tabular-nums",
               fontSize: 14,
+              textAlign: "center",
               transition: "background 0.15s, color 0.15s, border-color 0.15s",
               background: mode === "turnover" ? "#3c4043" : "#282a2d",
               border: `1px solid ${mode === "turnover" ? "#5f6368" : "#3c4043"}`,
@@ -115,6 +128,7 @@ export default function Home() {
               fontFamily: "ui-monospace, monospace",
               fontVariantNumeric: "tabular-nums",
               fontSize: 14,
+              textAlign: "center",
               transition: "background 0.15s, color 0.15s, border-color 0.15s",
               background: mode === "stophigh" ? "#3c4043" : "#282a2d",
               border: `1px solid ${mode === "stophigh" ? "#5f6368" : "#3c4043"}`,
@@ -124,20 +138,6 @@ export default function Home() {
           >
             Stop High
           </button>
-        </div>
-        <div
-          style={{
-            fontSize: 11,
-            color: "#707A8A",
-            fontVariantNumeric: "tabular-nums",
-            letterSpacing: "0.01em",
-          }}
-        >
-          {meta?.date}
-          <span style={{ margin: "0 4px" }}>·</span>
-          <span style={{ fontWeight: 600 }}>
-            {mode === "turnover" ? "TOP30" : `${displayRows.length}件`}
-          </span>
         </div>
       </div>
 
