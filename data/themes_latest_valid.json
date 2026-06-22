@@ -126,16 +126,16 @@
       "return_1y": 366.69,
       "top_movers": [
         {
+          "ticker": "UMC",
+          "pct_1d": 14.14
+        },
+        {
           "ticker": "TSEM",
           "pct_1d": 10.5
         },
         {
           "ticker": "ASX",
           "pct_1d": 7.5
-        },
-        {
-          "ticker": "INTC",
-          "pct_1d": 5.13
         }
       ],
       "bucket": "継続強"
@@ -458,12 +458,12 @@
           "pct_1d": 6.81
         },
         {
-          "ticker": "ONTO",
-          "pct_1d": 4.28
+          "ticker": "LRCX",
+          "pct_1d": 5.25
         },
         {
-          "ticker": "AMAT",
-          "pct_1d": 3.76
+          "ticker": "ONTO",
+          "pct_1d": 4.28
         }
       ],
       "bucket": "継続強"
@@ -950,16 +950,16 @@
       "return_1y": 241.73,
       "top_movers": [
         {
+          "ticker": "LRCX",
+          "pct_1d": 5.25
+        },
+        {
           "ticker": "AMAT",
           "pct_1d": 3.76
         },
         {
           "ticker": "KLAC",
           "pct_1d": 3.6
-        },
-        {
-          "ticker": "ASML",
-          "pct_1d": 0.03
         }
       ],
       "bucket": "継続強"
@@ -1314,6 +1314,10 @@
           "pct_1d": 2.04
         },
         {
+          "ticker": "LNG",
+          "pct_1d": 1.67
+        },
+        {
           "ticker": "SRE",
           "pct_1d": 1.0
         }
@@ -1390,15 +1394,15 @@
       "return_1y": 49.71,
       "top_movers": [
         {
+          "ticker": "UPS",
+          "pct_1d": 2.23
+        },
+        {
           "ticker": "GXO",
           "pct_1d": 2.18
         },
         {
           "ticker": "CHRW",
-          "pct_1d": 1.14
-        },
-        {
-          "ticker": "EXPD",
           "pct_1d": 1.14
         }
       ],
@@ -1798,12 +1802,12 @@
           "pct_1d": 3.64
         },
         {
-          "ticker": "DVA",
-          "pct_1d": 0.89
+          "ticker": "UHS",
+          "pct_1d": 0.97
         },
         {
-          "ticker": "EHC",
-          "pct_1d": 0.66
+          "ticker": "DVA",
+          "pct_1d": 0.89
         }
       ],
       "bucket": null
@@ -1852,6 +1856,10 @@
         {
           "ticker": "APD",
           "pct_1d": 1.02
+        },
+        {
+          "ticker": "LIN",
+          "pct_1d": 0.88
         }
       ],
       "bucket": null
@@ -2046,8 +2054,8 @@
           "pct_1d": 1.27
         },
         {
-          "ticker": "CNI",
-          "pct_1d": 0.62
+          "ticker": "UNP",
+          "pct_1d": 1.21
         }
       ],
       "bucket": null
@@ -2752,6 +2760,10 @@
         {
           "ticker": "OSCR",
           "pct_1d": 0.46
+        },
+        {
+          "ticker": "LMND",
+          "pct_1d": -2.35
         }
       ],
       "bucket": null
@@ -2990,12 +3002,12 @@
           "pct_1d": 1.32
         },
         {
-          "ticker": "CCJ",
-          "pct_1d": 0.59
+          "ticker": "LTBR",
+          "pct_1d": 1.12
         },
         {
-          "ticker": "LEU",
-          "pct_1d": -4.03
+          "ticker": "CCJ",
+          "pct_1d": 0.59
         }
       ],
       "bucket": null
@@ -3586,16 +3598,16 @@
       "return_1y": -7.36,
       "top_movers": [
         {
+          "ticker": "ULTA",
+          "pct_1d": 1.96
+        },
+        {
           "ticker": "EL",
           "pct_1d": -0.34
         },
         {
           "ticker": "KVUE",
           "pct_1d": -1.41
-        },
-        {
-          "ticker": "ELF",
-          "pct_1d": -1.59
         }
       ],
       "bucket": null
@@ -3646,12 +3658,12 @@
           "pct_1d": 3.97
         },
         {
-          "ticker": "SNAP",
-          "pct_1d": -0.34
+          "ticker": "LSCC",
+          "pct_1d": 1.03
         },
         {
-          "ticker": "QCOM",
-          "pct_1d": -1.83
+          "ticker": "SNAP",
+          "pct_1d": -0.34
         }
       ],
       "bucket": null
@@ -4218,12 +4230,12 @@
           "pct_1d": -0.42
         },
         {
-          "ticker": "VSEC",
-          "pct_1d": -1.67
+          "ticker": "LOAR",
+          "pct_1d": -0.92
         },
         {
-          "ticker": "HEI",
-          "pct_1d": -1.77
+          "ticker": "VSEC",
+          "pct_1d": -1.67
         }
       ],
       "bucket": null
@@ -4606,8 +4618,8 @@
           "pct_1d": -0.91
         },
         {
-          "ticker": "KVUE",
-          "pct_1d": -1.41
+          "ticker": "UL",
+          "pct_1d": -1.19
         }
       ],
       "bucket": null
@@ -5326,8 +5338,8 @@
           "pct_1d": -2.29
         },
         {
-          "ticker": "BLDR",
-          "pct_1d": -4.03
+          "ticker": "LOW",
+          "pct_1d": -3.5
         }
       ],
       "bucket": null
@@ -6019,5 +6031,5 @@
   ],
   "stock_date": "2026-06-22",
   "updated_at": "2026-06-22 21:34:47",
-  "saved_at": "2026-06-22T23:44:32.602750"
+  "saved_at": "2026-06-22T23:51:44.940788"
 }
