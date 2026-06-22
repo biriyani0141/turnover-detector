@@ -26,6 +26,7 @@ type StateLabel =
   | "調整予備軍"
   | "短期押し目"
   | "加速中"
+  | "初動"
   | "中立帯"
   | "失速"
   | "対象外";
@@ -57,6 +58,7 @@ const STATE_CONFIG: {
   headerBg: string;
 }[] = [
   { label: "加速中",    headerBg: "bg-emerald-700" },
+  { label: "初動",      headerBg: "bg-orange-600"  },
   { label: "短期押し目", headerBg: "bg-teal-700"    },
   { label: "調整",      headerBg: "bg-blue-700"    },
   { label: "調整予備軍", headerBg: "bg-sky-700"     },
@@ -72,6 +74,14 @@ function tri(v: number | null): "+" | "0" | "-" | null {
   return "0";
 }
 
+// 手前15営業日リターン（20日前→5日前）と、直近5日の加速度
+function calcAccel(r: Row): number | null {
+  if (r.ret_1m === null || r.ret_5d === null) return null;
+  const mid15d = (1 + r.ret_1m / 100) / (1 + r.ret_5d / 100) - 1; // 比率（小数）
+  const accel = r.ret_5d / 100 - mid15d; // 小数ベースで統一
+  return accel * 100; // %に戻して返す
+}
+
 function classify(r: Row): StateLabel {
   const s1y = tri(r.ret_1y);
   const s3m = tri(r.ret_3m);
@@ -83,7 +93,13 @@ function classify(r: Row): StateLabel {
   if (s1y === "+" && s3m === "+" && s1m === "-")                               return "調整";
   if (s1y === "+" && s3m === "+" && s1m === "0")                               return "調整予備軍";
   if (s1y === "+" && s3m === "+" && s1m === "+" && s5d === "-")                return "短期押し目";
-  if (s1y === "+" && s3m === "+" && s1m === "+" && (s5d === "+" || s5d === "0")) return "加速中";
+  if (s1y === "+" && s3m === "+" && s1m === "+" && (s5d === "+" || s5d === "0")) {
+    const accel = calcAccel(r);
+    if (r.ret_5d !== null && r.ret_5d >= 15 && accel !== null && accel >= 5) {
+      return "初動";
+    }
+    return "加速中";
+  }
   if (s1y === "+" && s3m === "0")                                               return "中立帯";
   if (s1y === "+" && s3m === "-")                                               return "失速";
 
