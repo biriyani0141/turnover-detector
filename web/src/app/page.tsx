@@ -87,20 +87,21 @@ export default function Home() {
           fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ display: "flex", gap: 8, flex: 1, marginRight: 12 }}>
           <button
             onClick={() => setMode("turnover")}
             style={{
-              padding: "7px 14px",
-              borderRadius: 8,
+              flex: 1,
+              padding: "9px 0",
+              borderRadius: 9999,
               fontFamily: "ui-monospace, monospace",
               fontVariantNumeric: "tabular-nums",
-              fontSize: 13,
-              fontWeight: 600,
-              transition: "background 0.15s, color 0.15s",
-              background: mode === "turnover" ? "#fff" : "#2c2c2e",
-              color: mode === "turnover" ? "#000" : "#8e8e93",
-              border: "none",
+              fontSize: 14,
+              transition: "background 0.15s, color 0.15s, border-color 0.15s",
+              background: mode === "turnover" ? "#3c4043" : "#282a2d",
+              border: `1px solid ${mode === "turnover" ? "#5f6368" : "#3c4043"}`,
+              color: mode === "turnover" ? "#e8eaed" : "#8e8e93",
+              fontWeight: mode === "turnover" ? 600 : 500,
             }}
           >
             Volume%
@@ -108,16 +109,17 @@ export default function Home() {
           <button
             onClick={() => setMode("stophigh")}
             style={{
-              padding: "7px 14px",
-              borderRadius: 8,
+              flex: 1,
+              padding: "9px 0",
+              borderRadius: 9999,
               fontFamily: "ui-monospace, monospace",
               fontVariantNumeric: "tabular-nums",
-              fontSize: 13,
-              fontWeight: 600,
-              transition: "background 0.15s, color 0.15s",
-              background: mode === "stophigh" ? "#fff" : "#2c2c2e",
-              color: mode === "stophigh" ? "#000" : "#8e8e93",
-              border: "none",
+              fontSize: 14,
+              transition: "background 0.15s, color 0.15s, border-color 0.15s",
+              background: mode === "stophigh" ? "#3c4043" : "#282a2d",
+              border: `1px solid ${mode === "stophigh" ? "#5f6368" : "#3c4043"}`,
+              color: mode === "stophigh" ? "#e8eaed" : "#8e8e93",
+              fontWeight: mode === "stophigh" ? 600 : 500,
             }}
           >
             Stop High
