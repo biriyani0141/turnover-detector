@@ -16,9 +16,11 @@ type Excluded = {
 
 export default function Home() {
   const [rows, setRows] = useState<CardStock[] | null>(null);
+  const [shRows, setShRows] = useState<CardStock[] | null>(null);
   const [meta, setMeta] = useState<{ date?: string } | null>(null);
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  const [mode, setMode] = useState<"turnover" | "stophigh">("turnover");
 
   // 信用区分の表示ラベルへのマッピング（文字列完全一致）
   const CREDIT_LABEL: Record<string, string> = {
@@ -42,8 +44,11 @@ export default function Home() {
       fetch("/data/margin_list.json")
         .then((r) => (r.ok ? r.json() : { stocks: {} }))
         .catch(() => ({ stocks: {} })),
+      fetch("/data/stophigh_cards.json")
+        .then((r) => (r.ok ? r.json() : { ranking: [] }))
+        .catch(() => ({ ranking: [] })),
     ])
-      .then(([cardsData, excludedData, marginData]) => {
+      .then(([cardsData, excludedData, marginData, stophighData]) => {
         setMeta(cardsData._meta);
         const excludedCodes = new Set<string>(
           (excludedData.excluded ?? []).map((e: Excluded) => e.code)
@@ -60,12 +65,15 @@ export default function Home() {
             creditType: CREDIT_LABEL[marginStocks[r.code.slice(0, 4)]] ?? "-",
           }));
         setRows(filtered);
+        setShRows((stophighData.ranking as CardStock[]) ?? []);
       })
       .catch((e) => setErr(String(e)));
   }, []);
 
   if (err) return <pre className="p-4 text-red-600">ERROR: {err}</pre>;
   if (!rows) return <div className="p-4">loading...</div>;
+
+  const displayRows = mode === "turnover" ? rows : shRows ?? [];
 
   return (
     <div className="p-3">
@@ -79,16 +87,42 @@ export default function Home() {
           fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        <span
-          style={{
-            fontSize: 15,
-            fontWeight: 700,
-            color: "#FFFFFF",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          回転率
-        </span>
+        <div style={{ display: "flex", gap: 6 }}>
+          <button
+            onClick={() => setMode("turnover")}
+            style={{
+              padding: "7px 14px",
+              borderRadius: 8,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 13,
+              fontWeight: 600,
+              transition: "background 0.15s, color 0.15s",
+              background: mode === "turnover" ? "#fff" : "#2c2c2e",
+              color: mode === "turnover" ? "#000" : "#8e8e93",
+              border: "none",
+            }}
+          >
+            Volume%
+          </button>
+          <button
+            onClick={() => setMode("stophigh")}
+            style={{
+              padding: "7px 14px",
+              borderRadius: 8,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 13,
+              fontWeight: 600,
+              transition: "background 0.15s, color 0.15s",
+              background: mode === "stophigh" ? "#fff" : "#2c2c2e",
+              color: mode === "stophigh" ? "#000" : "#8e8e93",
+              border: "none",
+            }}
+          >
+            Stop High
+          </button>
+        </div>
         <div
           style={{
             fontSize: 11,
@@ -99,11 +133,13 @@ export default function Home() {
         >
           {meta?.date}
           <span style={{ margin: "0 4px" }}>·</span>
-          <span style={{ fontWeight: 600 }}>TOP30</span>
+          <span style={{ fontWeight: 600 }}>
+            {mode === "turnover" ? "TOP30" : `${displayRows.length}件`}
+          </span>
         </div>
       </div>
 
-      <TurnoverCardList stocks={rows} />
+      <TurnoverCardList stocks={displayRows} />
 
       {excluded.length > 0 && (
         <div className="mt-8 pt-4 border-t border-gray-200">

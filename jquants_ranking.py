@@ -1017,6 +1017,162 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
     print(f"  -> {RANKING_CARDS_FILE_WEB}")
 
 
+STOPHIGH_CARDS_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "stophigh_cards.json"
+
+
+def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
+    """
+    当日S高銘柄（turnover上位100件の制約を受けない全件）のカード用JSONを生成する。
+    フィールドスキーマ・データ源・計算式は build_ranking_cards() と同一。
+    出力先: web/public/data/stophigh_cards.json のみ（既存ファイルには一切触れない）。
+    """
+    if not META_FILE.exists():
+        print(f"エラー: meta.json が見つかりません: {META_FILE}")
+        raise SystemExit(1)
+    meta = json.loads(META_FILE.read_text(encoding="utf-8"))
+    stocks_meta: dict[str, dict] = meta["stocks"]
+
+    date_str, code_to_close, code_to_va = _latest_daily_close()
+
+    latest_path = DAILY_DIR / f"{date_str}.json"
+    latest_raw = json.loads(latest_path.read_text(encoding="utf-8"))
+
+    # --- 当日S高銘柄を全件抽出（turnover順位の制約なし） ---
+    stophigh_codes = {code for code, rec in latest_raw.items() if rec.get("UL") == "1"}
+
+    # --- appearance.json から出現回数・S高回数を取得 ---
+    appearance_by_code: dict[str, dict] = {}
+    if APPEARANCE_FILE.exists():
+        try:
+            app_data = json.loads(APPEARANCE_FILE.read_text(encoding="utf-8"))
+            appearance_by_code = app_data.get("by_code", {})
+        except Exception:
+            pass
+
+    # --- 直近60営業日の日足収集 ---
+    json_files = sorted(DAILY_DIR.glob("*.json"))
+    recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
+
+    candles_map: dict[str, list] = {code: [] for code in stophigh_codes}
+    volumes_map: dict[str, list] = {code: [] for code in stophigh_codes}
+    limitup_touch_map: dict[str, list] = {code: [] for code in stophigh_codes}
+    limitup_closed_map: dict[str, list] = {code: [] for code in stophigh_codes}
+
+    for path in recent_files:
+        day_date = path.stem
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for code in stophigh_codes:
+            rec = data.get(code)
+            if rec is None:
+                continue
+            # S高チェック（OHLCV欠損とは独立して実施）
+            if rec.get("UL") == "1":
+                try:
+                    h_val = float(rec.get("H") or 0)
+                    c_val = float(rec.get("C") or 0)
+                except (TypeError, ValueError):
+                    h_val, c_val = 0.0, 0.0
+                if h_val > 0 and c_val == h_val:
+                    limitup_closed_map[code].append(day_date)  # 終値=高値=ストップ引け
+                else:
+                    limitup_touch_map[code].append(day_date)   # ザラ場タッチのみ
+            o, h, l, c, vo = rec.get("O"), rec.get("H"), rec.get("L"), rec.get("C"), rec.get("Vo")
+            if any(v is None or v == "" for v in [o, h, l, c, vo]):
+                continue
+            try:
+                candles_map[code].append({
+                    "time": day_date,
+                    "open": float(o),
+                    "high": float(h),
+                    "low": float(l),
+                    "close": float(c),
+                })
+                volumes_map[code].append({
+                    "time": day_date,
+                    "value": float(vo),
+                })
+            except (TypeError, ValueError):
+                pass
+
+    # --- 出力データ構築（証券コード昇順） ---
+    stophigh_cards: list[dict] = []
+    for code in sorted(stophigh_codes):
+        stock = stocks_meta.get(code)
+        if stock is None:
+            continue
+        shares = get_adjusted_shares(code, date_str, stock, split_events)
+        if shares is None:
+            continue
+        c = code_to_close.get(code)
+        if c is None:
+            continue
+        mktcap = c * shares
+        va = code_to_va.get(code)
+        if va is None or mktcap == 0:
+            continue
+        turnover_pct = va / mktcap * 100
+
+        candles = candles_map.get(code, [])
+        if len(candles) >= 2:
+            change = round(candles[-1]["close"] - candles[-2]["close"])
+            change_pct = round((change / candles[-2]["close"]) * 100, 2)
+        else:
+            change = 0
+            change_pct = 0.0
+
+        market_raw = stock.get("market", "")
+        market = _MARKET_NAME_MAP.get(market_raw, market_raw)
+        sector = stock.get("sector33", "")
+
+        touch_dates = limitup_touch_map.get(code, [])
+        closed_dates = limitup_closed_map.get(code, [])
+        is_limit_up = date_str in touch_dates or date_str in closed_dates
+        app_entry = appearance_by_code.get(code, {})
+
+        stophigh_cards.append({
+            "code": code,
+            "name": stock.get("name", ""),
+            "market": market,
+            "sector": sector,
+            "creditType": "-",
+            "price": c,
+            "change": change,
+            "changePct": change_pct,
+            "marketCap": _format_mktcap(mktcap),
+            "turnover": round(turnover_pct, 2),
+            "isLimitUp": is_limit_up,
+            "touchedOnlyDates": touch_dates,    # ザラ場タッチのみ（引け日は含まない）
+            "closedLimitUpDates": closed_dates, # 終値ストップ引け
+            "occCount": int(app_entry.get("turnover_50", 0)),   # 50日窓
+            "stophighCount": int(app_entry.get("stophigh_50", 0)),  # 50日窓
+            "candles": candles,
+            "volumes": volumes_map.get(code, []),
+        })
+
+    output = {
+        "_meta": {
+            "generated": datetime.datetime.now().isoformat(),
+            "date": date_str,
+            "count": len(stophigh_cards),
+        },
+        "ranking": stophigh_cards,
+    }
+
+    json_str = json.dumps(output, ensure_ascii=False)
+
+    STOPHIGH_CARDS_FILE_WEB.parent.mkdir(parents=True, exist_ok=True)
+    STOPHIGH_CARDS_FILE_WEB.write_text(json_str, encoding="utf-8")
+
+    file_kb = STOPHIGH_CARDS_FILE_WEB.stat().st_size / 1024
+    closed_n = sum(1 for card in stophigh_cards if date_str in card["closedLimitUpDates"])
+    touch_n = sum(1 for card in stophigh_cards if date_str in card["touchedOnlyDates"])
+    print(
+        f"stophigh_cards.json 出力: {len(stophigh_cards)}件 "
+        f"（終値S高引け:{closed_n} / ザラ場タッチのみ:{touch_n}） / {file_kb:.1f}KB"
+    )
+    print(f"  -> {STOPHIGH_CARDS_FILE_WEB}")
+
+
 if __name__ == "__main__":
     import sys
     split_events = build_split_events(sorted(DAILY_DIR.glob("*.json")))
@@ -1032,5 +1188,7 @@ if __name__ == "__main__":
         build_popular(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_ranking_cards":
         build_ranking_cards(split_events)
+    elif len(sys.argv) > 1 and sys.argv[1] == "build_stophigh_cards":
+        build_stophigh_cards(split_events)
     else:
         main(split_events)
