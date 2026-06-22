@@ -17,7 +17,7 @@ export interface StockRowProps {
 }
 
 function fmtCode(code: string): string {
-  if (/^\d{5}$/.test(code) && code.endsWith("0")) return code.slice(0, 4);
+  if (code.length === 5 && code.endsWith("0")) return code.slice(0, 4);
   return code;
 }
 

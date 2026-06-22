@@ -25,8 +25,8 @@ type StateLabel =
   | "調整"
   | "調整予備軍"
   | "短期押し目"
-  | "加速中"
-  | "初動"
+  | "継続"
+  | "初動・再加速"
   | "中立帯"
   | "失速"
   | "対象外";
@@ -57,8 +57,8 @@ const STATE_CONFIG: {
   label: StateLabel;
   headerBg: string;
 }[] = [
-  { label: "加速中",    headerBg: "bg-emerald-700" },
-  { label: "初動",      headerBg: "bg-orange-600"  },
+  { label: "継続",        headerBg: "bg-emerald-700" },
+  { label: "初動・再加速", headerBg: "bg-orange-600"  },
   { label: "短期押し目", headerBg: "bg-teal-700"    },
   { label: "調整",      headerBg: "bg-blue-700"    },
   { label: "調整予備軍", headerBg: "bg-sky-700"     },
@@ -96,9 +96,9 @@ function classify(r: Row): StateLabel {
   if (s1y === "+" && s3m === "+" && s1m === "+" && (s5d === "+" || s5d === "0")) {
     const accel = calcAccel(r);
     if (r.ret_5d !== null && r.ret_5d >= 15 && accel !== null && accel >= 5) {
-      return "初動";
+      return "初動・再加速";
     }
-    return "加速中";
+    return "継続";
   }
   if (s1y === "+" && s3m === "0")                                               return "中立帯";
   if (s1y === "+" && s3m === "-")                                               return "失速";
@@ -178,11 +178,10 @@ export default function PullbackPage() {
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
       <PageHeader
-        title="Pickup"
+        title="PickUP"
         date={meta?.date}
         description={
-          "長期（1年）で上昇トレンドにある銘柄を、直近の値動きで状態分類しています。\n\n" +
-          "「加速中／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
+          "直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
         }
       />
 
