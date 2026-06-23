@@ -88,12 +88,12 @@ function fmtRet1d(v: number | null | undefined): { text: string; color: string }
   const sign = v >= 0 ? "+" : "";
   return {
     text: `${sign}${v.toFixed(1)}%`,
-    color: v >= 0 ? "#E03A2F" : "#1B8C7D",
+    color: v >= 0 ? "#C0392B" : "#16A085",
   };
 }
 
 const monoFont = 'ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace';
-const BASE_BG = "#0f0f0f";
+const BASE_BG = "#0f1318";
 const TEXT_DEFAULT = "#8a8a8e";  // 全列共通グレー
 
 // 回転率による文字色（数値のみに使用）
@@ -112,14 +112,14 @@ function rowBg(turnover: number): string {
 
 // 列幅: 8列・padding 1px左右・合計360px（SE含む全機種OK）
 const COL_WIDTH = {
-  code:     30,
-  name:     82,
-  price:    46,
-  ret1d:    40,
-  va:       38,
-  mktcap:   42,
-  turnover: 32,
-  occ:      26,
+  code:     28,
+  name:     72,
+  price:    42,
+  ret1d:    42,
+  va:       40,
+  mktcap:   48,
+  turnover: 28,
+  occ:      30,
 } as const;
 
 const th: React.CSSProperties = {
@@ -131,7 +131,7 @@ const th: React.CSSProperties = {
   fontWeight: 600,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
-  padding: "4px 1px",
+  padding: "4px 2px",
   whiteSpace: "nowrap",
   borderBottom: "1px solid #222",
 };
@@ -141,9 +141,9 @@ const tdBase: React.CSSProperties = {
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
   color: TEXT_DEFAULT,
-  padding: "4px 1px",
+  padding: "4px 2px",
   whiteSpace: "nowrap",
-  borderBottom: "1px solid rgba(255,255,255,0.03)",
+  borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
 
 function toggleChipStyle(active: boolean): React.CSSProperties {
@@ -335,12 +335,12 @@ export default function RankingPage() {
                       {abbreviateName(r.name)}
                     </td>
                     <td style={{ ...tdBase, textAlign: "right" }}>{fmtPrice(r.C)}</td>
-                    <td style={{ ...tdBase, textAlign: "right", color: ret1d.color, fontWeight: 600 }}>
+                    <td style={{ ...tdBase, textAlign: "right", color: ret1d.color }}>
                       {ret1d.text}
                     </td>
                     <td style={{ ...tdBase, textAlign: "right" }}>{fmtOku(r.va)}</td>
                     <td style={{ ...tdBase, textAlign: "right" }}>{fmtOku(r.mktcap)}</td>
-                    <td style={{ ...tdBase, textAlign: "right", color: turnoverColor(r.turnover_pct), fontWeight: 600 }}>
+                    <td style={{ ...tdBase, textAlign: "right", color: turnoverColor(r.turnover_pct) }}>
                       {r.turnover_pct.toFixed(1)}
                     </td>
                     <td style={{ ...tdBase, textAlign: "right" }}>
