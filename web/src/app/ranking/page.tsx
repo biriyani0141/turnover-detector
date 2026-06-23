@@ -153,7 +153,7 @@ const numberFont = '"Monaco","Courier New",monospace';
 const tdNumber: React.CSSProperties = {
   ...tdBase,
   fontFamily: numberFont,
-  letterSpacing: "-0.02em",
+  letterSpacing: "-0.05em",
 };
 
 function toggleChipStyle(active: boolean): React.CSSProperties {
