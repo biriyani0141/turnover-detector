@@ -99,21 +99,20 @@ const monoFont = '"SF Mono",SFMono-Regular,ui-monospace,"Roboto Mono",Menlo,Cons
 const BASE_BG = "#17171a";
 const TEXT_DEFAULT = "#8a8a8e";  // 全列共通グレー
 const TEXT_BRIGHT = "#e8eaed";   // 出現欄用の高コントラスト色
-const TEXT_NAME = "#f5f5f5";     // 銘柄名・コード用（明るすぎないトーン）
-const ZEBRA_BG = "rgba(255,255,255,0.03)"; // 奇数行の背景
+const TEXT_NAME = "#dcdcdc";     // 銘柄名・コード用
 
 // 回転率による文字色（数値のみに使用）
 function turnoverColor(v: number): string {
-  if (v >= 10) return "#E05252";
-  if (v >= 5)  return "#E8A838";
+  if (v >= 10) return "#dc143a";
+  if (v >= 5)  return "#ffa500";
   return TEXT_DEFAULT;
 }
 
-// 回転率による行背景（ハイライトのみ。それ以外はゼブラ or 透明）
-function rowBg(turnover: number, isOddRow: boolean): string {
-  if (turnover >= 10) return "rgba(224,82,82,0.08)";
-  if (turnover >= 5)  return "rgba(232,168,56,0.08)";
-  return isOddRow ? ZEBRA_BG : "transparent";
+// 回転率による行背景（ハイライトのみ。通常行は透明=BASE_BG）
+function rowBg(turnover: number): string {
+  if (turnover >= 10) return "rgba(220,20,60,0.08)";
+  if (turnover >= 5)  return "rgba(255,165,0,0.08)";
+  return "transparent";
 }
 
 // 列幅: 8列・padding 1px左右・合計360px（SE含む全機種OK）
@@ -347,8 +346,8 @@ export default function RankingPage() {
             {filteredRows.map((r, i) => {
               const ret1d = fmtRet1d(r.ret_1d);
               const app = appearanceByCode[r.code];
+              const bg = rowBg(r.turnover_pct);
               const rank = i + 1;
-              const bg = rowBg(r.turnover_pct, rank % 2 === 1);
               const showDivider = rank > 1 && rank % 25 === 1;
               return (
                 <React.Fragment key={r.code}>
