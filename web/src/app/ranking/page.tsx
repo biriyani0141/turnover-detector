@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { PageHeader } from "../_components/PageHeader";
 
 type RankingRow = {
   code: string;
@@ -22,6 +21,15 @@ type Appearance = {
   stophigh_50?: number;
 };
 
+type MetaStock = {
+  market?: string;
+};
+
+// J-Quantsのコードは末尾0付き5桁（例: 285A0）。表示は先頭4桁。
+function displayCode(code: string): string {
+  return code.slice(0, 4);
+}
+
 type SubTab = "all" | "standard" | "growth";
 
 const SUB_TABS: { key: SubTab; label: string }[] = [
@@ -32,9 +40,9 @@ const SUB_TABS: { key: SubTab; label: string }[] = [
 
 // データは生の日本語のまま保持。表示変換のみここで行う。
 const MARKET_DISPLAY: Record<string, string> = {
-  "プライム": "東証PR",
-  "スタンダード": "東証STD",
-  "グロース": "東証GRT",
+  "プライム": "東証P",
+  "スタンダード": "東証S",
+  "グロース": "東証G",
 };
 
 function fmtMarket(market?: string): string {
@@ -70,18 +78,18 @@ function fmtRet1d(v: number | null | undefined): { text: string; color: string }
 
 const monoFont = 'ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace';
 
-// スマホ基準の列幅目安
+// iPhone 15基準(390px)で横スクロールなしに収まることを目標にした列幅
 const COL_WIDTH = {
-  rank: "2rem",
-  code: "3.5rem",
-  name: "7rem",
-  market: "3.5rem",
-  price: "4rem",
-  ret1d: "4.5rem",
-  va: "4rem",
-  mktcap: "4rem",
-  turnover: "4rem",
-  occ: "3rem",
+  rank: "20px",
+  code: "30px",
+  name: "50px",
+  market: "32px",
+  price: "36px",
+  ret1d: "40px",
+  va: "38px",
+  mktcap: "38px",
+  turnover: "32px",
+  occ: "24px",
 } as const;
 
 // 回転率の色分け（10%以上=赤、5%以上10%未満=オレンジ、5%未満=デフォルト）
@@ -96,10 +104,10 @@ const th: React.CSSProperties = {
   top: 0,
   background: "#09090B",
   color: "#71717A",
-  fontSize: 11,
+  fontSize: 10,
   fontWeight: 700,
   fontFamily: monoFont,
-  padding: "6px 4px",
+  padding: "4px 2px",
   whiteSpace: "nowrap",
   borderBottom: "1px solid #1F1F23",
 };
@@ -108,7 +116,7 @@ const td: React.CSSProperties = {
   fontSize: 11,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
-  padding: "6px 4px",
+  padding: "4px 2px",
   whiteSpace: "nowrap",
   borderBottom: "1px solid rgba(255,255,255,0.04)",
 };
@@ -129,10 +137,19 @@ export default function RankingPage() {
       fetch("/data/appearance.json")
         .then((r) => (r.ok ? r.json() : { by_code: {} }))
         .catch(() => ({ by_code: {} })),
+      fetch("/data/meta.json")
+        .then((r) => (r.ok ? r.json() : { stocks: {} }))
+        .catch(() => ({ stocks: {} })),
     ])
-      .then(([rankingData, appearanceData]) => {
+      .then(([rankingData, appearanceData, metaData]) => {
         setMeta(rankingData._meta);
-        setRows(rankingData.ranking as RankingRow[]);
+        const metaStocks: Record<string, MetaStock> = metaData.stocks ?? {};
+        // market 暫定対応: ranking.json側が空/未反映の場合のみ meta.json から補完
+        const joined = (rankingData.ranking as RankingRow[]).map((r) => ({
+          ...r,
+          market: r.market || metaStocks[r.code]?.market || r.market,
+        }));
+        setRows(joined);
         setAppearanceByCode(appearanceData.by_code ?? {});
       })
       .catch((e) => setErr(String(e)));
@@ -148,11 +165,12 @@ export default function RankingPage() {
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <PageHeader
-        title="売買代金ランキング"
-        date={meta?.date}
-        description="ranking.json を売買代金上位順に表示しています。市場区分でサブタブを切り替えられます。"
-      />
+      <div style={{ paddingLeft: 16, paddingRight: 16, marginBottom: 12 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>
+          Volume Ranking
+        </h1>
+        <p style={{ fontSize: 12, color: "#71717A" }}>{meta?.date}</p>
+      </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
         {SUB_TABS.map(({ key, label }) => (
@@ -202,7 +220,7 @@ export default function RankingPage() {
               return (
                 <tr key={r.code}>
                   <td style={{ ...td, textAlign: "right", color: "#71717A", minWidth: COL_WIDTH.rank }}>{i + 1}</td>
-                  <td style={{ ...td, color: "#c8c8c8", minWidth: COL_WIDTH.code }}>{r.code}</td>
+                  <td style={{ ...td, color: "#c8c8c8", minWidth: COL_WIDTH.code }}>{displayCode(r.code)}</td>
                   <td
                     style={{
                       ...td,
