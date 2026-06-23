@@ -4,8 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { href: "/ranking", icon: "currency_yen" },
-  { href: "/", icon: "cycle" },
+  { href: "/", icon: "candlestick_chart" },
+  { href: "/ranking", icon: "leaderboard" },
   { href: "/popular", icon: "finance_mode" },
   { href: "/pullback", icon: "electric_bolt" },
 ];
@@ -33,19 +33,13 @@ export function TabBar() {
                 fontSize: 24,
                 color: isActive ? "#e3e3e3" : "#5f6368",
                 fontVariationSettings: "'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24",
+                backgroundColor: isActive ? "rgba(255, 255, 255, 0.12)" : "transparent",
+                borderRadius: 8,
+                padding: "6px 10px",
               }}
             >
               {icon}
             </span>
-            <span
-              style={{
-                width: 28,
-                height: 2,
-                borderRadius: 2,
-                backgroundColor: isActive ? "#e3e3e3" : "transparent",
-                display: "block",
-              }}
-            />
           </Link>
         );
       })}
