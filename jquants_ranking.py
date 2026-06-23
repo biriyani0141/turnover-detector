@@ -12,6 +12,7 @@ from jquants_backbone import calc_returns
 
 APPEARANCE_FILE = Path(__file__).parent / "data" / "jquants" / "appearance.json"
 RANKING_FILE    = Path(__file__).parent / "data" / "jquants" / "ranking.json"
+RANKING_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "ranking.json"
 
 META_FILE  = Path(__file__).parent / "data" / "jquants" / "meta.json"
 DAILY_DIR  = Path(__file__).parent / "data" / "jquants" / "daily"
@@ -649,6 +650,10 @@ def build_ranking(split_events: dict[str, list[tuple[str, float]]]) -> None:
 
     RANKING_FILE.parent.mkdir(parents=True, exist_ok=True)
     RANKING_FILE.write_text(
+        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    RANKING_FILE_WEB.parent.mkdir(parents=True, exist_ok=True)
+    RANKING_FILE_WEB.write_text(
         json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(f"ranking.json 出力: {len(ranking)}件")
