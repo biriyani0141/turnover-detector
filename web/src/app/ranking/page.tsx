@@ -99,14 +99,7 @@ const monoFont = '"SF Mono",SFMono-Regular,ui-monospace,"Roboto Mono",Menlo,Cons
 const BASE_BG = "#17171a";
 const TEXT_DEFAULT = "#8a8a8e";  // 全列共通グレー
 const TEXT_BRIGHT = "#e8eaed";   // 出現欄用の高コントラスト色
-const TEXT_NAME = "#dcdcdc";     // 銘柄名・コード用
-
-// 回転率による文字色（数値のみに使用）
-function turnoverColor(v: number): string {
-  if (v >= 10) return "#dc143a";
-  if (v >= 5)  return "#ffa500";
-  return TEXT_DEFAULT;
-}
+const TEXT_NAME = "#b0b0b0";     // 銘柄名・コード用
 
 // 回転率による行背景（ハイライトのみ。通常行は透明=BASE_BG）
 function rowBg(turnover: number): string {
@@ -374,7 +367,7 @@ export default function RankingPage() {
                     </td>
                     <td style={{ ...tdNumber, textAlign: "right" }}>{fmtOku(r.va)}</td>
                     <td style={{ ...tdNumber, textAlign: "right" }}>{fmtOku(r.mktcap)}</td>
-                    <td style={{ ...tdNumber, textAlign: "right", color: turnoverColor(r.turnover_pct) }}>
+                    <td style={{ ...tdNumber, textAlign: "right" }}>
                       {r.turnover_pct.toFixed(1)}
                     </td>
                     <td style={{ ...tdBright, textAlign: "right" }}>
