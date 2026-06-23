@@ -98,6 +98,7 @@ function fmtRet1d(v: number | null | undefined): { text: string; color: string }
 const monoFont = '"SF Mono",SFMono-Regular,ui-monospace,"Roboto Mono",Menlo,Consolas,monospace';
 const BASE_BG = "#17171a";
 const TEXT_DEFAULT = "#8a8a8e";  // 全列共通グレー
+const TEXT_BRIGHT = "#e8eaed";   // 銘柄名・コード・出現欄用の高コントラスト色
 
 // 回転率による文字色（数値のみに使用）
 function turnoverColor(v: number): string {
@@ -146,7 +147,7 @@ const tdBase: React.CSSProperties = {
   fontVariantNumeric: "tabular-nums",
   letterSpacing: "-0.015em",
   color: TEXT_DEFAULT,
-  padding: "4px 2px",
+  padding: "2px 2px",
   whiteSpace: "nowrap",
   borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
@@ -156,6 +157,13 @@ const tdNumber: React.CSSProperties = {
   ...tdBase,
   fontFamily: `${robotoMono.style.fontFamily}, monospace`,
   letterSpacing: "-0.05em",
+  fontStretch: "condensed",
+};
+
+// 銘柄名・コード・出現欄: 高コントラスト
+const tdBright: React.CSSProperties = {
+  ...tdBase,
+  color: TEXT_BRIGHT,
 };
 
 function toggleChipStyle(active: boolean): React.CSSProperties {
@@ -349,8 +357,8 @@ export default function RankingPage() {
                     </tr>
                   )}
                   <tr style={{ background: bg }}>
-                    <td style={{ ...tdBase }}>{displayCode(r.code)}</td>
-                    <td style={{ ...tdBase, overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <td style={{ ...tdBright }}>{displayCode(r.code)}</td>
+                    <td style={{ ...tdBright, overflow: "hidden", textOverflow: "ellipsis" }}>
                       {abbreviateName(r.name)}
                     </td>
                     <td style={{ ...tdNumber, textAlign: "right" }}>{fmtPrice(r.C)}</td>
@@ -362,19 +370,19 @@ export default function RankingPage() {
                     <td style={{ ...tdNumber, textAlign: "right", color: turnoverColor(r.turnover_pct) }}>
                       {r.turnover_pct.toFixed(1)}
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right" }}>
+                    <td style={{ ...tdBright, textAlign: "right" }}>
                       {app ? (
                         <>
-                          <span style={{ color: "#555" }}>{app.turnover_50 ?? 0}:</span>
+                          <span style={{ color: TEXT_BRIGHT }}>{app.turnover_50 ?? 0}:</span>
                           <span style={{
-                            color: (app.stophigh_50 ?? 0) >= 1 ? "#ffa500" : "#555",
+                            color: (app.stophigh_50 ?? 0) >= 1 ? "#ffa500" : TEXT_BRIGHT,
                             fontWeight: (app.stophigh_50 ?? 0) >= 1 ? 700 : 400,
                           }}>
                             {app.stophigh_50 ?? 0}
                           </span>
                         </>
                       ) : (
-                        <span style={{ color: "#333" }}>—</span>
+                        <span style={{ color: TEXT_DEFAULT }}>—</span>
                       )}
                     </td>
                   </tr>
