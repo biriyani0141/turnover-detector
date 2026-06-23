@@ -599,7 +599,7 @@ def build_ranking(split_events: dict[str, list[tuple[str, float]]]) -> None:
         turnover_pct = va / mktcap * 100
         turnover_results.append({**r, "turnover_pct": turnover_pct})
 
-    turnover_results.sort(key=lambda x: x["turnover_pct"], reverse=True)
+    turnover_results.sort(key=lambda x: x["va"] if x["va"] is not None else 0, reverse=True)
 
     PERIODS = ["1d", "5d", "1m", "3m", "1y"]
     returns_all = calc_returns()

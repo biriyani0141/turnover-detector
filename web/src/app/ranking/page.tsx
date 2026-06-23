@@ -70,6 +70,27 @@ function fmtRet1d(v: number | null | undefined): { text: string; color: string }
 
 const monoFont = 'ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace';
 
+// スマホ基準の列幅目安
+const COL_WIDTH = {
+  rank: "2rem",
+  code: "3.5rem",
+  name: "7rem",
+  market: "3.5rem",
+  price: "4rem",
+  ret1d: "4.5rem",
+  va: "4rem",
+  mktcap: "4rem",
+  turnover: "4rem",
+  occ: "3rem",
+} as const;
+
+// 回転率の色分け（10%以上=赤、5%以上10%未満=オレンジ、5%未満=デフォルト）
+function turnoverColor(v: number): string {
+  if (v >= 10) return "#ef4444";
+  if (v >= 5) return "#fb923c";
+  return "#999";
+}
+
 const th: React.CSSProperties = {
   position: "sticky",
   top: 0,
@@ -78,16 +99,16 @@ const th: React.CSSProperties = {
   fontSize: 11,
   fontWeight: 700,
   fontFamily: monoFont,
-  padding: "6px 8px",
+  padding: "6px 4px",
   whiteSpace: "nowrap",
   borderBottom: "1px solid #1F1F23",
 };
 
 const td: React.CSSProperties = {
-  fontSize: 12,
+  fontSize: 11,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
-  padding: "6px 8px",
+  padding: "6px 4px",
   whiteSpace: "nowrap",
   borderBottom: "1px solid rgba(255,255,255,0.04)",
 };
@@ -159,19 +180,19 @@ export default function RankingPage() {
       </div>
 
       <div style={{ overflowX: "auto", paddingLeft: 16, paddingRight: 16 }}>
-        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 720 }}>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ ...th, textAlign: "right" }}>順位</th>
-              <th style={{ ...th, textAlign: "left" }}>コード</th>
-              <th style={{ ...th, textAlign: "left" }}>銘柄名</th>
-              <th style={{ ...th, textAlign: "left" }}>市場</th>
-              <th style={{ ...th, textAlign: "right" }}>現在値</th>
-              <th style={{ ...th, textAlign: "right" }}>前日比</th>
-              <th style={{ ...th, textAlign: "right" }}>売買代金(億)</th>
-              <th style={{ ...th, textAlign: "right" }}>時価総額(億)</th>
-              <th style={{ ...th, textAlign: "right" }}>回転率%</th>
-              <th style={{ ...th, textAlign: "right" }}>出現</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.rank }}>順位</th>
+              <th style={{ ...th, textAlign: "left", minWidth: COL_WIDTH.code }}>コード</th>
+              <th style={{ ...th, textAlign: "left", minWidth: COL_WIDTH.name }}>銘柄名</th>
+              <th style={{ ...th, textAlign: "left", minWidth: COL_WIDTH.market }}>市場</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.price }}>現在値</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.ret1d }}>前日比</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.va }}>売買代金(億)</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.mktcap }}>時価総額(億)</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.turnover }}>回転率%</th>
+              <th style={{ ...th, textAlign: "right", minWidth: COL_WIDTH.occ }}>出現</th>
             </tr>
           </thead>
           <tbody>
@@ -180,22 +201,42 @@ export default function RankingPage() {
               const app = appearanceByCode[r.code];
               return (
                 <tr key={r.code}>
-                  <td style={{ ...td, textAlign: "right", color: "#71717A" }}>{i + 1}</td>
-                  <td style={{ ...td, color: "#c8c8c8" }}>{r.code}</td>
-                  <td style={{ ...td, color: "#f5f5f5", fontFamily: "inherit" }}>{r.name}</td>
-                  <td style={{ ...td, color: "#9CA3AF" }}>{fmtMarket(r.market)}</td>
-                  <td style={{ ...td, textAlign: "right", color: "#999" }}>
+                  <td style={{ ...td, textAlign: "right", color: "#71717A", minWidth: COL_WIDTH.rank }}>{i + 1}</td>
+                  <td style={{ ...td, color: "#c8c8c8", minWidth: COL_WIDTH.code }}>{r.code}</td>
+                  <td
+                    style={{
+                      ...td,
+                      color: "#f5f5f5",
+                      fontFamily: "inherit",
+                      fontSize: 13,
+                      maxWidth: COL_WIDTH.name,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {r.name}
+                  </td>
+                  <td style={{ ...td, color: "#9CA3AF", minWidth: COL_WIDTH.market }}>{fmtMarket(r.market)}</td>
+                  <td style={{ ...td, textAlign: "right", color: "#999", minWidth: COL_WIDTH.price }}>
                     {r.C !== null && r.C !== undefined ? r.C.toLocaleString("ja-JP") : "—"}
                   </td>
-                  <td style={{ ...td, textAlign: "right", color: ret1d.color, fontWeight: 600 }}>
+                  <td style={{ ...td, textAlign: "right", color: ret1d.color, fontWeight: 600, minWidth: COL_WIDTH.ret1d }}>
                     {ret1d.text}
                   </td>
-                  <td style={{ ...td, textAlign: "right", color: "#999" }}>{fmtOku(r.va)}</td>
-                  <td style={{ ...td, textAlign: "right", color: "#999" }}>{fmtOku(r.mktcap)}</td>
-                  <td style={{ ...td, textAlign: "right", color: "#B5730F", fontWeight: 600 }}>
+                  <td style={{ ...td, textAlign: "right", color: "#999", minWidth: COL_WIDTH.va }}>{fmtOku(r.va)}</td>
+                  <td style={{ ...td, textAlign: "right", color: "#999", minWidth: COL_WIDTH.mktcap }}>{fmtOku(r.mktcap)}</td>
+                  <td
+                    style={{
+                      ...td,
+                      textAlign: "right",
+                      color: turnoverColor(r.turnover_pct),
+                      fontWeight: 600,
+                      minWidth: COL_WIDTH.turnover,
+                    }}
+                  >
                     {r.turnover_pct.toFixed(1)}%
                   </td>
-                  <td style={{ ...td, textAlign: "right" }}>
+                  <td style={{ ...td, textAlign: "right", minWidth: COL_WIDTH.occ }}>
                     {app ? (
                       <>
                         <span style={{ color: "#777" }}>{app.turnover_50 ?? 0}:</span>
