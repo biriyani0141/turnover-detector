@@ -745,6 +745,7 @@ def build_ranking_by_market(split_events: dict[str, list[tuple[str, float]]]) ->
     all_rows      = [_to_ranking_row(r) for r in turnover_results[:100]]
     standard_rows = [_to_ranking_row(r) for r in turnover_results if r["market"] == "スタンダード"][:100]
     growth_rows   = [_to_ranking_row(r) for r in turnover_results if r["market"] == "グロース"][:100]
+    prime_rows    = [_to_ranking_row(r) for r in turnover_results if r["market"] == "プライム"][:100]
 
     output = {
         "_meta": {
@@ -753,11 +754,13 @@ def build_ranking_by_market(split_events: dict[str, list[tuple[str, float]]]) ->
             "top_n":     100,
             "counts": {
                 "all":      len(all_rows),
+                "prime":    len(prime_rows),
                 "standard": len(standard_rows),
                 "growth":   len(growth_rows),
             },
         },
         "all":      all_rows,
+        "prime":    prime_rows,
         "standard": standard_rows,
         "growth":   growth_rows,
     }
