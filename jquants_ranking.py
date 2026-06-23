@@ -1108,6 +1108,8 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "change": change,
             "changePct": change_pct,
             "marketCap": _format_mktcap(mktcap),
+            "va": r["va"],
+            "mktcap": mktcap,
             "turnover": round(r["turnover_pct"], 2),
             "isLimitUp": is_limit_up,
             "touchedOnlyDates": touch_dates,    # ザラ場タッチのみ（引け日は含まない）
@@ -1263,6 +1265,8 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
             "change": change,
             "changePct": change_pct,
             "marketCap": _format_mktcap(mktcap),
+            "va": va,
+            "mktcap": mktcap,
             "turnover": round(turnover_pct, 2),
             "isLimitUp": is_limit_up,
             "touchedOnlyDates": touch_dates,    # ザラ場タッチのみ（引け日は含まない）

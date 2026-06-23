@@ -40,8 +40,11 @@ type CardRow = {
   price: number;
   changePct: number;
   marketCap: string;
+  va: number;
+  mktcap: number;
   turnover: number;
   occCount: number;
+  stophighCount: number;
 };
 
 type CardData = {
@@ -273,11 +276,11 @@ function rowFromCard(r: CardRow): DisplayRow {
     priceText: fmtPrice(r.price),
     changeText: change.text,
     changeColor: change.color,
-    vaText: null,
-    mktcapText: r.marketCap,
+    vaText: fmtOku(r.va),
+    mktcapText: fmtOku(r.mktcap),
     turnoverText: r.turnover.toFixed(1),
     turnoverRaw: r.turnover,
-    occurrence: <span style={{ color: TEXT_BRIGHT }}>{r.occCount}</span>,
+    occurrence: <span style={{ color: TEXT_BRIGHT }}>{r.occCount}:{r.stophighCount}</span>,
   };
 }
 
@@ -348,8 +351,8 @@ export default function RankingPage() {
     return stophighCards.map(rowFromCard);
   }, [mainTab, filteredRows, turnoverCards, stophighCards, appearanceByCode]);
 
-  const showVaColumn = mainTab === "volume";
-  const mktcapHeader = mainTab === "volume" ? "時価(億)" : "時価総額";
+  const showVaColumn = true;
+  const mktcapHeader = "時価(億)";
 
   if (err) return <pre style={{ background: BASE_BG, color: "#f87171", padding: 16, minHeight: "100vh" }}>ERROR: {err}</pre>;
   if (!displayRows) return <div style={{ background: BASE_BG, color: "#555", padding: 16, minHeight: "100vh" }}>loading...</div>;
@@ -368,29 +371,45 @@ export default function RankingPage() {
         }
       />
 
-      {/* メインタブ */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
-        {MAIN_TABS.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setMainTab(key)}
-            style={{
-              flex: 1,
-              padding: "9px 0",
-              borderRadius: 9999,
-              fontFamily: monoFont,
-              fontSize: 13,
-              textAlign: "center",
-              transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: mainTab === key ? "#3c4043" : "#282a2d",
-              border: `1px solid ${mainTab === key ? "#5f6368" : "#3c4043"}`,
-              color: mainTab === key ? "#e8eaed" : "#8e8e93",
-              fontWeight: mainTab === key ? 600 : 500,
-            }}
-          >
-            {label}
-          </button>
-        ))}
+      {/* メインタブ（セグメンテッドコントロール） */}
+      <div
+        style={{
+          display: "flex",
+          gap: 2,
+          marginBottom: 10,
+          marginLeft: 16,
+          marginRight: 16,
+          padding: 3,
+          borderRadius: 9999,
+          background: "#1c1c1f",
+          border: "1px solid #2a2d34",
+        }}
+      >
+        {MAIN_TABS.map(({ key, label }) => {
+          const active = mainTab === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setMainTab(key)}
+              style={{
+                flex: 1,
+                padding: "8px 0",
+                borderRadius: 9999,
+                fontFamily: monoFont,
+                fontSize: 13,
+                textAlign: "center",
+                border: "none",
+                transition: "background 0.15s, color 0.15s, box-shadow 0.15s",
+                background: active ? "#46494d" : "transparent",
+                boxShadow: active ? "0 1px 3px rgba(0,0,0,0.4)" : "none",
+                color: active ? "#e8eaed" : "#8e8e93",
+                fontWeight: active ? 600 : 500,
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       {mainTab === "volume" && (
@@ -475,7 +494,7 @@ export default function RankingPage() {
           </thead>
           <tbody>
             {displayRows.map((r, i) => {
-              const bg = rowBg(r.turnoverRaw);
+              const bg = mainTab === "volume" ? rowBg(r.turnoverRaw) : "transparent";
               const rank = i + 1;
               const showDivider = rank > 1 && rank % 25 === 1;
               return (
