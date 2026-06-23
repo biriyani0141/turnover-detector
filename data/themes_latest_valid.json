@@ -2194,16 +2194,16 @@
       "return_1y": 25.84,
       "top_movers": [
         {
+          "ticker": "SNOW",
+          "pct_1d": 1.79
+        },
+        {
           "ticker": "MDB",
           "pct_1d": 0.57
         },
         {
           "ticker": "PATH",
           "pct_1d": 0.0
-        },
-        {
-          "ticker": "DDOG",
-          "pct_1d": -0.39
         }
       ],
       "bucket": null
@@ -2742,16 +2742,16 @@
       "return_1y": 0.52,
       "top_movers": [
         {
+          "ticker": "SLM",
+          "pct_1d": 1.75
+        },
+        {
           "ticker": "UPST",
           "pct_1d": 0.42
         },
         {
           "ticker": "AXP",
           "pct_1d": -0.14
-        },
-        {
-          "ticker": "OMF",
-          "pct_1d": -0.26
         }
       ],
       "bucket": null
@@ -2988,6 +2988,10 @@
         {
           "ticker": "HPE",
           "pct_1d": 1.07
+        },
+        {
+          "ticker": "SMCI",
+          "pct_1d": -6.03
         }
       ],
       "bucket": null
@@ -3501,6 +3505,10 @@
       "return_6m": 8.34,
       "return_1y": 15.76,
       "top_movers": [
+        {
+          "ticker": "SNPS",
+          "pct_1d": -0.67
+        },
         {
           "ticker": "CDNS",
           "pct_1d": -2.57
@@ -4626,8 +4634,8 @@
           "pct_1d": -2.6
         },
         {
-          "ticker": "NNE",
-          "pct_1d": -6.79
+          "ticker": "SMR",
+          "pct_1d": -3.56
         }
       ],
       "bucket": null
@@ -4850,8 +4858,8 @@
           "pct_1d": -2.53
         },
         {
-          "ticker": "WRBY",
-          "pct_1d": -4.93
+          "ticker": "SNAP",
+          "pct_1d": -4.0
         }
       ],
       "bucket": null
@@ -5150,12 +5158,12 @@
           "pct_1d": -2.5
         },
         {
-          "ticker": "SES",
-          "pct_1d": -3.33
+          "ticker": "SLDP",
+          "pct_1d": -2.5
         },
         {
-          "ticker": "AMPX",
-          "pct_1d": -9.87
+          "ticker": "SES",
+          "pct_1d": -3.33
         }
       ],
       "bucket": null
@@ -5174,16 +5182,16 @@
       "return_1y": 312.95,
       "top_movers": [
         {
+          "ticker": "SNPS",
+          "pct_1d": -0.67
+        },
+        {
           "ticker": "NBIS",
           "pct_1d": -2.93
         },
         {
           "ticker": "IREN",
           "pct_1d": -3.8
-        },
-        {
-          "ticker": "NOK",
-          "pct_1d": -4.95
         }
       ],
       "bucket": null
@@ -6023,5 +6031,5 @@
   ],
   "stock_date": "2026-06-23",
   "updated_at": "2026-06-23 21:34:21",
-  "saved_at": "2026-06-23T22:06:28.448809"
+  "saved_at": "2026-06-23T22:21:49.159768"
 }
