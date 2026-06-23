@@ -18,6 +18,24 @@ META_FILE  = Path(__file__).parent / "data" / "jquants" / "meta.json"
 DAILY_DIR  = Path(__file__).parent / "data" / "jquants" / "daily"
 
 
+def _to_ranking_row(r: dict) -> dict:
+    return {
+        "code":         r["code"],
+        "name":         r["name"],
+        "market":       r["market"],
+        "turnover_pct": r["turnover_pct"],
+        "mktcap":       r["mktcap"],
+        "va":           r["va"],
+        "C":            r["C"],
+        "ret_1d":       r["1d"],
+        "ret_5d":       r["5d"],
+        "ret_1m":       r["1m"],
+        "ret_3m":       r["3m"],
+        "ret_1y":       r["1y"],
+        "sma25_dev":    r["sma25_dev"],
+    }
+
+
 # ── shares 取得（A/B案共通エントリ） ────────────────────────────────────────────
 def get_latest_shares(stock: dict, target_date: str | None = None) -> int | None:
     """
@@ -659,6 +677,102 @@ def build_ranking(split_events: dict[str, list[tuple[str, float]]]) -> None:
     print(f"ranking.json 出力: {len(ranking)}件")
 
 
+def build_ranking_by_market(split_events: dict[str, list[tuple[str, float]]]) -> None:
+    """
+    最新営業日の回転率上位100件を、全市場(all)/スタンダード(standard)/グロース(growth)の
+    3キーで data/jquants/ranking.json に書き出す。
+    """
+    if not META_FILE.exists():
+        print(f"エラー: meta.json が見つかりません: {META_FILE}")
+        raise SystemExit(1)
+    meta = json.loads(META_FILE.read_text(encoding="utf-8"))
+    stocks: dict[str, dict] = meta["stocks"]
+
+    targets = {
+        code: s
+        for code, s in stocks.items()
+        if s.get("prodcat") == "011" and s.get("shares")
+    }
+
+    date_str, code_to_close, code_to_va = _latest_daily_close()
+
+    results: list[dict] = []
+    for code, stock in targets.items():
+        shares = get_adjusted_shares(code, date_str, stock, split_events)
+        if shares is None:
+            continue
+        c = code_to_close.get(code)
+        if c is None:
+            continue
+        mktcap = c * shares
+        results.append({
+            "code":   code,
+            "name":   stock.get("name", ""),
+            "market": stock.get("market", ""),
+            "C":      c,
+            "shares": shares,
+            "mktcap": mktcap,
+            "va":     code_to_va.get(code),
+        })
+
+    turnover_results: list[dict] = []
+    for r in results:
+        va = r.get("va")
+        mktcap = r["mktcap"]
+        if va is None or mktcap == 0:
+            continue
+        turnover_pct = va / mktcap * 100
+        turnover_results.append({**r, "turnover_pct": turnover_pct})
+
+    turnover_results.sort(key=lambda x: x["va"] if x["va"] is not None else 0, reverse=True)
+
+    PERIODS = ["1d", "5d", "1m", "3m", "1y"]
+    returns_all = calc_returns()
+    for r in turnover_results:
+        ret = returns_all.get(r["code"])
+        if ret is None:
+            for p in PERIODS:
+                r[p] = None
+        else:
+            for p in PERIODS:
+                r[p] = ret.get(p)
+
+    target_code_set = {r["code"] for r in turnover_results}
+    sma25_dev = _calc_sma25_deviation(target_code_set)
+    for r in turnover_results:
+        r["sma25_dev"] = sma25_dev.get(r["code"])
+
+    all_rows      = [_to_ranking_row(r) for r in turnover_results[:100]]
+    standard_rows = [_to_ranking_row(r) for r in turnover_results if r["market"] == "スタンダード"][:100]
+    growth_rows   = [_to_ranking_row(r) for r in turnover_results if r["market"] == "グロース"][:100]
+
+    output = {
+        "_meta": {
+            "generated": datetime.datetime.now().isoformat(),
+            "date":      date_str,
+            "top_n":     100,
+            "counts": {
+                "all":      len(all_rows),
+                "standard": len(standard_rows),
+                "growth":   len(growth_rows),
+            },
+        },
+        "all":      all_rows,
+        "standard": standard_rows,
+        "growth":   growth_rows,
+    }
+
+    RANKING_FILE.parent.mkdir(parents=True, exist_ok=True)
+    RANKING_FILE.write_text(
+        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    RANKING_FILE_WEB.parent.mkdir(parents=True, exist_ok=True)
+    RANKING_FILE_WEB.write_text(
+        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"ranking.json 出力: all={len(all_rows)} standard={len(standard_rows)} growth={len(growth_rows)}")
+
+
 # ── S高日付DB構築 ──────────────────────────────────────────────────────────────
 def build_stophigh() -> None:
     """
@@ -1186,7 +1300,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "build_appearance":
         build_appearance_db(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_ranking":
-        build_ranking(split_events)
+        build_ranking_by_market(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_stophigh":
         build_stophigh()
     elif len(sys.argv) > 1 and sys.argv[1] == "build_window_scores":

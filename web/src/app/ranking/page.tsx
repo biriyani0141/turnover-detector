@@ -21,8 +21,11 @@ type Appearance = {
   stophigh_50?: number;
 };
 
-type MetaStock = {
-  market?: string;
+type RankingData = {
+  _meta?: { date?: string; counts?: { all: number; standard: number; growth: number } };
+  all: RankingRow[];
+  standard: RankingRow[];
+  growth: RankingRow[];
 };
 
 // J-Quantsのコードは末尾0付き5桁（例: 285A0）。表示は先頭4桁。
@@ -38,6 +41,26 @@ const SUB_TABS: { key: SubTab; label: string }[] = [
   { key: "growth", label: "グロース" },
 ];
 
+type MktBracket = "all" | "le100" | "le300" | "le1000" | "gt1000";
+
+const MKT_BRACKETS: { key: MktBracket; label: string }[] = [
+  { key: "all", label: "全て" },
+  { key: "le100", label: "100億↓" },
+  { key: "le300", label: "300億↓" },
+  { key: "le1000", label: "1000億↓" },
+  { key: "gt1000", label: "1000億↑" },
+];
+
+function matchesMktBracket(mktcap: number, b: MktBracket): boolean {
+  if (b === "all") return true;
+  const oku = mktcap / 1e8;
+  if (b === "le100") return oku <= 100;
+  if (b === "le300") return oku <= 300;
+  if (b === "le1000") return oku <= 1000;
+  if (b === "gt1000") return oku > 1000;
+  return true;
+}
+
 // データは生の日本語のまま保持。表示変換のみここで行う。
 const MARKET_DISPLAY: Record<string, string> = {
   "プライム": "東証P",
@@ -50,21 +73,11 @@ function fmtMarket(market?: string): string {
   return MARKET_DISPLAY[market] ?? market;
 }
 
-function matchesSubTab(market: string | undefined, tab: SubTab): boolean {
-  if (tab === "all") {
-    return !market || (market !== "その他" && market !== "TOKYO PRO MARKET");
-  }
-  if (tab === "standard") return market === "スタンダード";
-  if (tab === "growth") return market === "グロース";
-  return true;
-}
-
-// 1000億未満〜1兆未満: 整数（小数禁止）。1兆以上: 小数2桁の「X.XX兆」。
+// 億単位の整数（カンマなし）。兆表記は使わない。
 function fmtOku(yen: number | null | undefined): string {
   if (yen === null || yen === undefined) return "—";
-  const oku = yen / 1e8;
-  if (oku >= 10000) return (oku / 10000).toFixed(2) + "兆";
-  return Math.round(oku).toLocaleString("ja-JP");
+  const oku = Math.round(yen / 1e8);
+  return String(oku);
 }
 
 function fmtRet1d(v: number | null | undefined): { text: string; color: string } {
@@ -122,11 +135,13 @@ const td: React.CSSProperties = {
 };
 
 export default function RankingPage() {
-  const [rows, setRows] = useState<RankingRow[] | null>(null);
+  const [rankingData, setRankingData] = useState<RankingData | null>(null);
   const [appearanceByCode, setAppearanceByCode] = useState<Record<string, Appearance>>({});
-  const [meta, setMeta] = useState<{ date?: string } | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [subTab, setSubTab] = useState<SubTab>("all");
+  const [filterTurnover5, setFilterTurnover5] = useState(false);
+  const [filterRet10, setFilterRet10] = useState(false);
+  const [mktBracket, setMktBracket] = useState<MktBracket>("all");
 
   useEffect(() => {
     Promise.all([
@@ -137,28 +152,26 @@ export default function RankingPage() {
       fetch("/data/appearance.json")
         .then((r) => (r.ok ? r.json() : { by_code: {} }))
         .catch(() => ({ by_code: {} })),
-      fetch("/data/meta.json")
-        .then((r) => (r.ok ? r.json() : { stocks: {} }))
-        .catch(() => ({ stocks: {} })),
     ])
-      .then(([rankingData, appearanceData, metaData]) => {
-        setMeta(rankingData._meta);
-        const metaStocks: Record<string, MetaStock> = metaData.stocks ?? {};
-        // market 暫定対応: ranking.json側が空/未反映の場合のみ meta.json から補完
-        const joined = (rankingData.ranking as RankingRow[]).map((r) => ({
-          ...r,
-          market: r.market || metaStocks[r.code]?.market || r.market,
-        }));
-        setRows(joined);
+      .then(([rankingData, appearanceData]) => {
+        setRankingData(rankingData as RankingData);
         setAppearanceByCode(appearanceData.by_code ?? {});
       })
       .catch((e) => setErr(String(e)));
   }, []);
 
+  const meta = rankingData?._meta;
+
   const filteredRows = useMemo(() => {
-    if (!rows) return null;
-    return rows.filter((r) => matchesSubTab(r.market, subTab));
-  }, [rows, subTab]);
+    if (!rankingData) return null;
+    const baseArray = rankingData[subTab];
+    return baseArray.filter((r) => {
+      if (filterTurnover5 && !(r.turnover_pct >= 5)) return false;
+      if (filterRet10 && !(r.ret_1d !== null && r.ret_1d !== undefined && Math.abs(r.ret_1d) >= 10)) return false;
+      if (!matchesMktBracket(r.mktcap, mktBracket)) return false;
+      return true;
+    });
+  }, [rankingData, subTab, filterTurnover5, filterRet10, mktBracket]);
 
   if (err) return <pre className="p-4 text-red-400 bg-slate-900 min-h-screen">ERROR: {err}</pre>;
   if (!filteredRows) return <div className="p-4 bg-slate-900 text-gray-400 min-h-screen">loading...</div>;
@@ -195,6 +208,45 @@ export default function RankingPage() {
             {label}
           </button>
         ))}
+      </div>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingLeft: 16, paddingRight: 16, marginBottom: 8 }}>
+        <button
+          onClick={() => setFilterTurnover5((v) => !v)}
+          style={{
+            padding: "6px 10px", borderRadius: 9999, fontFamily: monoFont, fontVariantNumeric: "tabular-nums",
+            fontSize: 12, border: `1px solid ${filterTurnover5 ? "#5f6368" : "#3c4043"}`,
+            background: filterTurnover5 ? "#3c4043" : "#282a2d", color: filterTurnover5 ? "#e8eaed" : "#8e8e93",
+            fontWeight: filterTurnover5 ? 600 : 500,
+          }}
+        >回転率5%↑</button>
+        <button
+          onClick={() => setFilterRet10((v) => !v)}
+          style={{
+            padding: "6px 10px", borderRadius: 9999, fontFamily: monoFont, fontVariantNumeric: "tabular-nums",
+            fontSize: 12, border: `1px solid ${filterRet10 ? "#5f6368" : "#3c4043"}`,
+            background: filterRet10 ? "#3c4043" : "#282a2d", color: filterRet10 ? "#e8eaed" : "#8e8e93",
+            fontWeight: filterRet10 ? 600 : 500,
+          }}
+        >騰落率±10%</button>
+      </div>
+
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap", paddingLeft: 16, paddingRight: 16, marginBottom: 10 }}>
+        {MKT_BRACKETS.map(({ key, label }) => {
+          const active = mktBracket === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setMktBracket(key)}
+              style={{
+                padding: "6px 10px", borderRadius: 9999, fontFamily: monoFont, fontVariantNumeric: "tabular-nums",
+                fontSize: 12, border: `1px solid ${active ? "#5f6368" : "#3c4043"}`,
+                background: active ? "#3c4043" : "#282a2d", color: active ? "#e8eaed" : "#8e8e93",
+                fontWeight: active ? 600 : 500,
+              }}
+            >{label}</button>
+          );
+        })}
       </div>
 
       <div style={{ overflowX: "auto", paddingLeft: 16, paddingRight: 16 }}>
