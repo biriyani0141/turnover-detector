@@ -92,8 +92,8 @@ function fmtRet1d(v: number | null | undefined): { text: string; color: string }
   };
 }
 
-const monoFont = 'ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace';
-const BASE_BG = "#0f1318";
+const monoFont = '"SF Mono",SFMono-Regular,ui-monospace,"Roboto Mono",Menlo,Consolas,monospace';
+const BASE_BG = "#17171a";
 const TEXT_DEFAULT = "#8a8a8e";  // 全列共通グレー
 
 // 回転率による文字色（数値のみに使用）
@@ -126,20 +126,22 @@ const th: React.CSSProperties = {
   position: "sticky",
   top: 0,
   background: BASE_BG,
-  color: "#555",
-  fontSize: 9,
+  color: "#8e8e93",
+  fontSize: 10,
   fontWeight: 600,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
+  letterSpacing: "-0.01em",
   padding: "4px 2px",
   whiteSpace: "nowrap",
-  borderBottom: "1px solid #222",
+  borderBottom: "1px solid #2a2d34",
 };
 
 const tdBase: React.CSSProperties = {
   fontSize: 11,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
+  letterSpacing: "-0.015em",
   color: TEXT_DEFAULT,
   padding: "4px 2px",
   whiteSpace: "nowrap",
@@ -152,13 +154,13 @@ function toggleChipStyle(active: boolean): React.CSSProperties {
     padding: "7px 0",
     borderRadius: 9999,
     fontFamily: monoFont,
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: active ? 600 : 500,
     textAlign: "center",
     transition: "background 0.15s, color 0.15s, border-color 0.15s",
-    background: active ? "#2a2a2a" : "#141414",
-    border: `1px solid ${active ? "#444" : "#2a2a2a"}`,
-    color: active ? "#e8eaed" : "#555",
+    background: active ? "#3c4043" : "#282a2d",
+    border: `1px solid ${active ? "#5f6368" : "#3c4043"}`,
+    color: active ? "#e8eaed" : "#8e8e93",
   };
 }
 
@@ -173,8 +175,8 @@ function capChipStyle(active: boolean): React.CSSProperties {
     fontWeight: 600,
     textAlign: "center",
     transition: "background 0.15s, color 0.15s",
-    background: active ? "#fff" : "#141414",
-    color: active ? "#000" : "#555",
+    background: active ? "#fff" : "#2c2c2e",
+    color: active ? "#000" : "#8e8e93",
     border: "none",
   };
 }
@@ -185,7 +187,7 @@ export default function RankingPage() {
   const [err, setErr] = useState<string | null>(null);
   const [subTab, setSubTab] = useState<SubTab>("prime");
   const [filterTurnover5, setFilterTurnover5] = useState(false);
-  const [filterRet10, setFilterRet10] = useState(false);
+  const [retFilter, setRetFilter] = useState<"off" | "r5" | "r10">("off");
   const [mktBracket, setMktBracket] = useState<MktBracket>("all");
 
   useEffect(() => {
@@ -212,11 +214,15 @@ export default function RankingPage() {
     const baseArray = rankingData[subTab] ?? [];
     return baseArray.filter((r) => {
       if (filterTurnover5 && !(r.turnover_pct >= 5)) return false;
-      if (filterRet10 && !(r.ret_1d !== null && r.ret_1d !== undefined && Math.abs(r.ret_1d) >= 10)) return false;
+      if (retFilter !== "off") {
+        const absRet = r.ret_1d !== null && r.ret_1d !== undefined ? Math.abs(r.ret_1d) : -1;
+        const thr = retFilter === "r5" ? 5 : 10;
+        if (!(absRet >= thr)) return false;
+      }
       if (!matchesMktBracket(r.mktcap, mktBracket)) return false;
       return true;
     });
-  }, [rankingData, subTab, filterTurnover5, filterRet10, mktBracket]);
+  }, [rankingData, subTab, filterTurnover5, retFilter, mktBracket]);
 
   if (err) return <pre style={{ background: BASE_BG, color: "#f87171", padding: 16, minHeight: "100vh" }}>ERROR: {err}</pre>;
   if (!filteredRows) return <div style={{ background: BASE_BG, color: "#555", padding: 16, minHeight: "100vh" }}>loading...</div>;
@@ -229,7 +235,7 @@ export default function RankingPage() {
         description={
           "売買代金の上位100銘柄を市場別に表示します。\n" +
           "・タブ「プライム／スタンダード／グロース」で市場を切り替えます。\n" +
-          "・「回転率5%↑」「騰落率±10%」は独立トグル、「100↓〜1000↑」は時価総額フィルター（億）です。すべてAND結合。\n" +
+          "・「回転率5%↑」「騰落±5%」「騰落±10%」トグルと「100↓〜1000↑」時価総額フィルター（億）。騰落率は±5/±10が相互排他、他はAND結合。\n" +
           "・回転率10%以上は赤帯、5%以上は橙帯で行をハイライトします。\n" +
           "・「出現」欄：左=直近50日で回転率5%以上をつけた日数、右=その期間のS高回数。"
         }
@@ -249,9 +255,9 @@ export default function RankingPage() {
               fontSize: 13,
               textAlign: "center",
               transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: subTab === key ? "#2a2a2a" : "#141414",
-              border: `1px solid ${subTab === key ? "#444" : "#2a2a2a"}`,
-              color: subTab === key ? "#e8eaed" : "#555",
+              background: subTab === key ? "#3c4043" : "#282a2d",
+              border: `1px solid ${subTab === key ? "#5f6368" : "#3c4043"}`,
+              color: subTab === key ? "#e8eaed" : "#8e8e93",
               fontWeight: subTab === key ? 600 : 500,
             }}
           >
@@ -260,13 +266,16 @@ export default function RankingPage() {
         ))}
       </div>
 
-      {/* フィルター上段 */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 8, paddingLeft: 16, paddingRight: 16 }}>
+      {/* フィルター上段：回転率・騰落率（騰落率±5/±10は相互排他） */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 8, paddingLeft: 16, paddingRight: 16 }}>
         <button onClick={() => setFilterTurnover5((v) => !v)} style={toggleChipStyle(filterTurnover5)}>
           回転率5%↑
         </button>
-        <button onClick={() => setFilterRet10((v) => !v)} style={toggleChipStyle(filterRet10)}>
-          騰落率±10%
+        <button onClick={() => setRetFilter((cur) => (cur === "r5" ? "off" : "r5"))} style={toggleChipStyle(retFilter === "r5")}>
+          騰落±5%
+        </button>
+        <button onClick={() => setRetFilter((cur) => (cur === "r10" ? "off" : "r10"))} style={toggleChipStyle(retFilter === "r10")}>
+          騰落±10%
         </button>
       </div>
 
