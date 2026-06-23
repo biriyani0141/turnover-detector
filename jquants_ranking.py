@@ -583,6 +583,7 @@ def build_ranking(split_events: dict[str, list[tuple[str, float]]]) -> None:
         results.append({
             "code":   code,
             "name":   stock.get("name", ""),
+            "market": stock.get("market", ""),
             "C":      c,
             "shares": shares,
             "mktcap": mktcap,
@@ -621,6 +622,7 @@ def build_ranking(split_events: dict[str, list[tuple[str, float]]]) -> None:
         {
             "code":         r["code"],
             "name":         r["name"],
+            "market":       r["market"],
             "turnover_pct": r["turnover_pct"],
             "mktcap":       r["mktcap"],
             "va":           r["va"],
