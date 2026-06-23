@@ -1,6 +1,9 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
+import { Roboto_Mono } from "next/font/google";
 import { PageHeader } from "../_components/PageHeader";
+
+const robotoMono = Roboto_Mono({ weight: ["400", "700"], subsets: ["latin"] });
 
 type RankingRow = {
   code: string;
@@ -149,10 +152,9 @@ const tdBase: React.CSSProperties = {
 };
 
 // 数値カラム（現在値/前日比/売買代金/時価総額/回転率）専用: 等幅フォント詰め
-const numberFont = '"Monaco","Courier New",monospace';
 const tdNumber: React.CSSProperties = {
   ...tdBase,
-  fontFamily: numberFont,
+  fontFamily: `${robotoMono.style.fontFamily}, monospace`,
   letterSpacing: "-0.05em",
 };
 
