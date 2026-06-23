@@ -148,6 +148,14 @@ const tdBase: React.CSSProperties = {
   borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
 
+// 数値カラム（現在値/前日比/売買代金/時価総額/回転率）専用: 等幅フォント詰め
+const numberFont = '"Monaco","Courier New",monospace';
+const tdNumber: React.CSSProperties = {
+  ...tdBase,
+  fontFamily: numberFont,
+  letterSpacing: "-0.02em",
+};
+
 function toggleChipStyle(active: boolean): React.CSSProperties {
   return {
     flex: 1,
@@ -343,13 +351,13 @@ export default function RankingPage() {
                     <td style={{ ...tdBase, overflow: "hidden", textOverflow: "ellipsis" }}>
                       {abbreviateName(r.name)}
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right" }}>{fmtPrice(r.C)}</td>
-                    <td style={{ ...tdBase, textAlign: "right", color: ret1d.color }}>
+                    <td style={{ ...tdNumber, textAlign: "right" }}>{fmtPrice(r.C)}</td>
+                    <td style={{ ...tdNumber, textAlign: "right", color: ret1d.color }}>
                       {ret1d.text}
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right" }}>{fmtOku(r.va)}</td>
-                    <td style={{ ...tdBase, textAlign: "right" }}>{fmtOku(r.mktcap)}</td>
-                    <td style={{ ...tdBase, textAlign: "right", color: turnoverColor(r.turnover_pct) }}>
+                    <td style={{ ...tdNumber, textAlign: "right" }}>{fmtOku(r.va)}</td>
+                    <td style={{ ...tdNumber, textAlign: "right" }}>{fmtOku(r.mktcap)}</td>
+                    <td style={{ ...tdNumber, textAlign: "right", color: turnoverColor(r.turnover_pct) }}>
                       {r.turnover_pct.toFixed(1)}
                     </td>
                     <td style={{ ...tdBase, textAlign: "right" }}>
