@@ -110,8 +110,8 @@ function turnoverColor(v: number): string {
 
 // 回転率による行背景（ハイライトのみ。通常行は透明=BASE_BG）
 function rowBg(turnover: number): string {
-  if (turnover >= 10) return "rgba(220,20,60,0.08)";
-  if (turnover >= 5)  return "rgba(255,165,0,0.08)";
+  if (turnover >= 10) return "rgba(220,20,60,0.20)";
+  if (turnover >= 5)  return "rgba(255,165,0,0.20)";
   return "transparent";
 }
 
