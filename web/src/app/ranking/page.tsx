@@ -34,7 +34,6 @@ function displayCode(code: string): string {
   return code.slice(0, 4);
 }
 
-// 銘柄名の法人格略称変換
 function abbreviateName(name: string): string {
   return name
     .replace(/ホールディングス/g, "HD")
@@ -71,10 +70,10 @@ function matchesMktBracket(mktcap: number, b: MktBracket): boolean {
   return true;
 }
 
-// 代金・時価: floor(value/1e8) 整数のみ返す（億ラベルはJSXで付与）
-function toOku(yen: number | null | undefined): number | null {
-  if (yen === null || yen === undefined) return null;
-  return Math.floor(yen / 1e8);
+// 代金・時価: floor(value/1e8)、カンマあり整数
+function fmtOku(yen: number | null | undefined): string {
+  if (yen === null || yen === undefined) return "—";
+  return Math.floor(yen / 1e8).toLocaleString("ja-JP");
 }
 
 // 現在値: カンマあり
@@ -83,24 +82,38 @@ function fmtPrice(v: number | null | undefined): string {
   return v.toLocaleString("ja-JP");
 }
 
-// 前日比: 符号付き小数1桁。色は日本式（＋赤／－緑）。
+// 前日比: 符号付き小数1桁
 function fmtRet1d(v: number | null | undefined): { text: string; color: string } {
-  if (v === null || v === undefined) return { text: "—", color: "#6B7280" };
+  if (v === null || v === undefined) return { text: "—", color: "#555" };
   const sign = v >= 0 ? "+" : "";
   return {
     text: `${sign}${v.toFixed(1)}%`,
-    color: v >= 0 ? "#EF4444" : "#10B981",
+    color: v >= 0 ? "#E03A2F" : "#1B8C7D",
   };
 }
 
-// フォント定義
-const monoFont = '-apple-system-ui-monospace, ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace';
-const sansFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans JP", sans-serif';
+const monoFont = 'ui-monospace,"SF Mono",SFMono-Regular,Menlo,monospace';
+const BASE_BG = "#0f0f0f";
+const TEXT_DEFAULT = "#8a8a8e";  // 全列共通グレー
 
-// 8列・padding 2px左右。name=76px。合計370px（SE375も収まる）
+// 回転率による文字色（数値のみに使用）
+function turnoverColor(v: number): string {
+  if (v >= 10) return "#f87171";
+  if (v >= 5)  return "#fb923c";
+  return TEXT_DEFAULT;
+}
+
+// 回転率による行背景（ハイライトのみ。通常行は透明=BASE_BG）
+function rowBg(turnover: number): string {
+  if (turnover >= 10) return "rgba(248,113,113,0.08)";
+  if (turnover >= 5)  return "rgba(251,146,60,0.08)";
+  return "transparent";
+}
+
+// 列幅: 8列・padding 1px左右・合計360px（SE含む全機種OK）
 const COL_WIDTH = {
   code:     30,
-  name:     76,
+  name:     82,
   price:    46,
   ret1d:    40,
   va:       38,
@@ -109,43 +122,28 @@ const COL_WIDTH = {
   occ:      26,
 } as const;
 
-// 回転率による文字色
-function turnoverColor(v: number): string {
-  if (v >= 10) return "#F87171";
-  if (v >= 5)  return "#FB923C";
-  return "#9CA3AF";
-}
-
-// ゼブラ＋ハイライト行背景（PDF仕様）
-function rowBg(turnover: number, isOdd: boolean): string {
-  const isHighlight = turnover >= 5;
-  if (isHighlight) return isOdd ? "#2C1E19" : "#241915";
-  return isOdd ? "#181A1E" : "#121315";
-}
-
-const BASE_BG = "#121315";
-
 const th: React.CSSProperties = {
   position: "sticky",
   top: 0,
-  background: "#1C1E23",
-  color: "#9CA3AF",
-  fontSize: 11,
+  background: BASE_BG,
+  color: "#555",
+  fontSize: 9,
   fontWeight: 600,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
-  padding: "6px 2px",
+  padding: "4px 1px",
   whiteSpace: "nowrap",
-  borderBottom: "1px solid #2a2d34",
+  borderBottom: "1px solid #222",
 };
 
 const tdBase: React.CSSProperties = {
   fontSize: 11,
   fontFamily: monoFont,
   fontVariantNumeric: "tabular-nums",
-  padding: "6px 2px",
+  color: TEXT_DEFAULT,
+  padding: "4px 1px",
   whiteSpace: "nowrap",
-  borderBottom: "1px solid rgba(255,255,255,0.04)",
+  borderBottom: "1px solid rgba(255,255,255,0.03)",
 };
 
 function toggleChipStyle(active: boolean): React.CSSProperties {
@@ -153,14 +151,14 @@ function toggleChipStyle(active: boolean): React.CSSProperties {
     flex: 1,
     padding: "7px 0",
     borderRadius: 9999,
-    fontFamily: sansFont,
+    fontFamily: monoFont,
     fontSize: 12,
     fontWeight: active ? 600 : 500,
     textAlign: "center",
     transition: "background 0.15s, color 0.15s, border-color 0.15s",
-    background: active ? "#3c4043" : "#1E2025",
-    border: `1px solid ${active ? "#5f6368" : "#2a2d34"}`,
-    color: active ? "#e8eaed" : "#6B7280",
+    background: active ? "#2a2a2a" : "#141414",
+    border: `1px solid ${active ? "#444" : "#2a2a2a"}`,
+    color: active ? "#e8eaed" : "#555",
   };
 }
 
@@ -175,8 +173,8 @@ function capChipStyle(active: boolean): React.CSSProperties {
     fontWeight: 600,
     textAlign: "center",
     transition: "background 0.15s, color 0.15s",
-    background: active ? "#fff" : "#1E2025",
-    color: active ? "#000" : "#6B7280",
+    background: active ? "#fff" : "#141414",
+    color: active ? "#000" : "#555",
     border: "none",
   };
 }
@@ -220,8 +218,8 @@ export default function RankingPage() {
     });
   }, [rankingData, subTab, filterTurnover5, filterRet10, mktBracket]);
 
-  if (err) return <pre className="p-4 text-red-400 min-h-screen" style={{ background: BASE_BG }}>ERROR: {err}</pre>;
-  if (!filteredRows) return <div className="p-4 text-gray-400 min-h-screen" style={{ background: BASE_BG }}>loading...</div>;
+  if (err) return <pre style={{ background: BASE_BG, color: "#f87171", padding: 16, minHeight: "100vh" }}>ERROR: {err}</pre>;
+  if (!filteredRows) return <div style={{ background: BASE_BG, color: "#555", padding: 16, minHeight: "100vh" }}>loading...</div>;
 
   return (
     <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
@@ -229,10 +227,10 @@ export default function RankingPage() {
         title="Volume Ranking"
         date={meta?.date}
         description={
-          "売買代金（va）の上位100銘柄を市場別に表示します。\n" +
-          "・上部タブ「プライム／スタンダード／グロース」で市場を切り替えます（各市場の売買代金上位100銘柄）。\n" +
+          "売買代金の上位100銘柄を市場別に表示します。\n" +
+          "・タブ「プライム／スタンダード／グロース」で市場を切り替えます。\n" +
           "・「回転率5%↑」「騰落率±10%」は独立トグル、「100↓〜1000↑」は時価総額フィルター（億）です。すべてAND結合。\n" +
-          "・代金・時価は億円単位。回転率10%以上は赤帯、5%以上は橙帯で行をハイライトします。\n" +
+          "・回転率10%以上は赤帯、5%以上は橙帯で行をハイライトします。\n" +
           "・「出現」欄：左=直近50日で回転率5%以上をつけた日数、右=その期間のS高回数。"
         }
       />
@@ -247,13 +245,13 @@ export default function RankingPage() {
               flex: 1,
               padding: "9px 0",
               borderRadius: 9999,
-              fontFamily: sansFont,
+              fontFamily: monoFont,
               fontSize: 13,
               textAlign: "center",
               transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: subTab === key ? "#3c4043" : "#1E2025",
-              border: `1px solid ${subTab === key ? "#5f6368" : "#2a2d34"}`,
-              color: subTab === key ? "#e8eaed" : "#6B7280",
+              background: subTab === key ? "#2a2a2a" : "#141414",
+              border: `1px solid ${subTab === key ? "#444" : "#2a2a2a"}`,
+              color: subTab === key ? "#e8eaed" : "#555",
               fontWeight: subTab === key ? 600 : 500,
             }}
           >
@@ -262,7 +260,7 @@ export default function RankingPage() {
         ))}
       </div>
 
-      {/* フィルター上段：独立トグル */}
+      {/* フィルター上段 */}
       <div style={{ display: "flex", gap: 8, marginBottom: 8, paddingLeft: 16, paddingRight: 16 }}>
         <button onClick={() => setFilterTurnover5((v) => !v)} style={toggleChipStyle(filterTurnover5)}>
           回転率5%↑
@@ -272,8 +270,8 @@ export default function RankingPage() {
         </button>
       </div>
 
-      {/* フィルター下段：時価総額ブラケット */}
-      <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
+      {/* フィルター下段：時価総額 */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
         {MKT_BRACKETS.map(({ key, label }) => (
           <button
             key={key}
@@ -304,8 +302,8 @@ export default function RankingPage() {
               <th style={{ ...th, textAlign: "left" }}>銘柄</th>
               <th style={{ ...th, textAlign: "right" }}>現在値</th>
               <th style={{ ...th, textAlign: "right" }}>前日比</th>
-              <th style={{ ...th, textAlign: "right" }}>代金</th>
-              <th style={{ ...th, textAlign: "right" }}>時価</th>
+              <th style={{ ...th, textAlign: "right" }}>代金(億)</th>
+              <th style={{ ...th, textAlign: "right" }}>時価(億)</th>
               <th style={{ ...th, textAlign: "right" }}>回転</th>
               <th style={{ ...th, textAlign: "right" }}>出現</th>
             </tr>
@@ -314,12 +312,9 @@ export default function RankingPage() {
             {filteredRows.map((r, i) => {
               const ret1d = fmtRet1d(r.ret_1d);
               const app = appearanceByCode[r.code];
-              const isOdd = i % 2 === 1;
-              const bg = rowBg(r.turnover_pct, isOdd);
+              const bg = rowBg(r.turnover_pct);
               const rank = i + 1;
               const showDivider = rank > 1 && rank % 25 === 1;
-              const vaOku = toOku(r.va);
-              const mktOku = toOku(r.mktcap);
               return (
                 <React.Fragment key={r.code}>
                   {showDivider && (
@@ -327,69 +322,40 @@ export default function RankingPage() {
                       <td
                         colSpan={8}
                         style={{
-                          padding: "4px 0",
-                          borderTop: "2px solid rgba(255,255,255,0.18)",
+                          padding: "3px 0",
+                          borderTop: "1px solid #333",
                           background: "transparent",
                         }}
                       />
                     </tr>
                   )}
                   <tr style={{ background: bg }}>
-                    <td style={{ ...tdBase, color: "#9CA3AF" }}>{displayCode(r.code)}</td>
-                    <td
-                      style={{
-                        ...tdBase,
-                        fontFamily: sansFont,
-                        fontVariantNumeric: "normal",
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: "#FFFFFF",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
+                    <td style={{ ...tdBase }}>{displayCode(r.code)}</td>
+                    <td style={{ ...tdBase, overflow: "hidden", textOverflow: "ellipsis" }}>
                       {abbreviateName(r.name)}
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right", color: "#D1D5DB" }}>
-                      {fmtPrice(r.C)}
-                    </td>
+                    <td style={{ ...tdBase, textAlign: "right" }}>{fmtPrice(r.C)}</td>
                     <td style={{ ...tdBase, textAlign: "right", color: ret1d.color, fontWeight: 600 }}>
                       {ret1d.text}
                     </td>
-                    <td style={{ ...tdBase, textAlign: "right", color: "#9CA3AF" }}>
-                      {vaOku !== null ? (
-                        <>
-                          <span style={{ fontVariantNumeric: "tabular-nums" }}>{vaOku.toLocaleString("ja-JP")}</span>
-                          <span style={{ fontSize: "0.8em", color: "#6B7280" }}>億</span>
-                        </>
-                      ) : "—"}
-                    </td>
-                    <td style={{ ...tdBase, textAlign: "right", color: "#9CA3AF" }}>
-                      {mktOku !== null ? (
-                        <>
-                          <span style={{ fontVariantNumeric: "tabular-nums" }}>{mktOku.toLocaleString("ja-JP")}</span>
-                          <span style={{ fontSize: "0.8em", color: "#6B7280" }}>億</span>
-                        </>
-                      ) : "—"}
-                    </td>
+                    <td style={{ ...tdBase, textAlign: "right" }}>{fmtOku(r.va)}</td>
+                    <td style={{ ...tdBase, textAlign: "right" }}>{fmtOku(r.mktcap)}</td>
                     <td style={{ ...tdBase, textAlign: "right", color: turnoverColor(r.turnover_pct), fontWeight: 600 }}>
                       {r.turnover_pct.toFixed(1)}
                     </td>
                     <td style={{ ...tdBase, textAlign: "right" }}>
                       {app ? (
                         <>
-                          <span style={{ color: "#6B7280" }}>{app.turnover_50 ?? 0}:</span>
-                          <span
-                            style={{
-                              color: (app.stophigh_50 ?? 0) >= 1 ? "#F59E0B" : "#6B7280",
-                              fontWeight: (app.stophigh_50 ?? 0) >= 1 ? 700 : 400,
-                            }}
-                          >
+                          <span style={{ color: "#555" }}>{app.turnover_50 ?? 0}:</span>
+                          <span style={{
+                            color: (app.stophigh_50 ?? 0) >= 1 ? "#ffa500" : "#555",
+                            fontWeight: (app.stophigh_50 ?? 0) >= 1 ? 700 : 400,
+                          }}>
                             {app.stophigh_50 ?? 0}
                           </span>
                         </>
                       ) : (
-                        <span style={{ color: "#374151" }}>—</span>
+                        <span style={{ color: "#333" }}>—</span>
                       )}
                     </td>
                   </tr>
