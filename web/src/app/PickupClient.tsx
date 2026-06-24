@@ -1,16 +1,8 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
-import type { CardStock } from "../components/TurnoverCard";
+import TurnoverCard, { type CardStock } from "../components/TurnoverCard";
+import TurnoverCardList from "../components/TurnoverCardList";
 import { Row, StateLabel, STATE_CONFIG } from "@/lib/classify";
-
-const TurnoverCardList = dynamic(
-  () => import("../components/TurnoverCardList"),
-  { ssr: false }
-);
-const TurnoverCard = dynamic(() => import("../components/TurnoverCard"), {
-  ssr: false,
-});
 
 const LAZY_CHART = true; // falseで全描画に切替
 
@@ -104,13 +96,6 @@ export default function PickupClient({
 }) {
   const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
-
-  // Volume%/Stop Highタブを開いた時のチャンクDL待ちラグを避けるため、
-  // PickUpタブ表示中に裏でTurnoverCardListのチャンクをプリロードする
-  useEffect(() => {
-    import("../components/TurnoverCardList");
-    import("../components/TurnoverCard");
-  }, []);
 
   const displayRows = mode === "turnover" ? rows : mode === "stophigh" ? shRows ?? [] : [];
   const pullbackTotal = [...pullbackSections.values()].reduce((sum, items) => sum + items.length, 0);
