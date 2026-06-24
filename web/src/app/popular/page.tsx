@@ -43,15 +43,23 @@ function applyCapFilter(row: Row, cap: CapFilter): boolean {
   return true;
 }
 
+const PRESETS = [
+  { key: "keizoku", label: "継続", cap: "ge1000" as CapFilter, sortKey: "m3" as SortKey, sortDir: "desc" as SortDir },
+  { key: "shodo",    label: "初動", cap: "all"    as CapFilter, sortKey: "d5" as SortKey, sortDir: "desc" as SortDir },
+  { key: "shite",    label: "仕手", cap: "le1000" as CapFilter, sortKey: "occ" as SortKey, sortDir: "desc" as SortDir },
+] as const;
+type PresetKey = (typeof PRESETS)[number]["key"];
+
 export default function PopularPage() {
   const [allData, setAllData] = useState<Row[] | null>(null);
   const [meta, setMeta] = useState<any>(null);
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [win, setWin] = useState<Win>(25);
-  const [capFilter, setCapFilter] = useState<CapFilter>("all");
-  const [sortKey, setSortKey] = useState<SortKey>("turnover");
+  const [capFilter, setCapFilter] = useState<CapFilter>("ge1000");
+  const [sortKey, setSortKey] = useState<SortKey>("y1");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [activePreset, setActivePreset] = useState<PresetKey | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -88,6 +96,19 @@ export default function PopularPage() {
       setSortKey(k);
       setSortDir("desc");
     }
+    setActivePreset(null);
+  };
+
+  const handleCapFilterClick = (key: CapFilter) => {
+    setCapFilter(capFilter === key ? "all" : key);
+    setActivePreset(null);
+  };
+
+  const handlePresetClick = (preset: (typeof PRESETS)[number]) => {
+    setCapFilter(preset.cap);
+    setSortKey(preset.sortKey);
+    setSortDir(preset.sortDir);
+    setActivePreset(preset.key);
   };
 
   const rows = useMemo(() => {
@@ -126,6 +147,29 @@ export default function PopularPage() {
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
       <PageHeader
         date={meta?.date}
+        rightContent={
+          <div style={{ display: "flex", gap: 6 }}>
+            {PRESETS.map((p) => (
+              <button
+                key={p.key}
+                onClick={() => handlePresetClick(p)}
+                style={{
+                  padding: "5px 10px",
+                  borderRadius: 8,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  transition: "background 0.15s, color 0.15s",
+                  background: activePreset === p.key ? "#fff" : "#2c2c2e",
+                  color: activePreset === p.key ? "#000" : "#8e8e93",
+                  border: "none",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        }
         description={
           "選んだ期間（25／50／100／200日）の中で、売買代金回転率が5%以上をつけた銘柄を抽出しています。\n\n" +
           "・「出現」欄：左の数字は、期間内に回転率5%以上をつけた日数（出現回数）。右の数字は、その期間中のストップ高（S高）の回数です。\n" +
@@ -165,7 +209,7 @@ export default function PopularPage() {
         {CAP_FILTERS.map((f) => (
           <button
             key={f.key}
-            onClick={() => setCapFilter(capFilter === f.key ? "all" : f.key)}
+            onClick={() => handleCapFilterClick(f.key)}
             style={{
               flex: 1,
               padding: "7px 0",

@@ -1,15 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 
 type PageHeaderProps = {
   title?: string;
   date: string | undefined;
   description: string;
+  rightContent?: ReactNode;
 };
 
 const DATE_COLOR = "#71717A";
 
-export function PageHeader({ title, date, description }: PageHeaderProps) {
+export function PageHeader({ title, date, description, rightContent }: PageHeaderProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -23,6 +24,11 @@ export function PageHeader({ title, date, description }: PageHeaderProps) {
         <p className="text-xs" style={{ color: DATE_COLOR }}>
           {date}
         </p>
+        {rightContent && (
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            {rightContent}
+          </div>
+        )}
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
