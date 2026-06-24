@@ -30,7 +30,12 @@ jobs:
       - name: Update meta shares
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
-        run: python jquants_meta.py update
+        run: |
+          if [ -f data/jquants/meta.json ]; then
+            python jquants_meta.py update
+          else
+            python jquants_meta.py full
+          fi
       - name: Build appearance
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
