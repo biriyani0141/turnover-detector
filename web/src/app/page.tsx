@@ -93,7 +93,7 @@ export default function Home() {
   const [meta, setMeta] = useState<{ date?: string } | null>(null);
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [err, setErr] = useState<string | null>(null);
-  const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("turnover");
+  const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
 
   const [pullbackSections, setPullbackSections] = useState<Map<StateLabel, PullbackItem[]> | null>(null);
   const [pullbackMeta, setPullbackMeta] = useState<{ date?: string } | null>(null);
@@ -275,6 +275,25 @@ export default function Home() {
         )}
         <div style={{ display: "flex", gap: 8 }}>
           <button
+            onClick={() => setMode("pullback")}
+            style={{
+              flex: 1,
+              padding: "9px 0",
+              borderRadius: 9999,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 14,
+              textAlign: "center",
+              transition: "background 0.15s, color 0.15s, border-color 0.15s",
+              background: mode === "pullback" ? "#3c4043" : "#282a2d",
+              border: `1px solid ${mode === "pullback" ? "#5f6368" : "#3c4043"}`,
+              color: mode === "pullback" ? "#e8eaed" : "#8e8e93",
+              fontWeight: mode === "pullback" ? 600 : 500,
+            }}
+          >
+            PickUP
+          </button>
+          <button
             onClick={() => setMode("turnover")}
             style={{
               flex: 1,
@@ -311,25 +330,6 @@ export default function Home() {
             }}
           >
             Stop High
-          </button>
-          <button
-            onClick={() => setMode("pullback")}
-            style={{
-              flex: 1,
-              padding: "9px 0",
-              borderRadius: 9999,
-              fontFamily: "ui-monospace, monospace",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: 14,
-              textAlign: "center",
-              transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: mode === "pullback" ? "#3c4043" : "#282a2d",
-              border: `1px solid ${mode === "pullback" ? "#5f6368" : "#3c4043"}`,
-              color: mode === "pullback" ? "#e8eaed" : "#8e8e93",
-              fontWeight: mode === "pullback" ? 600 : 500,
-            }}
-          >
-            PickUP
           </button>
         </div>
       </div>
