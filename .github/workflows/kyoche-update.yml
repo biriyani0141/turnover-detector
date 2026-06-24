@@ -1,0 +1,66 @@
+name: kyoche-update
+
+on:
+  schedule:
+    - cron: "40 7 * * 1-5"  # JST 16:40、平日のみ
+    - cron: "40 8 * * 1-5"  # JST 17:40、平日のみ
+  workflow_dispatch:
+
+concurrency:
+  group: kyoche-update
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Build appearance
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_appearance
+      - name: Build stophigh
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_stophigh
+      - name: Build window scores
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_window_scores
+      - name: Build ranking
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_ranking
+      - name: Build popular
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_popular
+      - name: Build ranking cards
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_ranking_cards
+      - name: Build stophigh cards
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_stophigh_cards
+      - name: Build popular cards
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_popular_cards
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/ data/jquants/
+          if ! git diff --staged --quiet; then
+            git commit -m "data: kyoche update $(date -u +%Y-%m-%d)"
+            git push
+          fi
