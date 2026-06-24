@@ -137,8 +137,8 @@ function rowBg(turnover: number): string {
 
 // 回転率列の文字色（全タブ共通）
 function turnoverTextColor(turnover: number): string {
-  if (turnover >= 10) return "#dc143c";
-  if (turnover >= 5)  return "#ffa500";
+  if (turnover >= 10) return "#e05555";
+  if (turnover >= 5)  return "#cc8800";
   return TEXT_DEFAULT;
 }
 
@@ -287,7 +287,17 @@ function rowFromCard(r: CardRow): DisplayRow {
     mktcapText: fmtOku(r.mktcap),
     turnoverText: r.turnover.toFixed(1),
     turnoverRaw: r.turnover,
-    occurrence: <span style={{ color: TEXT_BRIGHT }}>{r.occCount}:{r.stophighCount}</span>,
+    occurrence: (
+      <>
+        <span style={{ color: TEXT_BRIGHT }}>{r.occCount}:</span>
+        <span style={{
+          color: r.stophighCount >= 1 ? "#ffa500" : TEXT_BRIGHT,
+          fontWeight: r.stophighCount >= 1 ? 700 : 400,
+        }}>
+          {r.stophighCount}
+        </span>
+      </>
+    ),
   };
 }
 
@@ -346,17 +356,28 @@ export default function RankingPage() {
   }, [rankingData, subTab, filterTurnover5, retFilter, mktBracket]);
 
   const displayRows = useMemo<DisplayRow[] | null>(() => {
+    const filterCards = (cards: CardRow[]): CardRow[] =>
+      cards.filter((r) => {
+        if (retFilter !== "off") {
+          const absRet = Math.abs(r.changePct);
+          const thr = retFilter === "r5" ? 5 : 10;
+          if (!(absRet >= thr)) return false;
+        }
+        if (!matchesMktBracket(r.mktcap, mktBracket)) return false;
+        return true;
+      });
+
     if (mainTab === "volume") {
       if (!filteredRows) return null;
       return filteredRows.map((r) => rowFromRanking(r, appearanceByCode[r.code]));
     }
     if (mainTab === "turnover") {
       if (!turnoverCards) return null;
-      return turnoverCards.filter((r) => r.turnover >= 5).map(rowFromCard);
+      return filterCards(turnoverCards.filter((r) => r.turnover >= 5)).map(rowFromCard);
     }
     if (!stophighCards) return null;
-    return stophighCards.map(rowFromCard);
-  }, [mainTab, filteredRows, turnoverCards, stophighCards, appearanceByCode]);
+    return filterCards(stophighCards).map(rowFromCard);
+  }, [mainTab, filteredRows, turnoverCards, stophighCards, appearanceByCode, retFilter, mktBracket]);
 
   const showVaColumn = true;
   const mktcapHeader = "時価(億)";
@@ -459,6 +480,33 @@ export default function RankingPage() {
           </div>
 
           {/* フィルター下段：時価総額 */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
+            {MKT_BRACKETS.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setMktBracket((cur) => (cur === key ? "all" : key))}
+                style={capChipStyle(mktBracket === key)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </>
+      )}
+
+      {(mainTab === "turnover" || mainTab === "stophigh") && (
+        <>
+          {/* フィルター：騰落率（騰落率±5/±10は相互排他） */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 8, paddingLeft: 16, paddingRight: 16 }}>
+            <button onClick={() => setRetFilter((cur) => (cur === "r5" ? "off" : "r5"))} style={toggleChipStyle(retFilter === "r5")}>
+              騰落±5%
+            </button>
+            <button onClick={() => setRetFilter((cur) => (cur === "r10" ? "off" : "r10"))} style={toggleChipStyle(retFilter === "r10")}>
+              騰落±10%
+            </button>
+          </div>
+
+          {/* フィルター：時価総額 */}
           <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
             {MKT_BRACKETS.map(({ key, label }) => (
               <button
