@@ -135,6 +135,13 @@ function rowBg(turnover: number): string {
   return "transparent";
 }
 
+// 回転率列の文字色（全タブ共通）
+function turnoverTextColor(turnover: number): string {
+  if (turnover >= 10) return "#dc143c";
+  if (turnover >= 5)  return "#ffa500";
+  return TEXT_DEFAULT;
+}
+
 // 列幅: 8列・padding 1px左右・合計360px（SE含む全機種OK）
 const COL_WIDTH = {
   code:     28,
@@ -345,7 +352,7 @@ export default function RankingPage() {
     }
     if (mainTab === "turnover") {
       if (!turnoverCards) return null;
-      return turnoverCards.map(rowFromCard);
+      return turnoverCards.filter((r) => r.turnover >= 5).map(rowFromCard);
     }
     if (!stophighCards) return null;
     return stophighCards.map(rowFromCard);
@@ -360,7 +367,6 @@ export default function RankingPage() {
   return (
     <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
       <PageHeader
-        title="Volume Ranking"
         date={meta?.date}
         description={
           "売買代金・回転率・S高の上位銘柄を表示します。\n" +
@@ -524,7 +530,9 @@ export default function RankingPage() {
                       <td style={{ ...tdNumber, textAlign: "right" }}>{r.vaText}</td>
                     )}
                     <td style={{ ...tdNumber, textAlign: "right" }}>{r.mktcapText}</td>
-                    <td style={{ ...tdNumber, textAlign: "right" }}>{r.turnoverText}</td>
+                    <td style={{ ...tdNumber, textAlign: "right", color: turnoverTextColor(r.turnoverRaw) }}>
+                      {r.turnoverText}
+                    </td>
                     <td style={{ ...tdBright, textAlign: "right" }}>{r.occurrence}</td>
                   </tr>
                 </React.Fragment>

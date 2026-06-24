@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 type PageHeaderProps = {
-  title: string;
+  title?: string;
   date: string | undefined;
   description: string;
 };
@@ -14,9 +14,11 @@ export function PageHeader({ title, date, description }: PageHeaderProps) {
 
   return (
     <div style={{ paddingLeft: 16, paddingRight: 16 }}>
-      <h1 className="font-sans font-bold text-base leading-tight text-gray-100 mb-1">
-        {title}
-      </h1>
+      {title && (
+        <h1 className="font-sans font-bold text-base leading-tight text-gray-100 mb-1">
+          {title}
+        </h1>
+      )}
       <div className="flex items-center" style={{ marginBottom: open ? 8 : 12 }}>
         <p className="text-xs" style={{ color: DATE_COLOR }}>
           {date}

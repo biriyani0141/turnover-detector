@@ -125,7 +125,6 @@ export default function PopularPage() {
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
       <PageHeader
-        title="Activity"
         date={meta?.date}
         description={
           "選んだ期間（25／50／100／200日）の中で、売買代金回転率が5%以上をつけた銘柄を抽出しています。\n\n" +
