@@ -59,7 +59,7 @@ function LazyCard({
         style={{
           position: "absolute",
           top: 6,
-          left: 6,
+          right: 6,
           zIndex: 1,
           fontSize: 10,
           fontWeight: 700,
@@ -98,6 +98,7 @@ export default function Home() {
   const [pullbackSections, setPullbackSections] = useState<Map<StateLabel, PullbackItem[]> | null>(null);
   const [pullbackMeta, setPullbackMeta] = useState<{ date?: string } | null>(null);
   const [pullbackFetched, setPullbackFetched] = useState(false);
+  const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
 
   // 信用区分の表示ラベルへのマッピング（文字列完全一致）
   const CREDIT_LABEL: Record<string, string> = {
@@ -220,11 +221,13 @@ export default function Home() {
       >
         <div
           style={{
+            display: "flex",
+            alignItems: "center",
             fontSize: 11,
             color: "#707A8A",
             fontVariantNumeric: "tabular-nums",
             letterSpacing: "0.01em",
-            marginBottom: 8,
+            marginBottom: pullbackDescOpen ? 4 : 8,
           }}
         >
           {headerDate}
@@ -236,7 +239,40 @@ export default function Home() {
                 ? `${pullbackTotal}件`
                 : `${displayRows.length}件`}
           </span>
+          {mode === "pullback" && (
+            <button
+              type="button"
+              onClick={() => setPullbackDescOpen((o) => !o)}
+              aria-expanded={pullbackDescOpen}
+              aria-label="説明を表示"
+              style={{
+                width: 28,
+                height: 28,
+                marginLeft: 2,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "transparent",
+                border: "none",
+                flexShrink: 0,
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#707A8A">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
+              </svg>
+            </button>
+          )}
         </div>
+        {mode === "pullback" && pullbackDescOpen && (
+          <p
+            className="text-[11px] leading-5 whitespace-pre-line"
+            style={{ color: "#9CA3AF", marginBottom: 8 }}
+          >
+            {
+              "直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
+            }
+          </p>
+        )}
         <div style={{ display: "flex", gap: 8 }}>
           <button
             onClick={() => setMode("turnover")}
@@ -293,34 +329,36 @@ export default function Home() {
               fontWeight: mode === "pullback" ? 600 : 500,
             }}
           >
-            Pullback
+            PickUP
           </button>
         </div>
       </div>
 
       {mode === "pullback" ? (
-        !pullbackSections ? (
-          <div className="p-4">loading...</div>
-        ) : (
-          STATE_CONFIG.map(({ label, headerBg }) => {
-            const items = pullbackSections.get(label) ?? [];
-            if (items.length === 0) return null;
-            return (
-              <div key={label} className="mb-4">
-                <div
-                  className={`py-1 ${headerBg} text-white text-xs font-bold flex items-center gap-2 rounded-t`}
-                  style={{ paddingLeft: 10, paddingRight: 10 }}
-                >
-                  <span>{label}</span>
-                  <span className="font-normal text-[10px] opacity-80">{items.length} 件</span>
+        <>
+          {!pullbackSections ? (
+            <div className="p-4">loading...</div>
+          ) : (
+            STATE_CONFIG.map(({ label, headerBg }) => {
+              const items = pullbackSections.get(label) ?? [];
+              if (items.length === 0) return null;
+              return (
+                <div key={label} className="mb-4">
+                  <div
+                    className={`py-1 ${headerBg} text-white text-xs font-bold flex items-center gap-2 rounded-t`}
+                    style={{ paddingLeft: 10, paddingRight: 10 }}
+                  >
+                    <span>{label}</span>
+                    <span className="font-normal text-[10px] opacity-80">{items.length} 件</span>
+                  </div>
+                  {items.map((item) => (
+                    <LazyCard key={item.row.code} item={item} label={label} headerBg={headerBg} />
+                  ))}
                 </div>
-                {items.map((item) => (
-                  <LazyCard key={item.row.code} item={item} label={label} headerBg={headerBg} />
-                ))}
-              </div>
-            );
-          })
-        )
+              );
+            })
+          )}
+        </>
       ) : (
         <TurnoverCardList stocks={displayRows} />
       )}
