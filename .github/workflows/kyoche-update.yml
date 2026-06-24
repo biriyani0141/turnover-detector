@@ -1,10 +1,10 @@
 name: kyoche-update
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "40 7 * * 1-5"  # JST 16:40、平日のみ
     - cron: "40 8 * * 1-5"  # JST 17:40、平日のみ
-  workflow_dispatch:
 
 concurrency:
   group: kyoche-update

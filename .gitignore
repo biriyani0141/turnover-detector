@@ -21,7 +21,6 @@ service_account.json
 auth.json
 
 # jquants 中間データ（webは読まない・容量大のため除外）
-data/jquants/daily/
 data/jquants/meta.json
 
 *.bak*

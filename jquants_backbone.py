@@ -311,8 +311,8 @@ def main_full_fetch() -> None:
     today = datetime.date.today()
     start = today - datetime.timedelta(days=365)
 
-    # 直近営業日（昨日以前の平日）を基準に
-    ref = today - datetime.timedelta(days=1)
+    # 直近営業日（当日含む平日）を基準に
+    ref = today
     while ref.weekday() >= 5:
         ref -= datetime.timedelta(days=1)
 
