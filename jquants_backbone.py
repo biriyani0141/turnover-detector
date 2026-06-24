@@ -107,6 +107,22 @@ def get_daily_all(api_key: str, date: str) -> list[dict]:
     return results
 
 
+# ── 3c. 日次ファイルの有効性判定（共通） ──────────────────────────────────────
+def is_valid_daily_file(path: Path) -> bool:
+    """
+    日次JSONファイルが「有効な既存データ」とみなせるかを判定する。
+    存在し、JSONとして読み込め、銘柄レコードが1件以上あればTrue。
+    破損・空ファイルはFalse（再取得・上書き対象として扱う）。
+    """
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError, UnicodeDecodeError):
+        return False
+    return isinstance(data, dict) and len(data) > 0
+
+
 # ── 4. 保存（日付別 JSON、冪等） ──────────────────────────────────────────────
 def save_quotes_to_daily_json(quotes: list[dict]) -> dict[str, int]:
     """
@@ -130,7 +146,7 @@ def save_quotes_to_daily_json(quotes: list[dict]) -> dict[str, int]:
     for date, stocks in sorted(by_date.items()):
         path = DATA_DIR / f"{date}.json"
         new_count = len(stocks)
-        if path.exists():
+        if is_valid_daily_file(path):
             existing = json.loads(path.read_text(encoding="utf-8"))
             existing_count = len(existing)
             if existing_count >= new_count:
@@ -308,6 +324,14 @@ def main_full_fetch() -> None:
     平日のみループ。祝日はデータ0件で自然スキップ。
     再実行時は既存ファイルをスキップするため冪等。
     """
+    # 診断ログ: CI環境でdaily/の実在・件数・範囲を確認するため（今後も残す）
+    daily_dir_exists = DATA_DIR.exists()
+    diag_files = sorted(DATA_DIR.glob("*.json")) if daily_dir_exists else []
+    print(f"[diag] daily dir exists: {daily_dir_exists}")
+    print(f"[diag] daily files found: {len(diag_files)}")
+    if diag_files:
+        print(f"[diag] oldest: {diag_files[0].name}  newest: {diag_files[-1].name}")
+
     today = datetime.date.today()
     start = today - datetime.timedelta(days=365)
 
@@ -340,6 +364,12 @@ def main_full_fetch() -> None:
     error_days = 0
 
     for i, date in enumerate(dates, 1):
+        if is_valid_daily_file(DATA_DIR / f"{date}.json"):
+            print(f"[{i}/{total}] skip {date}")
+            skipped_existing += 1
+            continue
+        print(f"[{i}/{total}] fetch {date}")
+
         try:
             quotes = get_daily_all(api_key, date)
         except requests.exceptions.HTTPError as e:
