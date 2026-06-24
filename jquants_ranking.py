@@ -866,7 +866,8 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
     採用条件: turnover_200>0 OR stophigh_200>0 OR 時価総額ランク<=100。
     時価総額ランクは当日終値(raw close)×分割調整後株数の降順で全銘柄に付与する。
     """
-    POPULAR_FILE = APPEARANCE_FILE.parent / "popular.json"
+    POPULAR_FILE     = APPEARANCE_FILE.parent / "popular.json"
+    POPULAR_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "popular.json"
 
     data = json.loads(APPEARANCE_FILE.read_text(encoding="utf-8"))
     by_code: dict[str, dict] = data["by_code"]
@@ -958,12 +959,18 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
         "popular": popular,
     }
 
+    json_str = json.dumps(output, ensure_ascii=False, indent=2)
+
     POPULAR_FILE.parent.mkdir(parents=True, exist_ok=True)
-    POPULAR_FILE.write_text(
-        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    file_kb = POPULAR_FILE.stat().st_size / 1024
+    POPULAR_FILE.write_text(json_str, encoding="utf-8")
+
+    POPULAR_FILE_WEB.parent.mkdir(parents=True, exist_ok=True)
+    POPULAR_FILE_WEB.write_text(json_str, encoding="utf-8")
+
+    file_kb = POPULAR_FILE_WEB.stat().st_size / 1024
     print(f"popular.json 出力: {len(popular)}銘柄 / 除外(全窓0): {skipped}銘柄 / {file_kb:.1f}KB")
+    print(f"  -> {POPULAR_FILE}")
+    print(f"  -> {POPULAR_FILE_WEB}")
 
 
 _MARKET_NAME_MAP = {
