@@ -137,8 +137,7 @@ export default function PickupClient({
               aria-expanded={pullbackDescOpen}
               aria-label="説明を表示"
               style={{
-                width: 28,
-                height: 28,
+                padding: 2,
                 marginLeft: 2,
                 display: "flex",
                 alignItems: "center",
