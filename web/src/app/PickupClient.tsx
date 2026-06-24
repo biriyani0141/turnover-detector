@@ -109,6 +109,7 @@ export default function PickupClient({
   // PickUpタブ表示中に裏でTurnoverCardListのチャンクをプリロードする
   useEffect(() => {
     import("../components/TurnoverCardList");
+    import("../components/TurnoverCard");
   }, []);
 
   const displayRows = mode === "turnover" ? rows : mode === "stophigh" ? shRows ?? [] : [];
