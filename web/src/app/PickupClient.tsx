@@ -105,6 +105,12 @@ export default function PickupClient({
   const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
 
+  // Volume%/Stop Highタブを開いた時のチャンクDL待ちラグを避けるため、
+  // PickUpタブ表示中に裏でTurnoverCardListのチャンクをプリロードする
+  useEffect(() => {
+    import("../components/TurnoverCardList");
+  }, []);
+
   const displayRows = mode === "turnover" ? rows : mode === "stophigh" ? shRows ?? [] : [];
   const pullbackTotal = [...pullbackSections.values()].reduce((sum, items) => sum + items.length, 0);
   const headerDate = mode === "pullback" ? pullbackMeta?.date : meta?.date;
