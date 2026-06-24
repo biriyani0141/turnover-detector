@@ -23,6 +23,14 @@ jobs:
           python-version: "3.12"
       - name: Install deps
         run: pip install -r requirements.txt
+      - name: Fetch daily quotes
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_backbone.py full_fetch
+      - name: Update meta shares
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_meta.py update
       - name: Build appearance
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
