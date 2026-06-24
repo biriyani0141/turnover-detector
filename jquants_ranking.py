@@ -1301,6 +1301,238 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
     print(f"  -> {STOPHIGH_CARDS_FILE_WEB}")
 
 
+POPULAR_CARDS_FILE_DATA = Path(__file__).parent / "data" / "jquants" / "popular_cards.json"
+POPULAR_CARDS_FILE_WEB  = Path(__file__).parent / "web" / "public" / "data" / "popular_cards.json"
+
+# ─── 状態判定ロジック（web/src/lib/classify.ts と同一・変更禁止） ──────────────
+_PULLBACK_NEUTRAL_PCT = 2.0
+MIN_TURNOVER_50 = 20
+
+
+def _pullback_tri(v: float | None) -> str | None:
+    if v is None:
+        return None
+    if v >= _PULLBACK_NEUTRAL_PCT:
+        return "+"
+    if v <= -_PULLBACK_NEUTRAL_PCT:
+        return "-"
+    return "0"
+
+
+def _pullback_calc_accel(ret_1m: float | None, ret_5d: float | None) -> float | None:
+    if ret_1m is None or ret_5d is None:
+        return None
+    mid15d = (1 + ret_1m / 100) / (1 + ret_5d / 100) - 1
+    accel = ret_5d / 100 - mid15d
+    return accel * 100
+
+
+def _pullback_classify(row: dict) -> str:
+    s1y = _pullback_tri(row.get("ret_1y"))
+    s3m = _pullback_tri(row.get("ret_3m"))
+    s1m = _pullback_tri(row.get("ret_1m"))
+    s5d = _pullback_tri(row.get("ret_5d"))
+
+    if s1y is None or s3m is None or s1m is None or s5d is None:
+        return "対象外"
+
+    if s1y == "+" and s3m == "+" and s1m == "-":
+        return "調整"
+    if s1y == "+" and s3m == "+" and s1m == "0":
+        return "調整予備軍"
+    if s1y == "+" and s3m == "+" and s1m == "+" and s5d == "-":
+        return "短期押し目"
+    if s1y == "+" and s3m == "+" and s1m == "+" and s5d in ("+", "0"):
+        accel = _pullback_calc_accel(row.get("ret_1m"), row.get("ret_5d"))
+        ret_5d = row.get("ret_5d")
+        if ret_5d is not None and ret_5d >= 15 and accel is not None and accel >= 5:
+            return "初動・再加速"
+        return "継続"
+    if s1y == "+" and s3m == "0":
+        return "中立帯"
+    if s1y == "+" and s3m == "-":
+        return "失速"
+
+    return "対象外"
+
+
+def build_popular_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
+    """
+    /pullback 表示対象銘柄（classify()!=対象外 かつ turnover_50>=20、除外銘柄を除く）の
+    カード用JSONを生成する。フィールドスキーマ・データ源・計算式は build_stophigh_cards() と同一。
+    対象銘柄の選定ロジックは web/src/lib/classify.ts および app/pullback/page.tsx の
+    フィルタ条件と完全一致させる。
+    出力先: data/jquants/popular_cards.json と web/public/data/popular_cards.json
+    """
+    POPULAR_FILE = APPEARANCE_FILE.parent / "popular.json"
+    if not POPULAR_FILE.exists():
+        print(f"エラー: popular.json が見つかりません: {POPULAR_FILE}")
+        raise SystemExit(1)
+    if not META_FILE.exists():
+        print(f"エラー: meta.json が見つかりません: {META_FILE}")
+        raise SystemExit(1)
+
+    popular_data = json.loads(POPULAR_FILE.read_text(encoding="utf-8"))
+    rows: list[dict] = popular_data["popular"]
+
+    excluded_file = Path(__file__).parent / "web" / "public" / "data" / "excluded.json"
+    excluded_codes: set[str] = set()
+    if excluded_file.exists():
+        try:
+            excluded_codes = {
+                e["code"] for e in json.loads(excluded_file.read_text(encoding="utf-8"))["excluded"]
+            }
+        except Exception:
+            pass
+
+    target_codes = {
+        r["code"]
+        for r in rows
+        if r["code"] not in excluded_codes
+        and r.get("turnover_50", 0) >= MIN_TURNOVER_50
+        and _pullback_classify(r) != "対象外"
+    }
+
+    meta = json.loads(META_FILE.read_text(encoding="utf-8"))
+    stocks_meta: dict[str, dict] = meta["stocks"]
+
+    date_str, code_to_close, code_to_va = _latest_daily_close()
+
+    # --- appearance.json から出現回数・S高回数を取得 ---
+    appearance_by_code: dict[str, dict] = {}
+    if APPEARANCE_FILE.exists():
+        try:
+            app_data = json.loads(APPEARANCE_FILE.read_text(encoding="utf-8"))
+            appearance_by_code = app_data.get("by_code", {})
+        except Exception:
+            pass
+
+    # --- 直近60営業日の日足収集 ---
+    json_files = sorted(DAILY_DIR.glob("*.json"))
+    recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
+
+    candles_map: dict[str, list] = {code: [] for code in target_codes}
+    volumes_map: dict[str, list] = {code: [] for code in target_codes}
+    limitup_touch_map: dict[str, list] = {code: [] for code in target_codes}
+    limitup_closed_map: dict[str, list] = {code: [] for code in target_codes}
+
+    for path in recent_files:
+        day_date = path.stem
+        data = json.loads(path.read_text(encoding="utf-8"))
+        for code in target_codes:
+            rec = data.get(code)
+            if rec is None:
+                continue
+            if rec.get("UL") == "1":
+                try:
+                    h_val = float(rec.get("H") or 0)
+                    c_val = float(rec.get("C") or 0)
+                except (TypeError, ValueError):
+                    h_val, c_val = 0.0, 0.0
+                if h_val > 0 and c_val == h_val:
+                    limitup_closed_map[code].append(day_date)
+                else:
+                    limitup_touch_map[code].append(day_date)
+            o, h, l, c, vo = rec.get("O"), rec.get("H"), rec.get("L"), rec.get("C"), rec.get("Vo")
+            if any(v is None or v == "" for v in [o, h, l, c, vo]):
+                continue
+            try:
+                candles_map[code].append({
+                    "time": day_date,
+                    "open": float(o),
+                    "high": float(h),
+                    "low": float(l),
+                    "close": float(c),
+                })
+                volumes_map[code].append({
+                    "time": day_date,
+                    "value": float(vo),
+                })
+            except (TypeError, ValueError):
+                pass
+
+    # --- 出力データ構築（回転率降順、popular.json と同じ並び） ---
+    popular_cards: list[dict] = []
+    for code in target_codes:
+        stock = stocks_meta.get(code)
+        if stock is None:
+            continue
+        shares = get_adjusted_shares(code, date_str, stock, split_events)
+        if shares is None:
+            continue
+        c = code_to_close.get(code)
+        if c is None:
+            continue
+        mktcap = c * shares
+        va = code_to_va.get(code)
+        if va is None or mktcap == 0:
+            continue
+        turnover_pct = va / mktcap * 100
+
+        candles = candles_map.get(code, [])
+        if len(candles) >= 2:
+            change = round(candles[-1]["close"] - candles[-2]["close"])
+            change_pct = round((change / candles[-2]["close"]) * 100, 2)
+        else:
+            change = 0
+            change_pct = 0.0
+
+        market_raw = stock.get("market", "")
+        market = _MARKET_NAME_MAP.get(market_raw, market_raw)
+        sector = stock.get("sector33", "")
+
+        touch_dates = limitup_touch_map.get(code, [])
+        closed_dates = limitup_closed_map.get(code, [])
+        is_limit_up = date_str in touch_dates or date_str in closed_dates
+        app_entry = appearance_by_code.get(code, {})
+
+        popular_cards.append({
+            "code": code,
+            "name": stock.get("name", ""),
+            "market": market,
+            "sector": sector,
+            "creditType": "-",
+            "price": c,
+            "change": change,
+            "changePct": change_pct,
+            "marketCap": _format_mktcap(mktcap),
+            "va": va,
+            "mktcap": mktcap,
+            "turnover": round(turnover_pct, 2),
+            "isLimitUp": is_limit_up,
+            "touchedOnlyDates": touch_dates,
+            "closedLimitUpDates": closed_dates,
+            "occCount": int(app_entry.get("turnover_50", 0)),
+            "stophighCount": int(app_entry.get("stophigh_50", 0)),
+            "candles": candles,
+            "volumes": volumes_map.get(code, []),
+        })
+
+    popular_cards.sort(key=lambda card: card["turnover"], reverse=True)
+
+    output = {
+        "_meta": {
+            "generated": datetime.datetime.now().isoformat(),
+            "date": date_str,
+            "count": len(popular_cards),
+        },
+        "ranking": popular_cards,
+    }
+
+    json_str = json.dumps(output, ensure_ascii=False)
+
+    POPULAR_CARDS_FILE_DATA.parent.mkdir(parents=True, exist_ok=True)
+    POPULAR_CARDS_FILE_DATA.write_text(json_str, encoding="utf-8")
+
+    POPULAR_CARDS_FILE_WEB.parent.mkdir(parents=True, exist_ok=True)
+    POPULAR_CARDS_FILE_WEB.write_text(json_str, encoding="utf-8")
+
+    file_kb = POPULAR_CARDS_FILE_WEB.stat().st_size / 1024
+    print(f"popular_cards.json 出力: {len(popular_cards)}件 / {file_kb:.1f}KB")
+    print(f"  -> {POPULAR_CARDS_FILE_DATA}")
+    print(f"  -> {POPULAR_CARDS_FILE_WEB}")
+
+
 if __name__ == "__main__":
     import sys
     split_events = build_split_events(sorted(DAILY_DIR.glob("*.json")))
@@ -1318,5 +1550,7 @@ if __name__ == "__main__":
         build_ranking_cards(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_stophigh_cards":
         build_stophigh_cards(split_events)
+    elif len(sys.argv) > 1 and sys.argv[1] == "build_popular_cards":
+        build_popular_cards(split_events)
     else:
         main(split_events)

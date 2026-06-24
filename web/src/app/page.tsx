@@ -1,12 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { CardStock } from "../components/TurnoverCard";
+import { Row, StateLabel, STATE_CONFIG, classify, MIN_TURNOVER_50 } from "@/lib/classify";
 
 const TurnoverCardList = dynamic(
   () => import("../components/TurnoverCardList"),
   { ssr: false }
 );
+const TurnoverCard = dynamic(() => import("../components/TurnoverCard"), {
+  ssr: false,
+});
+
+const LAZY_CHART = true; // falseで全描画に切替
 
 type Excluded = {
   code: string;
@@ -14,13 +20,84 @@ type Excluded = {
   reason: string;
 };
 
+type PullbackItem = { row: Row; card: CardStock };
+
+// ビューポートに入るまでチャート描画を遅延させるラッパー（TurnoverCard自体は無改修）
+function LazyCard({
+  item,
+  label,
+  headerBg,
+}: {
+  item: PullbackItem;
+  label: StateLabel;
+  headerBg: string;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(!LAZY_CHART);
+
+  useEffect(() => {
+    if (!LAZY_CHART || visible) return;
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [visible]);
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <span
+        className={headerBg}
+        style={{
+          position: "absolute",
+          top: 6,
+          left: 6,
+          zIndex: 1,
+          fontSize: 10,
+          fontWeight: 700,
+          color: "#fff",
+          borderRadius: 4,
+          padding: "2px 6px",
+        }}
+      >
+        {label}
+      </span>
+      {visible ? (
+        <TurnoverCard stock={item.card} />
+      ) : (
+        <div
+          style={{
+            height: 360,
+            marginBottom: 12,
+            background: "#F4F6FB",
+            border: "1px solid #DDE1EC",
+            borderRadius: 4,
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const [rows, setRows] = useState<CardStock[] | null>(null);
   const [shRows, setShRows] = useState<CardStock[] | null>(null);
   const [meta, setMeta] = useState<{ date?: string } | null>(null);
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [err, setErr] = useState<string | null>(null);
-  const [mode, setMode] = useState<"turnover" | "stophigh">("turnover");
+  const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("turnover");
+
+  const [pullbackSections, setPullbackSections] = useState<Map<StateLabel, PullbackItem[]> | null>(null);
+  const [pullbackMeta, setPullbackMeta] = useState<{ date?: string } | null>(null);
+  const [pullbackFetched, setPullbackFetched] = useState(false);
 
   // 信用区分の表示ラベルへのマッピング（文字列完全一致）
   const CREDIT_LABEL: Record<string, string> = {
@@ -70,10 +147,67 @@ export default function Home() {
       .catch((e) => setErr(String(e)));
   }, []);
 
+  // pullback: mode切替時に初回のみ取得（/pullback と完全一致するフィルタ・ソート）
+  useEffect(() => {
+    if (mode !== "pullback" || pullbackFetched) return;
+    Promise.all([
+      fetch("/data/popular.json").then((r) => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }),
+      fetch("/data/excluded.json")
+        .then((r) => {
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.json();
+        })
+        .catch(() => ({ excluded: [] })),
+      fetch("/data/popular_cards.json").then((r) => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      }),
+    ])
+      .then(([popularData, excludedData, cardsData]) => {
+        setPullbackMeta(popularData._meta);
+        const excludedCodes = new Set<string>(
+          (excludedData.excluded ?? []).map((e: Excluded) => e.code)
+        );
+        const cardByCode = new Map<string, CardStock>(
+          (cardsData.ranking as CardStock[]).map((c) => [c.code, c])
+        );
+
+        const base = (popularData.popular as Row[]).filter(
+          (r) =>
+            !excludedCodes.has(r.code) &&
+            r.turnover_50 >= MIN_TURNOVER_50 &&
+            classify(r) !== "対象外"
+        );
+
+        const map = new Map<StateLabel, PullbackItem[]>(
+          STATE_CONFIG.map((s) => [s.label, []])
+        );
+        for (const row of base) {
+          const card = cardByCode.get(row.code);
+          if (!card) continue; // 生成漏れ（通常発生しない）
+          map.get(classify(row))!.push({ row, card });
+        }
+        for (const items of map.values()) {
+          items.sort((a, b) => (b.row.turnover_50 ?? 0) - (a.row.turnover_50 ?? 0));
+        }
+
+        setPullbackSections(map);
+        setPullbackFetched(true);
+      })
+      .catch((e) => setErr(String(e)));
+  }, [mode, pullbackFetched]);
+
   if (err) return <pre className="p-4 text-red-600">ERROR: {err}</pre>;
   if (!rows) return <div className="p-4">loading...</div>;
 
-  const displayRows = mode === "turnover" ? rows : shRows ?? [];
+  const displayRows = mode === "turnover" ? rows : mode === "stophigh" ? shRows ?? [] : [];
+  const pullbackTotal = pullbackSections
+    ? [...pullbackSections.values()].reduce((sum, items) => sum + items.length, 0)
+    : 0;
+  const headerDate = mode === "pullback" ? pullbackMeta?.date : meta?.date;
 
   return (
     <div className="p-3">
@@ -93,10 +227,14 @@ export default function Home() {
             marginBottom: 8,
           }}
         >
-          {meta?.date}
+          {headerDate}
           <span style={{ margin: "0 4px" }}>·</span>
           <span style={{ fontWeight: 600 }}>
-            {mode === "turnover" ? "TOP30" : `${displayRows.length}件`}
+            {mode === "turnover"
+              ? "TOP30"
+              : mode === "pullback"
+                ? `${pullbackTotal}件`
+                : `${displayRows.length}件`}
           </span>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -138,10 +276,54 @@ export default function Home() {
           >
             Stop High
           </button>
+          <button
+            onClick={() => setMode("pullback")}
+            style={{
+              flex: 1,
+              padding: "9px 0",
+              borderRadius: 9999,
+              fontFamily: "ui-monospace, monospace",
+              fontVariantNumeric: "tabular-nums",
+              fontSize: 14,
+              textAlign: "center",
+              transition: "background 0.15s, color 0.15s, border-color 0.15s",
+              background: mode === "pullback" ? "#3c4043" : "#282a2d",
+              border: `1px solid ${mode === "pullback" ? "#5f6368" : "#3c4043"}`,
+              color: mode === "pullback" ? "#e8eaed" : "#8e8e93",
+              fontWeight: mode === "pullback" ? 600 : 500,
+            }}
+          >
+            Pullback
+          </button>
         </div>
       </div>
 
-      <TurnoverCardList stocks={displayRows} />
+      {mode === "pullback" ? (
+        !pullbackSections ? (
+          <div className="p-4">loading...</div>
+        ) : (
+          STATE_CONFIG.map(({ label, headerBg }) => {
+            const items = pullbackSections.get(label) ?? [];
+            if (items.length === 0) return null;
+            return (
+              <div key={label} className="mb-4">
+                <div
+                  className={`py-1 ${headerBg} text-white text-xs font-bold flex items-center gap-2 rounded-t`}
+                  style={{ paddingLeft: 10, paddingRight: 10 }}
+                >
+                  <span>{label}</span>
+                  <span className="font-normal text-[10px] opacity-80">{items.length} 件</span>
+                </div>
+                {items.map((item) => (
+                  <LazyCard key={item.row.code} item={item} label={label} headerBg={headerBg} />
+                ))}
+              </div>
+            );
+          })
+        )
+      ) : (
+        <TurnoverCardList stocks={displayRows} />
+      )}
 
       {excluded.length > 0 && (
         <div className="mt-8 pt-4 border-t border-gray-200">
