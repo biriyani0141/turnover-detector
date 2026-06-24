@@ -76,5 +76,6 @@ jobs:
           git add web/public/data/ data/jquants/
           if ! git diff --staged --quiet; then
             git commit -m "data: kyoche update $(date -u +%Y-%m-%d)"
+            git pull --rebase origin master
             git push
           fi
