@@ -863,7 +863,8 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
     """
     appearance.json の by_code から turnover/stophigh窓スコアを集め、
     銘柄名・時価総額を付与して data/jquants/popular.json を生成する。
-    turnover_200==0 かつ stophigh_200==0 の銘柄は除外（ノイズ軽減）。
+    採用条件: turnover_200>0 OR stophigh_200>0 OR 時価総額ランク<=100。
+    時価総額ランクは当日終値(raw close)×分割調整後株数の降順で全銘柄に付与する。
     """
     POPULAR_FILE = APPEARANCE_FILE.parent / "popular.json"
 
@@ -882,12 +883,37 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
 
     returns_all = calc_returns()
 
+    # 時価総額ランクは上場銘柄全体(meta.stocks収録分)に付与する。
+    # turnover/stophigh が一度もウィンドウ出現していない銘柄（by_code未収録、
+    # 例: SBG等の超大型株で回転率%が常に低い銘柄）も候補に含めるため。
+    # mktcap = 当日終値(raw close) × 分割調整後株数、code完全一致でjoin。
+    mktcap_by_code: dict[str, float] = {}
+    for code in stocks:
+        stock = stocks[code]
+        c = daily.get(code, {}).get("C")
+        adj_shares = get_adjusted_shares(code, date_str, stock, split_events)
+        if c is not None and adj_shares is not None:
+            try:
+                mktcap_by_code[code] = float(c) * adj_shares
+            except (TypeError, ValueError):
+                pass
+
+    mktcap_rank: dict[str, int] = {
+        code: i + 1
+        for i, (code, _) in enumerate(
+            sorted(mktcap_by_code.items(), key=lambda kv: kv[1], reverse=True)
+        )
+    }
+    top100_codes = {code for code, rank in mktcap_rank.items() if rank <= 100}
+
     popular: list[dict] = []
     skipped = 0
-    for code, entry in by_code.items():
+    for code in by_code.keys() | top100_codes:
+        entry = by_code.get(code, {})
         t200 = entry.get("turnover_200", 0)
         s200 = entry.get("stophigh_200", 0)
-        if t200 == 0 and s200 == 0:
+        rank = mktcap_rank.get(code)
+        if t200 == 0 and s200 == 0 and (rank is None or rank > 100):
             skipped += 1
             continue
 
@@ -895,14 +921,8 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
         name = stock.get("name", "")
 
         c = daily.get(code, {}).get("C")
-        adj_shares = get_adjusted_shares(code, date_str, stock, split_events)
-        if c is not None and adj_shares is not None:
-            try:
-                mktcap_oku = round(float(c) * adj_shares / 1e8, 1)
-            except (TypeError, ValueError):
-                mktcap_oku = None
-        else:
-            mktcap_oku = None
+        mktcap = mktcap_by_code.get(code)
+        mktcap_oku = round(mktcap / 1e8, 1) if mktcap is not None else None
 
         ret = returns_all.get(code)
         popular.append({
