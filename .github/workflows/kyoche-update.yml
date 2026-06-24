@@ -34,6 +34,7 @@ jobs:
           if [ -f data/jquants/meta.json ]; then
             python jquants_meta.py update
           else
+            python jquants_meta.py step1
             python jquants_meta.py full
           fi
       - name: Build appearance
