@@ -79,3 +79,53 @@ export function classify(r: Row): StateLabel {
 
   return "対象外";
 }
+
+// ─── 4ゲート判定（大型/大相場/初動/常連・OR結合） ─────────────────────────────
+export const GATE_LABELS = ["大型", "大相場", "初動", "常連"] as const;
+export type GateLabel = typeof GATE_LABELS[number];
+
+// 渡された母集団（excluded適用後）内で mktcap_oku 降順にランク付けする（null は対象外）
+export function computeMktcapRanks(rows: Row[]): Map<string, number> {
+  const ranked = rows
+    .filter((r): r is Row & { mktcap_oku: number } => r.mktcap_oku !== null)
+    .slice()
+    .sort((a, b) => b.mktcap_oku - a.mktcap_oku);
+  const ranks = new Map<string, number>();
+  ranked.forEach((r, i) => ranks.set(r.code, i + 1));
+  return ranks;
+}
+
+// jquants_ranking.py の _pullback_gates() と同一ロジック
+export function computeGates(r: Row, mktcapRank: number | null): GateLabel[] {
+  const classification = classify(r);
+  const ret1y = r.ret_1y ?? -Infinity;
+  const gates: GateLabel[] = [];
+
+  if (
+    mktcapRank !== null &&
+    mktcapRank <= 100 &&
+    ret1y >= 100 &&
+    ["継続", "短期押し目", "調整", "調整予備軍"].includes(classification)
+  ) {
+    gates.push("大型");
+  }
+
+  if (
+    ret1y >= 200 &&
+    classification !== "失速" &&
+    classification !== "対象外" &&
+    r.turnover_50 >= 10
+  ) {
+    gates.push("大相場");
+  }
+
+  if (classification === "初動・再加速") {
+    gates.push("初動");
+  }
+
+  if (r.turnover_50 >= MIN_TURNOVER_50 && classification !== "対象外") {
+    gates.push("常連");
+  }
+
+  return gates;
+}

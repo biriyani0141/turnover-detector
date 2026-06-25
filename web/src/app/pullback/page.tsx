@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import PullbackList from "./PullbackList";
-import { MIN_TURNOVER_50, Row } from "@/lib/classify";
+import { Row, computeMktcapRanks, computeGates } from "@/lib/classify";
 
 type Excluded = { code: string; name: string; reason: string };
 
@@ -25,8 +25,10 @@ export default async function PullbackPage() {
   }
 
   const excludedCodes = new Set(excluded.map((e) => e.code));
-  const base = popularData.popular.filter(
-    (r) => !excludedCodes.has(r.code) && r.turnover_50 >= MIN_TURNOVER_50
+  const population = popularData.popular.filter((r) => !excludedCodes.has(r.code));
+  const mktcapRanks = computeMktcapRanks(population);
+  const base = population.filter(
+    (r) => computeGates(r, mktcapRanks.get(r.code) ?? null).length > 0
   );
 
   return <PullbackList base={base} meta={popularData._meta} />;

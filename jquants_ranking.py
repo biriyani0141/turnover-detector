@@ -1383,12 +1383,50 @@ def _pullback_classify(row: dict) -> str:
     return "対象外"
 
 
+def _pullback_mktcap_ranks(rows: list[dict]) -> dict[str, int]:
+    """渡された母集団内で mktcap_oku 降順にランク付けする（null は対象外）。"""
+    ranked = sorted(
+        (r for r in rows if r.get("mktcap_oku") is not None),
+        key=lambda r: -r["mktcap_oku"],
+    )
+    return {r["code"]: i + 1 for i, r in enumerate(ranked)}
+
+
+def _pullback_gates(row: dict, classification: str, mktcap_rank: int | None) -> list[str]:
+    """4ゲート（大型/大相場/初動/常連）の通過判定。web/src/lib/classify.ts の同名ロジックと同一。"""
+    ret_1y = row.get("ret_1y") if row.get("ret_1y") is not None else -float("inf")
+    gates: list[str] = []
+
+    if (
+        mktcap_rank is not None
+        and mktcap_rank <= 100
+        and ret_1y >= 100
+        and classification in ("継続", "短期押し目", "調整", "調整予備軍")
+    ):
+        gates.append("大型")
+
+    if (
+        ret_1y >= 200
+        and classification != "失速"
+        and classification != "対象外"
+        and row.get("turnover_50", 0) >= 10
+    ):
+        gates.append("大相場")
+
+    if classification == "初動・再加速":
+        gates.append("初動")
+
+    if row.get("turnover_50", 0) >= MIN_TURNOVER_50 and classification != "対象外":
+        gates.append("常連")
+
+    return gates
+
+
 def build_popular_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
     """
-    /pullback 表示対象銘柄（classify()!=対象外 かつ turnover_50>=20、除外銘柄を除く）の
+    /pullback 表示対象銘柄（大型/大相場/初動/常連の4ゲートをOR結合、除外銘柄を除く）の
     カード用JSONを生成する。フィールドスキーマ・データ源・計算式は build_stophigh_cards() と同一。
-    対象銘柄の選定ロジックは web/src/lib/classify.ts および app/pullback/page.tsx の
-    フィルタ条件と完全一致させる。
+    ゲート判定ロジックは web/src/lib/classify.ts の同名関数と一致させる。
     出力先: data/jquants/popular_cards.json と web/public/data/popular_cards.json
     """
     POPULAR_FILE = APPEARANCE_FILE.parent / "popular.json"
@@ -1412,13 +1450,17 @@ def build_popular_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
         except Exception:
             pass
 
-    target_codes = {
-        r["code"]
-        for r in rows
-        if r["code"] not in excluded_codes
-        and r.get("turnover_50", 0) >= MIN_TURNOVER_50
-        and _pullback_classify(r) != "対象外"
-    }
+    population = [r for r in rows if r["code"] not in excluded_codes]
+    mktcap_ranks = _pullback_mktcap_ranks(population)
+
+    gates_by_code: dict[str, list[str]] = {}
+    for r in population:
+        classification = _pullback_classify(r)
+        gates = _pullback_gates(r, classification, mktcap_ranks.get(r["code"]))
+        if gates:
+            gates_by_code[r["code"]] = gates
+
+    target_codes = set(gates_by_code.keys())
 
     meta = json.loads(META_FILE.read_text(encoding="utf-8"))
     stocks_meta: dict[str, dict] = meta["stocks"]
@@ -1531,6 +1573,7 @@ def build_popular_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "closedLimitUpDates": closed_dates,
             "occCount": int(app_entry.get("turnover_50", 0)),
             "stophighCount": int(app_entry.get("stophigh_50", 0)),
+            "gates": gates_by_code.get(code, []),
             "candles": candles,
             "volumes": volumes_map.get(code, []),
         })
