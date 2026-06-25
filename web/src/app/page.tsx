@@ -2,7 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import PickupClient from "./PickupClient";
 import type { CardStock } from "../components/TurnoverCard";
-import { Row, StateLabel, STATE_CONFIG, classify, MIN_TURNOVER_50 } from "@/lib/classify";
+import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGates } from "@/lib/classify";
 
 type Excluded = {
   code: string;
@@ -80,11 +80,10 @@ export default async function Home() {
     popularCardsData.ranking.map((c) => [c.code, c])
   );
 
-  const base = popularData.popular.filter(
-    (r) =>
-      !excludedCodes.has(r.code) &&
-      r.turnover_50 >= MIN_TURNOVER_50 &&
-      classify(r) !== "対象外"
+  const population = popularData.popular.filter((r) => !excludedCodes.has(r.code));
+  const mktcapRanks = computeMktcapRanks(population);
+  const base = population.filter(
+    (r) => computeGates(r, mktcapRanks.get(r.code) ?? null).length > 0
   );
 
   const pullbackSections = new Map<StateLabel, PullbackItem[]>(
