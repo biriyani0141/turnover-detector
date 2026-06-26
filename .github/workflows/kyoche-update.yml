@@ -49,6 +49,10 @@ jobs:
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python jquants_ranking.py build_window_scores
+      - name: Build chart data
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python build_chart_data.py --bulk
       - name: Build ranking
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
@@ -73,7 +77,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add web/public/data/ data/jquants/
+          git add web/public/data/ web/public/chart-data/ data/jquants/
           if ! git diff --staged --quiet; then
             git commit -m "data: kyoche update $(date -u +%Y-%m-%d)"
             git pull --rebase origin master
