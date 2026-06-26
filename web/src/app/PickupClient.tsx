@@ -46,29 +46,13 @@ function LazyCard({
   }, [visible]);
 
   return (
-    <div ref={ref} style={{ position: "relative" }}>
-      <span
-        className={headerBg}
-        style={{
-          position: "absolute",
-          top: 6,
-          right: 6,
-          zIndex: 1,
-          fontSize: 10,
-          fontWeight: 700,
-          color: "#fff",
-          borderRadius: 4,
-          padding: "2px 6px",
-        }}
-      >
-        {label}
-      </span>
+    <div ref={ref}>
       {visible ? (
-        <TurnoverCard stock={item.card} />
+        <TurnoverCard stock={item.card} badge={{ text: label, bgClass: headerBg }} />
       ) : (
         <div
           style={{
-            height: 192,
+            height: 226,
             marginBottom: 12,
             background: "#F4F6FB",
             border: "1px solid #DDE1EC",
