@@ -52,7 +52,7 @@ function LazyCard({
       ) : (
         <div
           style={{
-            height: 226,
+            height: 258,
             marginBottom: 12,
             background: "#F4F6FB",
             border: "1px solid #DDE1EC",

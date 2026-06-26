@@ -84,7 +84,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
       handleScroll: false,
       handleScale: false,
       width: chartRef.current.offsetWidth,
-      height: chartRef.current.offsetHeight || 170,
+      height: chartRef.current.offsetHeight || 200,
     });
 
     // ローソク足シリーズ（価格軸：整数表示）
@@ -181,7 +181,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
       if (chartRef.current) {
         chart.applyOptions({
           width: chartRef.current.offsetWidth,
-          height: chartRef.current.offsetHeight || 170,
+          height: chartRef.current.offsetHeight || 200,
         });
       }
     });
@@ -196,7 +196,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
   return (
     <div
       style={{
-        height: 226,
+        height: 258,
         background: "#FFFFFF",
         border: "1px solid #DDE1EC",
         borderRadius: 4,
