@@ -84,7 +84,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       handleScroll: false,
       handleScale: false,
       width: chartRef.current.offsetWidth,
-      height: chartRef.current.offsetHeight || 248,
+      height: chartRef.current.offsetHeight || 150,
     });
 
     // ローソク足シリーズ（価格軸：整数表示）
@@ -181,7 +181,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
       if (chartRef.current) {
         chart.applyOptions({
           width: chartRef.current.offsetWidth,
-          height: chartRef.current.offsetHeight || 248,
+          height: chartRef.current.offsetHeight || 150,
         });
       }
     });
@@ -193,18 +193,10 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
     };
   }, [stock]);
 
-  // タグ並び順: コード / 市場 / 信用or貸借 / 業種
-  const tags = [
-    stock.code.slice(0, 4),
-    stock.market,
-    stock.creditType !== "-" ? stock.creditType : null,
-    stock.sector,
-  ].filter(Boolean) as string[];
-
   return (
     <div
       style={{
-        height: 360,
+        height: 192,
         background: "#FFFFFF",
         border: "1px solid #DDE1EC",
         borderRadius: 4,
@@ -216,37 +208,23 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
         fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
       }}
     >
-      {/* 情報エリア（固定高さ） */}
+      {/* 情報エリア（1行） */}
       <div
         style={{
-          flex: "0 0 88px",
+          flex: "0 0 auto",
           background: "#F4F6FB",
-          padding: "8px 14px",
+          padding: "5px 10px",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 6,
           borderBottom: "1px solid #DDE1EC",
           overflow: "hidden",
+          fontVariantNumeric: "tabular-nums",
         }}
       >
-        {/* 行1: 銘柄名（単独・フル幅・ellipsis） */}
-        <div
-          style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: "#131722",
-            letterSpacing: "-0.01em",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {stock.name}
-        </div>
-
-        {/* 行2: コード/市場/信用/業種 タグ */}
-        <div style={{ display: "flex", gap: 3, flexWrap: "wrap", lineHeight: 1 }}>
-          {tags.map((t) => (
+        {/* コード・市場タグ */}
+        <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+          {[stock.code.slice(0, 4), stock.market].filter(Boolean).map((t) => (
             <span
               key={t}
               style={{
@@ -257,6 +235,7 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
                 borderRadius: 3,
                 padding: "1px 4px",
                 background: "rgba(112,122,138,0.06)",
+                lineHeight: 1.4,
               }}
             >
               {t}
@@ -264,70 +243,59 @@ export default function TurnoverCard({ stock }: { stock: CardStock }) {
           ))}
         </div>
 
-        {/* 行3: 左=株価・前日比・S高バッジ／右=回転率・時価総額・出現:S高 */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 8 }}>
-          <div
+        {/* 株価 */}
+        <span style={{ fontSize: 14, fontWeight: 700, color, letterSpacing: "-0.02em", flexShrink: 0 }}>
+          {fmtPrice(stock.price)}
+        </span>
+
+        {/* 前日比 */}
+        <span style={{ fontSize: 11, fontWeight: 600, color, letterSpacing: "-0.01em", flexShrink: 0 }}>
+          {sign}{fmtNum(stock.change)} ({sign}{stock.changePct.toFixed(2)}%)
+        </span>
+
+        {/* S高バッジ */}
+        {isLimitUp && (
+          <span
             style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: 6,
-              lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-              letterSpacing: "-0.02em",
+              fontSize: 9,
+              fontWeight: 700,
+              color: "#FFFFFF",
+              background: "#E03A2F",
+              borderRadius: 3,
+              padding: "1px 4px",
+              letterSpacing: "0.02em",
               flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: 18, fontWeight: 700, color }}>
-              {fmtPrice(stock.price)}
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color, letterSpacing: "-0.01em" }}>
-              {sign}{fmtNum(stock.change)} ({sign}{stock.changePct.toFixed(2)}%)
-            </span>
-            {isLimitUp && (
-              <span
-                style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "#FFFFFF",
-                  background: "#E03A2F",
-                  borderRadius: 3,
-                  padding: "1px 5px",
-                  letterSpacing: "0.02em",
-                }}
-              >
-                S高
-              </span>
-            )}
-          </div>
+            S高
+          </span>
+        )}
 
-          <div style={{ display: "flex", gap: 10, lineHeight: 1, flexShrink: 0 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: "#707A8A", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                回転率
+        {/* スペーサー */}
+        <div style={{ flex: 1, minWidth: 4 }} />
+
+        {/* 右側指標3カラム */}
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+            <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>回転率</span>
+            <span style={{ fontSize: 11, fontWeight: 700, color: "#f5a623", letterSpacing: "-0.02em", lineHeight: 1 }}>
+              {stock.turnover.toFixed(2)}%
+            </span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+            <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>時価総額</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "#9098A9", letterSpacing: "-0.02em", lineHeight: 1 }}>
+              {stock.marketCap}
+            </span>
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+            <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>出現:S高</span>
+            <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1 }}>
+              <span style={{ color: "#707A8A" }}>{occCount}:</span>
+              <span style={{ color: stophighCount >= 1 ? "#F5A623" : "#707A8A", fontWeight: stophighCount >= 1 ? 700 : 500 }}>
+                {stophighCount}
               </span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#B5730F", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
-                {stock.turnover.toFixed(2)}%
-              </span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: "#707A8A", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                時価総額
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
-                {stock.marketCap}
-              </span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: "#707A8A", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                出現:S高
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 500, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
-                <span style={{ color: "#707A8A" }}>{occCount}:</span>
-                <span style={{ color: stophighCount >= 1 ? "#F5A623" : "#707A8A", fontWeight: stophighCount >= 1 ? 700 : 500 }}>
-                  {stophighCount}
-                </span>
-              </span>
-            </div>
+            </span>
           </div>
         </div>
       </div>
