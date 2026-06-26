@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
 import { PageHeader } from "../_components/PageHeader";
 import { STATE_CONFIG, StateLabel, Row, classify } from "@/lib/classify";
+import ExportMenu from "@/components/ExportMenu";
 
 // ─── 時価総額フィルタ ─────────────────────────────────────────────────────────
 const CAP_FILTERS = [
@@ -101,32 +102,36 @@ export default function PullbackList({
       </div>
 
       {/* チャート生成 */}
-      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", paddingLeft: 16, paddingRight: 16 }}>
-        <button
-          type="button"
-          onClick={() => {
-            const codes = [...sections.entries()]
-              .filter(([label]) => label !== "対象外")
-              .flatMap(([, rows]) => rows)
-              .map((r) => r.code)
-              .join(",");
-            window.open(`/chart?codes=${codes}`, "_blank");
-          }}
-          style={{
-            padding: "6px 14px",
-            borderRadius: 6,
-            fontSize: 12,
-            fontWeight: 600,
-            background: "#3c4043",
-            border: "1px solid #5f6368",
-            color: "#e8eaed",
-            cursor: "pointer",
-            fontFamily: "ui-monospace, monospace",
-          }}
-        >
-          チャート生成
-        </button>
-      </div>
+      {(() => {
+        const exportCodes = [...sections.entries()]
+          .filter(([label]) => label !== "対象外")
+          .flatMap(([, rows]) => rows)
+          .map((r) => r.code);
+        return (
+          <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8, paddingLeft: 16, paddingRight: 16 }}>
+            <ExportMenu codes={exportCodes} />
+            <button
+              type="button"
+              onClick={() => {
+                window.open(`/chart?codes=${exportCodes.join(",")}`, "_blank");
+              }}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                background: "#3c4043",
+                border: "1px solid #5f6368",
+                color: "#e8eaed",
+                cursor: "pointer",
+                fontFamily: "ui-monospace, monospace",
+              }}
+            >
+              チャート生成
+            </button>
+          </div>
+        );
+      })()}
 
       {/* 状態セクション */}
       {STATE_CONFIG.map(({ label, headerBg }) => {

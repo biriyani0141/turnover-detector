@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
 import { PageHeader } from "../_components/PageHeader";
+import ExportMenu from "@/components/ExportMenu";
 
 type Row = {
   code: string;
@@ -209,7 +210,8 @@ export default function PopularList({
       </div>
 
       {/* チャート生成 */}
-      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", paddingLeft: 16, paddingRight: 16 }}>
+      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8, paddingLeft: 16, paddingRight: 16 }}>
+        <ExportMenu codes={rows.map((r) => r.code)} />
         <button
           type="button"
           onClick={() => {

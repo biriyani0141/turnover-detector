@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import TurnoverCard, { type CardStock } from "../components/TurnoverCard";
 import TurnoverCardList from "../components/TurnoverCardList";
 import { Row, StateLabel, STATE_CONFIG } from "@/lib/classify";
+import ExportMenu from "../components/ExportMenu";
 
 const LAZY_CHART = true; // falseで全描画に切替
 
@@ -246,7 +247,32 @@ export default function PickupClient({
           })}
         </>
       ) : (
-        <TurnoverCardList stocks={displayRows} />
+        <>
+          <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8 }}>
+            <ExportMenu codes={displayRows.map((r) => r.code)} />
+            <button
+              type="button"
+              onClick={() => {
+                const codes = displayRows.map(r => r.code).join(",");
+                window.open(`/chart?codes=${codes}`, "_blank");
+              }}
+              style={{
+                padding: "6px 14px",
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                background: "#3c4043",
+                border: "1px solid #5f6368",
+                color: "#e8eaed",
+                cursor: "pointer",
+                fontFamily: "ui-monospace, monospace",
+              }}
+            >
+              チャート生成
+            </button>
+          </div>
+          <TurnoverCardList stocks={displayRows} />
+        </>
       )}
 
       {excluded.length > 0 && (

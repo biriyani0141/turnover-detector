@@ -2,6 +2,7 @@
 import React, { useMemo, useState } from "react";
 import { Roboto_Mono } from "next/font/google";
 import { PageHeader } from "../_components/PageHeader";
+import ExportMenu from "@/components/ExportMenu";
 
 const robotoMono = Roboto_Mono({ weight: ["400", "700"], subsets: ["latin"] });
 
@@ -494,7 +495,8 @@ export default function RankingTabs({
       )}
 
       {/* チャート生成 */}
-      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", paddingLeft: 16, paddingRight: 16 }}>
+      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8, paddingLeft: 16, paddingRight: 16 }}>
+        <ExportMenu codes={displayRows.map((r) => r.code)} />
         <button
           type="button"
           onClick={() => {
