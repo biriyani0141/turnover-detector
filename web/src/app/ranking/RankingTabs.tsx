@@ -493,6 +493,30 @@ export default function RankingTabs({
         </>
       )}
 
+      {/* チャート生成 */}
+      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", paddingLeft: 16, paddingRight: 16 }}>
+        <button
+          type="button"
+          onClick={() => {
+            const codes = displayRows.map((r) => r.code).join(",");
+            window.open(`/chart?codes=${codes}`, "_blank");
+          }}
+          style={{
+            padding: "6px 14px",
+            borderRadius: 6,
+            fontSize: 12,
+            fontWeight: 600,
+            background: "#3c4043",
+            border: "1px solid #5f6368",
+            color: "#e8eaed",
+            cursor: "pointer",
+            fontFamily: monoFont,
+          }}
+        >
+          チャート生成
+        </button>
+      </div>
+
       {/* テーブル */}
       <div style={{ paddingLeft: 4, paddingRight: 4 }}>
         <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>

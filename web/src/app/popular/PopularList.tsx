@@ -208,6 +208,30 @@ export default function PopularList({
         ))}
       </div>
 
+      {/* チャート生成 */}
+      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", paddingLeft: 16, paddingRight: 16 }}>
+        <button
+          type="button"
+          onClick={() => {
+            const codes = rows.map((r) => r.code).join(",");
+            window.open(`/chart?codes=${codes}`, "_blank");
+          }}
+          style={{
+            padding: "6px 14px",
+            borderRadius: 6,
+            fontSize: 12,
+            fontWeight: 600,
+            background: "#3c4043",
+            border: "1px solid #5f6368",
+            color: "#e8eaed",
+            cursor: "pointer",
+            fontFamily: "ui-monospace, monospace",
+          }}
+        >
+          チャート生成
+        </button>
+      </div>
+
       {/* リスト */}
       <div style={{ backgroundColor: "#17171a" }}>
         <StockRowHeader sortKey={sortKey} sortDir={sortDir} onSort={handleSort} />
