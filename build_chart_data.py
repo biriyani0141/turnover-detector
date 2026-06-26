@@ -238,7 +238,7 @@ def build_all_chart_data() -> None:
     all_trading_days = [f.stem for f in json_files]
     print(f"  完了: 銘柄数={len(code_date_map)} 営業日数={len(all_trading_days)}")
 
-    # ── Step 2: 母集団取得（turnover_200 > 0）─────────────────────────────
+    # ── Step 2: 母集団取得（turnover_200 > 0 OR popular.json 掲載）────────
     print("Step2: 母集団取得...")
     if not APPEARANCE_FILE.exists():
         print("エラー: appearance.json が見つかりません")
@@ -248,10 +248,22 @@ def build_all_chart_data() -> None:
     by_code_app: dict[str, dict] = app_data.get("by_code", {})
     by_date_app: dict[str, list[str]] = app_data.get("by_date", {})
 
-    target_codes = [
+    target_codes_set = {
         code for code, entry in by_code_app.items()
         if entry.get("turnover_200", 0) > 0
-    ]
+    }
+
+    popular_file = Path(__file__).parent / "web" / "public" / "data" / "popular.json"
+    if popular_file.exists():
+        pop_data = json.loads(popular_file.read_text(encoding="utf-8"))
+        popular_codes = {e["code"] for e in pop_data.get("popular", [])}
+        added = popular_codes - target_codes_set
+        target_codes_set |= popular_codes
+        print(f"  popular.json から追加: {len(added)}件")
+    else:
+        print("  popular.json なし（スキップ）")
+
+    target_codes = list(target_codes_set)
     print(f"  対象銘柄数={len(target_codes)}")
 
     # ── Step 3: 共通リソース準備 ────────────────────────────────────────────
