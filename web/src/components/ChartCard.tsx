@@ -65,7 +65,7 @@ function fmtMktcap(n: number): string {
   }
 }
 
-export default function ChartCard({ data }: { data: ChartData }) {
+export default function ChartCard({ data, badge }: { data: ChartData; badge?: { text: string; bgClass: string } }) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   const { header, code, name, market, sector } = data;
@@ -106,7 +106,7 @@ export default function ChartCard({ data }: { data: ChartData }) {
       handleScroll: false,
       handleScale: false,
       width: chartRef.current.offsetWidth,
-      height: chartRef.current.offsetHeight || 248,
+      height: chartRef.current.offsetHeight || 200,
     });
 
     const candleSeries = chart.addCandlestickSeries({
@@ -200,7 +200,7 @@ export default function ChartCard({ data }: { data: ChartData }) {
       if (chartRef.current) {
         chart.applyOptions({
           width: chartRef.current.offsetWidth,
-          height: chartRef.current.offsetHeight || 248,
+          height: chartRef.current.offsetHeight || 200,
         });
       }
     });
@@ -212,12 +212,10 @@ export default function ChartCard({ data }: { data: ChartData }) {
     };
   }, [data]);
 
-  const tags = [code.slice(0, 4), market, sector].filter(Boolean) as string[];
-
   return (
     <div
       style={{
-        height: 360,
+        height: 258,
         background: "#FFFFFF",
         border: "1px solid #DDE1EC",
         borderRadius: 4,
@@ -229,112 +227,136 @@ export default function ChartCard({ data }: { data: ChartData }) {
         fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
       }}
     >
-      {/* 情報エリア（固定高さ） */}
+      {/* 情報エリア（2行） */}
       <div
         style={{
-          flex: "0 0 88px",
+          flex: "0 0 auto",
           background: "#F4F6FB",
-          padding: "8px 14px",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
           borderBottom: "1px solid #DDE1EC",
           overflow: "hidden",
         }}
       >
-        {/* 行1: 銘柄名 */}
+        {/* 行1: 銘柄名 + 状態バッジ */}
         <div
           style={{
-            fontSize: 14,
-            fontWeight: 700,
-            color: "#131722",
-            letterSpacing: "-0.01em",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
+            display: "flex",
+            alignItems: "center",
+            padding: "5px 10px 3px",
+            gap: 6,
           }}
         >
-          {name}
-        </div>
-
-        {/* 行2: コード/市場/業種 タグ */}
-        <div style={{ display: "flex", gap: 3, flexWrap: "wrap", lineHeight: 1 }}>
-          {tags.map(t => (
-            <span
-              key={t}
-              style={{
-                fontSize: 9,
-                fontWeight: 500,
-                color: "#707A8A",
-                border: "1px solid rgba(112,122,138,0.28)",
-                borderRadius: 3,
-                padding: "1px 4px",
-                background: "rgba(112,122,138,0.06)",
-              }}
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* 行3: 株価・前日比 / 右側指標 */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", gap: 8 }}>
-          <div
+          <span
             style={{
-              display: "flex",
-              alignItems: "baseline",
-              gap: 6,
-              lineHeight: 1,
-              fontVariantNumeric: "tabular-nums",
-              letterSpacing: "-0.02em",
-              flexShrink: 0,
+              fontSize: 16,
+              fontWeight: 700,
+              color: "#131722",
+              letterSpacing: "-0.01em",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              flex: 1,
+              minWidth: 0,
             }}
           >
-            <span style={{ fontSize: 18, fontWeight: 700, color }}>
-              {price !== null ? fmtPrice(price) : "-"}
+            {name}
+          </span>
+          {badge && (
+            <span
+              className={badge.bgClass}
+              style={{
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#fff",
+                borderRadius: 4,
+                padding: "2px 6px",
+                flexShrink: 0,
+              }}
+            >
+              {badge.text}
             </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color, letterSpacing: "-0.01em" }}>
-              {sign}{fmtNum(change)} ({sign}{changePct.toFixed(2)}%)
-            </span>
-            {isStopHigh && (
+          )}
+        </div>
+
+        {/* 行2: コード・市場タグ → 株価 → 前日比 → 指標3カラム */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "3px 10px 5px",
+            fontVariantNumeric: "tabular-nums",
+            overflow: "hidden",
+          }}
+        >
+          {/* コード・市場タグ */}
+          <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
+            {[code.slice(0, 4), market].filter(Boolean).map((t) => (
               <span
+                key={t}
                 style={{
-                  fontSize: 10,
-                  fontWeight: 700,
-                  color: "#FFFFFF",
-                  background: "#E03A2F",
+                  fontSize: 9,
+                  fontWeight: 500,
+                  color: "#707A8A",
+                  border: "1px solid rgba(112,122,138,0.28)",
                   borderRadius: 3,
-                  padding: "1px 5px",
-                  letterSpacing: "0.02em",
+                  padding: "1px 4px",
+                  background: "rgba(112,122,138,0.06)",
+                  lineHeight: 1.4,
                 }}
               >
-                S高
+                {t}
               </span>
-            )}
+            ))}
           </div>
 
-          <div style={{ display: "flex", gap: 10, lineHeight: 1, flexShrink: 0 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: "#707A8A", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                回転率
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#B5730F", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+          {/* 株価 */}
+          <span style={{ fontSize: 14, fontWeight: 700, color, letterSpacing: "-0.02em", flexShrink: 0 }}>
+            {price !== null ? fmtPrice(price) : "-"}
+          </span>
+
+          {/* 前日比 */}
+          <span style={{ fontSize: 11, fontWeight: 600, color, letterSpacing: "-0.01em", flexShrink: 0 }}>
+            {sign}{fmtNum(change)} ({sign}{changePct.toFixed(2)}%)
+          </span>
+
+          {/* S高バッジ */}
+          {isStopHigh && (
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: "#FFFFFF",
+                background: "#E03A2F",
+                borderRadius: 3,
+                padding: "1px 4px",
+                letterSpacing: "0.02em",
+                flexShrink: 0,
+              }}
+            >
+              S高
+            </span>
+          )}
+
+          {/* スペーサー */}
+          <div style={{ flex: 1, minWidth: 4 }} />
+
+          {/* 右側指標3カラム */}
+          <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+              <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>回転率</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#f5a623", letterSpacing: "-0.02em", lineHeight: 1 }}>
                 {header.turnoverPct !== null ? `${header.turnoverPct.toFixed(2)}%` : "-"}
               </span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: "#707A8A", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                時価総額
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+              <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>時価総額</span>
+              <span style={{ fontSize: 11, fontWeight: 500, color: "#9098A9", letterSpacing: "-0.02em", lineHeight: 1 }}>
                 {header.marketCap !== null ? fmtMktcap(header.marketCap) : "-"}
               </span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{ fontSize: 9, fontWeight: 500, color: "#707A8A", letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                出現:S高
-              </span>
-              <span style={{ fontSize: 12, fontWeight: 500, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
+              <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>出現:S高</span>
+              <span style={{ fontSize: 11, fontWeight: 500, letterSpacing: "-0.02em", lineHeight: 1 }}>
                 <span style={{ color: "#707A8A" }}>{occCount}:</span>
                 <span style={{ color: stophighCount >= 1 ? "#F5A623" : "#707A8A", fontWeight: stophighCount >= 1 ? 700 : 500 }}>
                   {stophighCount}
