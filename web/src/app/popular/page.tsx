@@ -13,7 +13,7 @@ type Row = {
   ret_3m: number | null;
   ret_1y: number | null;
   close: number | null;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type Excluded = { code: string; name: string; reason: string };
@@ -25,7 +25,7 @@ async function readJson<T>(relPath: string): Promise<T> {
 }
 
 export default async function PopularPage() {
-  const popularData = await readJson<{ _meta: any; popular: Row[] }>("data/popular.json");
+  const popularData = await readJson<{ _meta: { date?: string }; popular: Row[] }>("data/popular.json");
 
   let excluded: Excluded[] = [];
   try {

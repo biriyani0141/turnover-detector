@@ -170,6 +170,22 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const ma200s = chart.addLineSeries({ color: "#FF6D00", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma200s.setData(maData("ma200"));
 
+    const candleAutoScale = (__original: () => AutoscaleInfo | null) => {
+      const highs = rs.map(r => r.h);
+      const lows = rs.map(r => r.l);
+      const max = Math.max(...highs);
+      const min = Math.min(...lows);
+      const pad = (max - min) * 0.05;
+      return {
+        priceRange: { minValue: min - pad, maxValue: max + pad },
+        margins: { above: 0.1, below: 0.1 },
+      };
+    };
+    ma5s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
+    ma25s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
+    ma75s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
+    ma200s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
+
     // 出来高（下20%）
     const volSeries = chart.addHistogramSeries({
       priceFormat: { type: "volume" as const },

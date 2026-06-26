@@ -15,7 +15,7 @@ type Row = {
   ret_3m: number | null;
   ret_1y: number | null;
   close: number | null;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type Excluded = { code: string; name: string; reason: string };
@@ -57,7 +57,7 @@ export default function PopularList({
   excluded,
 }: {
   allData: Row[];
-  meta: any;
+  meta: { date?: string } | null;
   excluded: Excluded[];
 }) {
   const [win, setWin] = useState<Win>(25);
@@ -96,8 +96,8 @@ export default function PopularList({
     const filtered = allData.filter((r) => applyCapFilter(r, capFilter));
 
     const KEY_MAP: Record<SortKey, (r: Row) => number | null> = {
-      turnover: (r) => r[`turnover_${win}`] ?? null,
-      occ:      (r) => r[`stophigh_${win}`] ?? null,
+      turnover: (r) => (r[`turnover_${win}`] as number | null) ?? null,
+      occ:      (r) => (r[`stophigh_${win}`] as number | null) ?? null,
       d1:       (r) => r.ret_1d,
       d5:       (r) => r.ret_5d,
       m1:       (r) => r.ret_1m,
@@ -249,8 +249,8 @@ export default function PopularList({
             ret_1m={r.ret_1m}
             ret_3m={r.ret_3m}
             ret_1y={r.ret_1y}
-            occLeft={(r as any)[`turnover_${win}`] ?? 0}
-            occRight={(r as any)[`stophigh_${win}`] ?? 0}
+            occLeft={(r as Record<string, number | null>)[`turnover_${win}`] ?? 0}
+            occRight={(r as Record<string, number | null>)[`stophigh_${win}`] ?? 0}
             isEven={i % 2 === 1}
           />
         ))}
