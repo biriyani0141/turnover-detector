@@ -100,7 +100,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.05, bottom: 0.22 },
+        scaleMargins: { top: 0.02, bottom: 0.2 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
@@ -199,9 +199,10 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const visible = rs.slice(Math.max(0, rs.length - 50));
     const max = Math.max(...visible.map(r => r.h));
     const min = Math.min(...visible.map(r => r.l));
+    const pad = (max - min) * 0.02;
     candleSeries.applyOptions({
       autoscaleInfoProvider: () => ({
-        priceRange: { minValue: min, maxValue: max },
+        priceRange: { minValue: min - pad, maxValue: max + pad },
       }),
     });
 
