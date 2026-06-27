@@ -100,7 +100,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.05, bottom: 0.2 },
+        scaleMargins: { top: 0.02, bottom: 0.18 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
@@ -178,7 +178,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       const pad = (max - min) * 0.05;
       return {
         priceRange: { minValue: min - pad, maxValue: max + pad },
-        margins: { above: 0.1, below: 0.1 },
+        margins: { above: 0.02, below: 0.18 },
       };
     };
     ma5s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
@@ -193,7 +193,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
         const pad = (max - min) * 0.05;
         return {
           priceRange: { minValue: min - pad, maxValue: max + pad },
-          margins: { above: 0.05, below: 0.2 },
+          margins: { above: 0.02, below: 0.18 },
         };
       },
     });
