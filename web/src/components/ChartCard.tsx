@@ -100,7 +100,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.02, bottom: 0.22 },
+        scaleMargins: { top: 0.05, bottom: 0.22 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
@@ -170,32 +170,6 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const ma200s = chart.addLineSeries({ color: "#FF6D00", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma200s.setData(maData("ma200"));
 
-    const candleAutoScale = (__original: () => AutoscaleInfo | null) => {
-      const highs = rs.map(r => r.h);
-      const lows = rs.map(r => r.l);
-      const max = Math.max(...highs);
-      const min = Math.min(...lows);
-      const pad = (max - min) * 0.05;
-      return {
-        priceRange: { minValue: min - pad, maxValue: max + pad },
-      };
-    };
-    ma5s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
-    ma25s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
-    ma75s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
-    ma200s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
-    candleSeries.applyOptions({
-      autoscaleInfoProvider: (__original: () => AutoscaleInfo | null) => {
-        const visible = rs.slice(Math.max(0, rs.length - 50));
-        const max = Math.max(...visible.map(r => r.h));
-        const min = Math.min(...visible.map(r => r.l));
-        const pad = (max - min) * 0.02;
-        return {
-          priceRange: { minValue: min - pad, maxValue: max + pad },
-        };
-      },
-    });
-
     // 出来高（下20%）
     const volSeries = chart.addHistogramSeries({
       priceFormat: { type: "volume" as const },
@@ -221,6 +195,15 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
 
     const total = rs.length;
     chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, total - 50), to: total });
+
+    const visible = rs.slice(Math.max(0, rs.length - 50));
+    const max = Math.max(...visible.map(r => r.h));
+    const min = Math.min(...visible.map(r => r.l));
+    candleSeries.applyOptions({
+      autoscaleInfoProvider: () => ({
+        priceRange: { minValue: min, maxValue: max },
+      }),
+    });
 
     const ro = new ResizeObserver(() => {
       if (chartRef.current) {
