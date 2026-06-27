@@ -200,11 +200,14 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const max = Math.max(...visible.map(r => r.h));
     const min = Math.min(...visible.map(r => r.l));
     const pad = (max - min) * 0.02;
-    candleSeries.applyOptions({
-      autoscaleInfoProvider: () => ({
-        priceRange: { minValue: min - pad, maxValue: max + pad },
-      }),
+    const scaleProvider = () => ({
+      priceRange: { minValue: min - pad, maxValue: max + pad },
     });
+    candleSeries.applyOptions({ autoscaleInfoProvider: scaleProvider });
+    ma5s.applyOptions({ autoscaleInfoProvider: scaleProvider });
+    ma25s.applyOptions({ autoscaleInfoProvider: scaleProvider });
+    ma75s.applyOptions({ autoscaleInfoProvider: scaleProvider });
+    ma200s.applyOptions({ autoscaleInfoProvider: scaleProvider });
 
     const ro = new ResizeObserver(() => {
       if (chartRef.current) {
