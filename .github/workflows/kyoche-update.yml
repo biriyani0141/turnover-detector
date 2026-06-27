@@ -73,6 +73,8 @@ jobs:
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python jquants_ranking.py build_popular_cards
+      - name: Build dates JSON
+        run: python jquants_ranking.py build_dates_json
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"

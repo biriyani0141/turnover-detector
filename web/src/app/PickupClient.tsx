@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import TurnoverCard, { type CardStock } from "../components/TurnoverCard";
 import TurnoverCardList from "../components/TurnoverCardList";
-import { Row, StateLabel, STATE_CONFIG } from "@/lib/classify";
+import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGates } from "@/lib/classify";
 import ExportMenu from "../components/ExportMenu";
 
-const LAZY_CHART = true; // falseで全描画に切替
+const LAZY_CHART = true;
 
 type Excluded = {
   code: string;
@@ -15,7 +15,14 @@ type Excluded = {
 
 type PullbackItem = { row: Row; card: CardStock };
 
-// ビューポートに入るまでチャート描画を遅延させるラッパー（TurnoverCard自体は無改修）
+type DateData = {
+  rows: CardStock[];
+  shRows: CardStock[];
+  meta: { date?: string } | null;
+  pullbackSections: Map<StateLabel, PullbackItem[]>;
+  pullbackMeta: { date?: string } | null;
+};
+
 function LazyCard({
   item,
   label,
@@ -64,6 +71,77 @@ function LazyCard({
   );
 }
 
+function DateSelector({
+  availableDates,
+  selectedDate,
+  onChange,
+}: {
+  availableDates: string[];
+  selectedDate: string | null;
+  onChange: (date: string | null) => void;
+}) {
+  if (availableDates.length < 2) return null;
+
+  const latest = availableDates[availableDates.length - 1];
+  const current = selectedDate ?? latest;
+  const idx = availableDates.indexOf(current);
+  if (idx === -1) return null;
+
+  const isLatest = idx === availableDates.length - 1;
+  const isEarliest = idx === 0;
+  const label = current.slice(5).replace("-", "/");
+
+  const btnStyle = (disabled: boolean): React.CSSProperties => ({
+    padding: "0 6px",
+    background: "transparent",
+    border: "none",
+    color: disabled ? "#3c3c3c" : "#707A8A",
+    cursor: disabled ? "default" : "pointer",
+    fontSize: 13,
+    lineHeight: 1,
+    userSelect: "none",
+  });
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
+      <button
+        type="button"
+        disabled={isEarliest}
+        onClick={() => {
+          const prev = availableDates[idx - 1];
+          onChange(prev === latest ? null : prev);
+        }}
+        style={btnStyle(isEarliest)}
+      >
+        ◀
+      </button>
+      <span
+        style={{
+          fontSize: 11,
+          fontVariantNumeric: "tabular-nums",
+          color: isLatest ? "#707A8A" : "#c8d0da",
+          minWidth: 34,
+          textAlign: "center",
+          letterSpacing: "0.02em",
+        }}
+      >
+        {label}
+      </span>
+      <button
+        type="button"
+        disabled={isLatest}
+        onClick={() => {
+          const next = availableDates[idx + 1];
+          onChange(next === latest ? null : next);
+        }}
+        style={btnStyle(isLatest)}
+      >
+        ▶
+      </button>
+    </div>
+  );
+}
+
 export default function PickupClient({
   rows,
   shRows,
@@ -82,9 +160,111 @@ export default function PickupClient({
   const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
 
-  const displayRows = mode === "turnover" ? rows : mode === "stophigh" ? shRows ?? [] : [];
-  const pullbackTotal = [...pullbackSections.values()].reduce((sum, items) => sum + items.length, 0);
-  const headerDate = mode === "pullback" ? pullbackMeta?.date : meta?.date;
+  // === 10日振り返り ===
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  // override.date === selectedDate のときだけ override.data を使う
+  const [override, setOverride] = useState<{ date: string; data: DateData } | null>(null);
+  const cacheRef = useRef<Map<string, DateData>>(new Map());
+  const excludedCodesRef = useRef(new Set(excluded.map((e) => e.code)));
+
+  // mount: dates.json 取得 + URLパラメータ読み込み
+  useEffect(() => {
+    fetch("/data/dates.json")
+      .then((r) => r.json())
+      .then((d: { ranking?: string[] }) => {
+        setAvailableDates(d.ranking ?? []);
+      })
+      .catch(() => {});
+
+    const dateParam = new URLSearchParams(window.location.search).get("date");
+    if (dateParam) queueMicrotask(() => setSelectedDate(dateParam));
+  }, []);
+
+  // 過去日フェッチ（すべてのsetStateを最初のawait後に実行し同期呼び出しを回避）
+  const fetchDateData = useCallback(async (date: string) => {
+    // キャッシュヒット: awaitで非同期にしてからsetState
+    const cached = cacheRef.current.get(date);
+    if (cached) {
+      await Promise.resolve();
+      setOverride({ date, data: cached });
+      return;
+    }
+
+    const excl = excludedCodesRef.current;
+    const [cardsData, popularData, popularCardsData, stophighData] = await Promise.all([
+      fetch(`/data/ranking_cards_${date}.json`).then((r) => r.json()),
+      fetch(`/data/popular_${date}.json`).then((r) => r.json()),
+      fetch(`/data/popular_cards_${date}.json`).then((r) => r.json()),
+      fetch(`/data/stophigh_cards_${date}.json`).then((r) => r.json()),
+    ]);
+
+    const newRows: CardStock[] = ((cardsData.ranking ?? []) as CardStock[])
+      .filter((r) => !excl.has(r.code))
+      .slice(0, 30);
+
+    const newShRows: CardStock[] = stophighData.ranking ?? [];
+
+    const population: Row[] = ((popularData.popular ?? []) as Row[]).filter(
+      (r) => !excl.has(r.code)
+    );
+    const mktcapRanks = computeMktcapRanks(population);
+    const base = population.filter(
+      (r) => computeGates(r, mktcapRanks.get(r.code) ?? null).length > 0
+    );
+    const cardByCode = new Map<string, CardStock>(
+      ((popularCardsData.ranking ?? []) as CardStock[]).map((c) => [c.code, c])
+    );
+    const newSections = new Map<StateLabel, PullbackItem[]>(
+      STATE_CONFIG.map((s) => [s.label, [] as PullbackItem[]])
+    );
+    for (const row of base) {
+      const card = cardByCode.get(row.code);
+      if (!card) continue;
+      newSections.get(classify(row))!.push({ row, card });
+    }
+    for (const items of newSections.values()) {
+      items.sort((a, b) => (b.row.turnover_50 ?? 0) - (a.row.turnover_50 ?? 0));
+    }
+
+    const result: DateData = {
+      rows: newRows,
+      shRows: newShRows,
+      meta: cardsData._meta ?? null,
+      pullbackSections: newSections,
+      pullbackMeta: popularData._meta ?? null,
+    };
+    cacheRef.current.set(date, result);
+    setOverride({ date, data: result });
+  }, []);
+
+  // selectedDate 変化: URL更新 + フェッチ
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (selectedDate) {
+      params.set("date", selectedDate);
+    } else {
+      params.delete("date");
+    }
+    const qs = params.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+
+    if (selectedDate) {
+      fetchDateData(selectedDate).catch(console.error);
+    }
+  }, [selectedDate, fetchDateData]);
+
+  // overrideが現在の選択日に対応していればそちら、なければ props を使う
+  const d = selectedDate && override?.date === selectedDate ? override.data : null;
+  const activeRows = d ? d.rows : rows;
+  const activeShRows = d ? d.shRows : shRows;
+  const activeMeta = d ? d.meta : meta;
+  const activePullbackSections = d ? d.pullbackSections : pullbackSections;
+  const activePullbackMeta = d ? d.pullbackMeta : pullbackMeta;
+
+  const displayRows = mode === "turnover" ? activeRows : mode === "stophigh" ? activeShRows ?? [] : [];
+  const pullbackTotal = [...activePullbackSections.values()].reduce((sum, items) => sum + items.length, 0);
+  const headerDate = mode === "pullback" ? activePullbackMeta?.date : activeMeta?.date;
 
   return (
     <div className="p-3">
@@ -137,6 +317,11 @@ export default function PickupClient({
               </svg>
             </button>
           )}
+          <DateSelector
+            availableDates={availableDates}
+            selectedDate={selectedDate}
+            onChange={setSelectedDate}
+          />
         </div>
         {mode === "pullback" && pullbackDescOpen && (
           <p
@@ -185,7 +370,7 @@ export default function PickupClient({
               fontWeight: mode === "turnover" ? 600 : 500,
             }}
           >
-            Volume%
+            回転率
           </button>
           <button
             onClick={() => setMode("stophigh")}
@@ -204,7 +389,7 @@ export default function PickupClient({
               fontWeight: mode === "stophigh" ? 600 : 500,
             }}
           >
-            Stop High
+            S高
           </button>
         </div>
       </div>
@@ -212,7 +397,7 @@ export default function PickupClient({
       {mode === "pullback" ? (
         <>
           {STATE_CONFIG.map(({ label, headerBg }) => {
-            const items = pullbackSections.get(label) ?? [];
+            const items = activePullbackSections.get(label) ?? [];
             if (items.length === 0) return null;
             return (
               <div key={label} className="mb-4">

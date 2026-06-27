@@ -5,6 +5,7 @@ pandas / SQLite 不使用。標準 json のみ。
 """
 from __future__ import annotations
 import json
+import re
 import datetime
 import shutil
 from pathlib import Path
@@ -16,6 +17,25 @@ RANKING_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "ranking.
 
 META_FILE  = Path(__file__).parent / "data" / "jquants" / "meta.json"
 DAILY_DIR  = Path(__file__).parent / "data" / "jquants" / "daily"
+
+WEB_DATA_DIR       = Path(__file__).parent / "web" / "public" / "data"
+DATED_HISTORY_DAYS = 15
+
+
+def _write_dated_and_prune(base_name: str, date_str: str, json_str: str) -> None:
+    """日付別JSONを web/public/data/ に書き、15日超の古いファイルを削除する。"""
+    WEB_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    dated_path = WEB_DATA_DIR / f"{base_name}_{date_str}.json"
+    dated_path.write_text(json_str, encoding="utf-8")
+    print(f"  dated: {dated_path.name}")
+
+    cutoff = (datetime.date.today() - datetime.timedelta(days=DATED_HISTORY_DAYS)).isoformat()
+    pattern = re.compile(rf"^{re.escape(base_name)}_(\d{{4}}-\d{{2}}-\d{{2}})\.json$")
+    for f in WEB_DATA_DIR.glob(f"{base_name}_????-??-??.json"):
+        m = pattern.match(f.name)
+        if m and m.group(1) < cutoff:
+            f.unlink()
+            print(f"  pruned: {f.name}")
 
 
 def _to_ranking_row(r: dict) -> dict:
@@ -971,6 +991,7 @@ def build_popular(split_events: dict[str, list[tuple[str, float]]]) -> None:
     print(f"popular.json 出力: {len(popular)}銘柄 / 除外(全窓0): {skipped}銘柄 / {file_kb:.1f}KB")
     print(f"  -> {POPULAR_FILE}")
     print(f"  -> {POPULAR_FILE_WEB}")
+    _write_dated_and_prune("popular", date_str, json_str)
 
 
 _MARKET_NAME_MAP = {
@@ -1168,6 +1189,7 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
     print(f"ranking_cards.json 出力: {len(ranking_cards)}件 / {file_kb:.1f}KB")
     print(f"  -> {RANKING_CARDS_FILE_DATA}")
     print(f"  -> {RANKING_CARDS_FILE_WEB}")
+    _write_dated_and_prune("ranking_cards", date_str, json_str)
 
 
 STOPHIGH_CARDS_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "stophigh_cards.json"
@@ -1326,6 +1348,7 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
         f"（終値S高引け:{closed_n} / ザラ場タッチのみ:{touch_n}） / {file_kb:.1f}KB"
     )
     print(f"  -> {STOPHIGH_CARDS_FILE_WEB}")
+    _write_dated_and_prune("stophigh_cards", date_str, json_str)
 
 
 POPULAR_CARDS_FILE_DATA = Path(__file__).parent / "data" / "jquants" / "popular_cards.json"
@@ -1601,6 +1624,27 @@ def build_popular_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
     print(f"popular_cards.json 出力: {len(popular_cards)}件 / {file_kb:.1f}KB")
     print(f"  -> {POPULAR_CARDS_FILE_DATA}")
     print(f"  -> {POPULAR_CARDS_FILE_WEB}")
+    _write_dated_and_prune("popular_cards", date_str, json_str)
+
+
+def build_dates_json() -> None:
+    """日付別JSONが揃っている利用可能日リストを web/public/data/dates.json に出力する。"""
+    names = ["ranking_cards", "popular", "popular_cards", "stophigh_cards"]
+    date_re = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+    sets: list[set[str]] = []
+    for name in names:
+        found: set[str] = set()
+        for f in WEB_DATA_DIR.glob(f"{name}_????-??-??.json"):
+            date_part = f.stem[len(name) + 1:]
+            if date_re.match(date_part):
+                found.add(date_part)
+        sets.append(found)
+    available = sorted(sets[0].intersection(*sets[1:]) if sets else [])
+    out_path = WEB_DATA_DIR / "dates.json"
+    out_path.write_text(json.dumps({"ranking": available}, ensure_ascii=False), encoding="utf-8")
+    print(f"dates.json: {len(available)}日分 → {out_path}")
+    if available:
+        print(f"  oldest={available[0]} latest={available[-1]}")
 
 
 if __name__ == "__main__":
@@ -1622,5 +1666,7 @@ if __name__ == "__main__":
         build_stophigh_cards(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_popular_cards":
         build_popular_cards(split_events)
+    elif len(sys.argv) > 1 and sys.argv[1] == "build_dates_json":
+        build_dates_json()
     else:
         main(split_events)
