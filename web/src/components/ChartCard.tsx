@@ -100,7 +100,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.1, bottom: 0.25 },
+        scaleMargins: { top: 0.05, bottom: 0.2 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
@@ -185,6 +185,18 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     ma25s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
     ma75s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
     ma200s.applyOptions({ autoscaleInfoProvider: candleAutoScale });
+    candleSeries.applyOptions({
+      autoscaleInfoProvider: (__original: () => AutoscaleInfo | null) => {
+        const visible = rs.slice(Math.max(0, rs.length - 50));
+        const max = Math.max(...visible.map(r => r.h));
+        const min = Math.min(...visible.map(r => r.l));
+        const pad = (max - min) * 0.05;
+        return {
+          priceRange: { minValue: min - pad, maxValue: max + pad },
+          margins: { above: 0.05, below: 0.2 },
+        };
+      },
+    });
 
     // 出来高（下20%）
     const volSeries = chart.addHistogramSeries({
