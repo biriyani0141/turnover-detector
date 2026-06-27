@@ -4,6 +4,10 @@ import {
   createChart,
   ColorType,
   CrosshairMode,
+  CandlestickSeries,
+  LineSeries,
+  HistogramSeries,
+  createSeriesMarkers,
   AutoscaleInfo,
   type LineData,
   type WhitespaceData,
@@ -100,7 +104,6 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.02, bottom: 0.2 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
@@ -109,7 +112,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       height: chartRef.current.offsetHeight || 200,
     });
 
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: UP,
       downColor: DOWN,
       borderUpColor: UP,
@@ -150,7 +153,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
         text: "●",
       })),
     ].sort((a, b) => (a.time < b.time ? -1 : 1));
-    if (markers.length > 0) candleSeries.setMarkers(markers);
+    if (markers.length > 0) createSeriesMarkers(candleSeries, markers);
 
     // 直近50本のhigh/lowを基準にMAをクランプ（範囲外はwhitespace）
     const visibleRange = rs.slice(Math.max(0, rs.length - 50));
@@ -166,20 +169,19 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       });
     }
 
-    const ma5s = chart.addLineSeries({ color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    const ma5s = chart.addSeries(LineSeries, { color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma5s.setData(maData("ma5"));
-    const ma25s = chart.addLineSeries({ color: "#22AB94", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    const ma25s = chart.addSeries(LineSeries, { color: "#22AB94", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma25s.setData(maData("ma25"));
-    const ma75s = chart.addLineSeries({ color: "#9C27B0", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    const ma75s = chart.addSeries(LineSeries, { color: "#9C27B0", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma75s.setData(maData("ma75"));
-    const ma200s = chart.addLineSeries({ color: "#FF6D00", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    const ma200s = chart.addSeries(LineSeries, { color: "#FF6D00", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
     ma200s.setData(maData("ma200"));
 
-    // 出来高（下20%）
-    const volSeries = chart.addHistogramSeries({
+    // 出来高（別ペイン）
+    const volSeries = chart.addSeries(HistogramSeries, {
       priceFormat: { type: "volume" as const },
-      priceScaleId: "volume",
-    });
+    }, 1);
     volSeries.setData(
       rs.map(r => ({
         time: r.date as `${number}-${number}-${number}`,
@@ -187,16 +189,20 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
         color: "#5B8DEF99",
       }))
     );
-    chart.priceScale("volume").applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
-    });
     volSeries.applyOptions({
       autoscaleInfoProvider: (original: () => AutoscaleInfo | null) => {
         const res = original();
-        if (res !== null) res.priceRange.minValue = 0;
+        if (res !== null && res.priceRange !== null) res.priceRange.minValue = 0;
         return res;
       },
     });
+
+    // ペイン高さ比率 4:1（メイン:出来高）
+    const panes = chart.panes();
+    if (panes.length >= 2) {
+      panes[0].setStretchFactor(4);
+      panes[1].setStretchFactor(1);
+    }
 
     const total = rs.length;
     chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, total - 50), to: total });

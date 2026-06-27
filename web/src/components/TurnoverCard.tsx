@@ -1,6 +1,15 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { createChart, ColorType, CrosshairMode, AutoscaleInfo } from "lightweight-charts";
+import {
+  createChart,
+  ColorType,
+  CrosshairMode,
+  CandlestickSeries,
+  LineSeries,
+  HistogramSeries,
+  createSeriesMarkers,
+  AutoscaleInfo,
+} from "lightweight-charts";
 
 type Candle = {
   time: string;
@@ -78,7 +87,6 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
       rightPriceScale: {
         visible: true,
         borderVisible: false,
-        scaleMargins: { top: 0.1, bottom: 0.25 },
       },
       leftPriceScale: { visible: false },
       handleScroll: false,
@@ -88,7 +96,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
     });
 
     // ローソク足シリーズ（価格軸：整数表示）
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: UP,
       downColor: DOWN,
       borderUpColor: UP,
@@ -126,7 +134,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
         })),
     ].sort((a, b) => (a.time < b.time ? -1 : 1));
 
-    if (markers.length > 0) candleSeries.setMarkers(markers);
+    if (markers.length > 0) createSeriesMarkers(candleSeries, markers);
 
     // 移動平均線（5日・25日・75日）
     function sma(period: number) {
@@ -140,18 +148,33 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
       }
       return out;
     }
-    const ma5 = chart.addLineSeries({ color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-    ma5.setData(sma(5));
-    const ma25 = chart.addLineSeries({ color: "#22AB94", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-    ma25.setData(sma(25));
-    const ma75 = chart.addLineSeries({ color: "#9C27B0", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
-    ma75.setData(sma(75));
-
-    // 出来高（同一チャート内オーバーレイ、下20%に配置）
-    const volSeries = chart.addHistogramSeries({
-      priceFormat: { type: "volume" as const },
-      priceScaleId: "volume",
+    // 直近50本の high/low でY軸をクランプ
+    const total = stock.candles.length;
+    const visibleFrom = Math.max(0, total - 50);
+    const visibleCandles = stock.candles.slice(visibleFrom);
+    const clampMax = Math.max(...visibleCandles.map(c => c.high));
+    const clampMin = Math.min(...visibleCandles.map(c => c.low));
+    const pad = (clampMax - clampMin) * 0.02;
+    const scaleProvider = () => ({
+      priceRange: { minValue: clampMin - pad, maxValue: clampMax + pad },
     });
+
+    candleSeries.applyOptions({ autoscaleInfoProvider: scaleProvider });
+
+    const ma5 = chart.addSeries(LineSeries, { color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    ma5.setData(sma(5));
+    ma5.applyOptions({ autoscaleInfoProvider: scaleProvider });
+    const ma25 = chart.addSeries(LineSeries, { color: "#22AB94", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    ma25.setData(sma(25));
+    ma25.applyOptions({ autoscaleInfoProvider: scaleProvider });
+    const ma75 = chart.addSeries(LineSeries, { color: "#9C27B0", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
+    ma75.setData(sma(75));
+    ma75.applyOptions({ autoscaleInfoProvider: scaleProvider });
+
+    // 出来高（別ペイン）
+    const volSeries = chart.addSeries(HistogramSeries, {
+      priceFormat: { type: "volume" as const },
+    }, 1);
     volSeries.setData(
       stock.volumes.map((v) => ({
         time: v.time as `${number}-${number}-${number}`,
@@ -159,22 +182,22 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
         color: "#5B8DEF99",
       }))
     );
-    chart.priceScale("volume").applyOptions({
-      scaleMargins: { top: 0.8, bottom: 0 },
-    });
     volSeries.applyOptions({
       autoscaleInfoProvider: (original: () => AutoscaleInfo | null) => {
         const res = original();
-        if (res !== null) {
-          res.priceRange.minValue = 0;
-        }
+        if (res !== null && res.priceRange !== null) res.priceRange.minValue = 0;
         return res;
       },
     });
 
-    // 直近50本を初期表示（全シリーズ共通の時間軸）
-    const total = stock.candles.length;
-    const visibleFrom = Math.max(0, total - 50);
+    // ペイン高さ比率 4:1（メイン:出来高）
+    const panes = chart.panes();
+    if (panes.length >= 2) {
+      panes[0].setStretchFactor(4);
+      panes[1].setStretchFactor(1);
+    }
+
+    // 直近50本を初期表示
     chart.timeScale().setVisibleLogicalRange({ from: visibleFrom, to: total });
 
     const ro = new ResizeObserver(() => {
