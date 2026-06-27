@@ -152,12 +152,17 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     ].sort((a, b) => (a.time < b.time ? -1 : 1));
     if (markers.length > 0) candleSeries.setMarkers(markers);
 
-    // MA line series（null行は whitespace data として渡す）
+    // 直近50本のhigh/lowを基準にMAをクランプ（範囲外はwhitespace）
+    const visibleRange = rs.slice(Math.max(0, rs.length - 50));
+    const clampMax = Math.max(...visibleRange.map(r => r.h));
+    const clampMin = Math.min(...visibleRange.map(r => r.l));
+
     function maData(key: "ma5" | "ma25" | "ma75" | "ma200"): (LineData | WhitespaceData)[] {
       return rs.map(r => {
         const val = r[key];
         const t = r.date as `${number}-${number}-${number}`;
-        return val !== null ? { time: t, value: val } : { time: t };
+        if (val === null || val < clampMin || val > clampMax) return { time: t };
+        return { time: t, value: val };
       });
     }
 
@@ -196,18 +201,12 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const total = rs.length;
     chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, total - 50), to: total });
 
-    const visible = rs.slice(Math.max(0, rs.length - 50));
-    const max = Math.max(...visible.map(r => r.h));
-    const min = Math.min(...visible.map(r => r.l));
-    const pad = (max - min) * 0.02;
-    const scaleProvider = () => ({
-      priceRange: { minValue: min - pad, maxValue: max + pad },
+    const pad = (clampMax - clampMin) * 0.02;
+    candleSeries.applyOptions({
+      autoscaleInfoProvider: () => ({
+        priceRange: { minValue: clampMin - pad, maxValue: clampMax + pad },
+      }),
     });
-    candleSeries.applyOptions({ autoscaleInfoProvider: scaleProvider });
-    ma5s.applyOptions({ autoscaleInfoProvider: scaleProvider });
-    ma25s.applyOptions({ autoscaleInfoProvider: scaleProvider });
-    ma75s.applyOptions({ autoscaleInfoProvider: scaleProvider });
-    ma200s.applyOptions({ autoscaleInfoProvider: scaleProvider });
 
     const ro = new ResizeObserver(() => {
       if (chartRef.current) {
