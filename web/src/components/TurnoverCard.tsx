@@ -159,6 +159,9 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
       priceRange: { minValue: clampMin - pad, maxValue: clampMax + pad },
     });
 
+    candleSeries.priceScale().applyOptions({
+      scaleMargins: { top: 0.08, bottom: 0.08 },
+    });
     candleSeries.applyOptions({ autoscaleInfoProvider: scaleProvider });
 
     const ma5 = chart.addSeries(LineSeries, { color: "#2962FF", lineWidth: 1, priceLineVisible: false, lastValueVisible: false });

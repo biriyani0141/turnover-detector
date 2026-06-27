@@ -207,6 +207,10 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const total = rs.length;
     chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, total - 50), to: total });
 
+    candleSeries.priceScale().applyOptions({
+      scaleMargins: { top: 0.08, bottom: 0.08 },
+    });
+
     const pad = (clampMax - clampMin) * 0.02;
     candleSeries.applyOptions({
       autoscaleInfoProvider: () => ({
