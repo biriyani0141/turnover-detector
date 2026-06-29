@@ -5,31 +5,16 @@
   "market": "東証P",
   "sector": "サービス業",
   "header": {
-    "price": 915,
-    "change": -3,
-    "changePct": -0.3,
+    "price": 935,
+    "change": 20,
+    "changePct": 2.2,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
-    "marketCap": 85879606095,
-    "appearCount": 1,
+    "turnoverPct": 0.4,
+    "marketCap": 87756755955,
+    "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-14",
-      "o": 853,
-      "h": 895,
-      "l": 839,
-      "c": 878,
-      "v": 3446600,
-      "ma5": 801.0,
-      "ma25": 777.2,
-      "ma75": 778.8,
-      "ma200": 772.0,
-      "marks": [
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-15",
       "o": 878,
@@ -617,6 +602,18 @@
       "ma25": 868.6,
       "ma75": 828.2,
       "ma200": 801.8
+    },
+    {
+      "date": "2026-06-29",
+      "o": 925,
+      "h": 940,
+      "l": 919,
+      "c": 935,
+      "v": 343700,
+      "ma5": 911.0,
+      "ma25": 872.0,
+      "ma75": 829.9,
+      "ma200": 802.3
     }
   ]
 }
