@@ -722,12 +722,12 @@
           "pct_1d": 14.63
         },
         {
-          "ticker": "KEYS",
-          "pct_1d": 2.02
+          "ticker": "SITM",
+          "pct_1d": 6.3
         },
         {
-          "ticker": "CIEN",
-          "pct_1d": -0.15
+          "ticker": "KEYS",
+          "pct_1d": 2.02
         }
       ],
       "bucket": "新規点火"
@@ -2070,12 +2070,12 @@
           "pct_1d": 15.18
         },
         {
-          "ticker": "POOL",
-          "pct_1d": 0.02
+          "ticker": "SHW",
+          "pct_1d": 0.16
         },
         {
-          "ticker": "WMS",
-          "pct_1d": -0.34
+          "ticker": "POOL",
+          "pct_1d": 0.02
         }
       ],
       "bucket": null
@@ -2242,8 +2242,8 @@
           "pct_1d": 3.48
         },
         {
-          "ticker": "ARRY",
-          "pct_1d": 1.69
+          "ticker": "SHLS",
+          "pct_1d": 3.11
         }
       ],
       "bucket": null
@@ -2990,8 +2990,8 @@
           "pct_1d": 0.59
         },
         {
-          "ticker": "PBR",
-          "pct_1d": 0.0
+          "ticker": "SHEL",
+          "pct_1d": 0.44
         }
       ],
       "bucket": null
@@ -3906,8 +3906,8 @@
           "pct_1d": 1.5
         },
         {
-          "ticker": "RIO",
-          "pct_1d": 0.68
+          "ticker": "SGML",
+          "pct_1d": 1.45
         }
       ],
       "bucket": null
@@ -4665,6 +4665,10 @@
       "return_6m": 12.06,
       "return_1y": 5.12,
       "top_movers": [
+        {
+          "ticker": "SHW",
+          "pct_1d": 0.16
+        },
         {
           "ticker": "PPG",
           "pct_1d": -1.86
@@ -5764,6 +5768,10 @@
         {
           "ticker": "CMG",
           "pct_1d": -1.07
+        },
+        {
+          "ticker": "SHAK",
+          "pct_1d": -3.75
         }
       ],
       "bucket": null
@@ -6039,5 +6047,5 @@
   ],
   "stock_date": "2026-06-29",
   "updated_at": "2026-06-29 21:34:59",
-  "saved_at": "2026-06-29T21:57:57.033331"
+  "saved_at": "2026-06-29T22:00:17.071556"
 }
