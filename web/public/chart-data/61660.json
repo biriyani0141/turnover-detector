@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "機械",
   "header": {
-    "price": 666,
+    "price": 766,
     "change": 100,
-    "changePct": 17.7,
+    "changePct": 15.0,
     "isStopHigh": true,
-    "turnoverPct": 2.5,
-    "marketCap": 7339919400,
-    "appearCount": 12,
-    "stopHighCount": 4
+    "turnoverPct": 12.7,
+    "marketCap": 8442009400,
+    "appearCount": 13,
+    "stopHighCount": 5
   },
   "rows": [
-    {
-      "date": "2026-04-15",
-      "o": 751,
-      "h": 758,
-      "l": 736,
-      "c": 742,
-      "v": 110700,
-      "ma5": 741.4,
-      "ma25": 756.9,
-      "ma75": 649.1,
-      "ma200": 435.0
-    },
     {
       "date": "2026-04-16",
       "o": 742,
@@ -663,6 +651,23 @@
       "ma200": 503.1,
       "marks": [
         "shc"
+      ]
+    },
+    {
+      "date": "2026-06-30",
+      "o": 700,
+      "h": 766,
+      "l": 700,
+      "c": 766,
+      "v": 1454900,
+      "ma5": 628.0,
+      "ma25": 561.0,
+      "ma75": 663.2,
+      "ma200": 505.3,
+      "marks": [
+        "shc",
+        "turn5",
+        "appear"
       ]
     }
   ]

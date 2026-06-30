@@ -6,27 +6,15 @@
   "sector": "化学",
   "header": {
     "price": 1510,
-    "change": -18,
-    "changePct": -1.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.1,
+    "turnoverPct": 0.0,
     "marketCap": 3907125000,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-14",
-      "o": 1573,
-      "h": 1598,
-      "l": 1573,
-      "c": 1587,
-      "v": 14000,
-      "ma5": 1569.0,
-      "ma25": 1559.0,
-      "ma75": 1626.9,
-      "ma200": null
-    },
     {
       "date": "2026-04-15",
       "o": 1593,
@@ -615,6 +603,18 @@
       "v": 2300,
       "ma5": 1502.0,
       "ma25": 1517.3,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-06-30",
+      "o": 1502,
+      "h": 1510,
+      "l": 1502,
+      "c": 1510,
+      "v": 500,
+      "ma5": 1507.0,
+      "ma25": 1516.1,
       "ma75": null,
       "ma200": null
     }

@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "銀行業",
   "header": {
-    "price": 629,
-    "change": 2,
-    "changePct": 0.3,
+    "price": 610,
+    "change": -19,
+    "changePct": -3.0,
     "isStopHigh": false,
-    "turnoverPct": 1.5,
-    "marketCap": 51926290509,
-    "appearCount": 4,
+    "turnoverPct": 3.0,
+    "marketCap": 50357769810,
+    "appearCount": 5,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-15",
-      "o": 628,
-      "h": 642,
-      "l": 616,
-      "c": 624,
-      "v": 2076400,
-      "ma5": 615.8,
-      "ma25": 601.6,
-      "ma75": 571.6,
-      "ma200": 404.6
-    },
     {
       "date": "2026-04-16",
       "o": 631,
@@ -626,6 +614,21 @@
       "ma25": 639.6,
       "ma75": 616.6,
       "ma200": 493.5
+    },
+    {
+      "date": "2026-06-30",
+      "o": 630,
+      "h": 637,
+      "l": 609,
+      "c": 610,
+      "v": 2468100,
+      "ma5": 622.6,
+      "ma25": 638.4,
+      "ma75": 616.3,
+      "ma200": 495.1,
+      "marks": [
+        "appear"
+      ]
     }
   ]
 }

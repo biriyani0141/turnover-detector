@@ -6,27 +6,15 @@
   "sector": "不動産業",
   "header": {
     "price": 75,
-    "change": 3,
-    "changePct": 4.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 23.6,
+    "turnoverPct": 2.6,
     "marketCap": 1785615000,
-    "appearCount": 1,
+    "appearCount": 2,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-15",
-      "o": 87,
-      "h": 87,
-      "l": 85,
-      "c": 87,
-      "v": 219000,
-      "ma5": 86.2,
-      "ma25": 88.6,
-      "ma75": 86.3,
-      "ma200": 94.8
-    },
     {
       "date": "2026-04-16",
       "o": 87,
@@ -616,6 +604,21 @@
       "ma200": 87.7,
       "marks": [
         "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-06-30",
+      "o": 76,
+      "h": 80,
+      "l": 74,
+      "c": 75,
+      "v": 609700,
+      "ma5": 74.4,
+      "ma25": 74.4,
+      "ma75": 81.4,
+      "ma200": 87.5,
+      "marks": [
         "appear"
       ]
     }

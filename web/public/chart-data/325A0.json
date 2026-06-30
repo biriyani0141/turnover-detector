@@ -5,33 +5,16 @@
   "market": "東証G",
   "sector": "繊維製品",
   "header": {
-    "price": 1351,
-    "change": -2784,
-    "changePct": -67.3,
+    "price": 1402,
+    "change": 51,
+    "changePct": 3.8,
     "isStopHigh": false,
-    "turnoverPct": 0.6,
-    "marketCap": 31031555373,
-    "appearCount": 3,
-    "stopHighCount": 1
+    "turnoverPct": 0.8,
+    "marketCap": 32202990846,
+    "appearCount": 2,
+    "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-15",
-      "o": 4145,
-      "h": 4505,
-      "l": 4110,
-      "c": 4210,
-      "v": 1278200,
-      "ma5": 3801.0,
-      "ma25": 3593.4,
-      "ma75": 3961.3,
-      "ma200": 4208.5,
-      "marks": [
-        "sht",
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-16",
       "o": 4200,
@@ -625,6 +608,18 @@
       "ma25": 3711.0,
       "ma75": 3727.7,
       "ma200": 4055.9
+    },
+    {
+      "date": "2026-06-30",
+      "o": 1351,
+      "h": 1420,
+      "l": 1321,
+      "c": 1402,
+      "v": 194400,
+      "ma5": 3031.6,
+      "ma25": 3625.3,
+      "ma75": 3694.5,
+      "ma200": 4039.2
     }
   ]
 }
