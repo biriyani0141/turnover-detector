@@ -1078,6 +1078,10 @@
       "return_1y": 85.0,
       "top_movers": [
         {
+          "ticker": "SMCI",
+          "pct_1d": 4.21
+        },
+        {
           "ticker": "DELL",
           "pct_1d": 4.06
         },
@@ -4050,12 +4054,12 @@
           "pct_1d": 0.72
         },
         {
-          "ticker": "HAL",
-          "pct_1d": -0.44
+          "ticker": "SLB",
+          "pct_1d": 0.22
         },
         {
-          "ticker": "BKR",
-          "pct_1d": -1.55
+          "ticker": "HAL",
+          "pct_1d": -0.44
         }
       ],
       "bucket": null
@@ -4518,16 +4522,16 @@
       "return_1y": 53.54,
       "top_movers": [
         {
+          "ticker": "SN",
+          "pct_1d": 4.0
+        },
+        {
           "ticker": "SGI",
           "pct_1d": 0.35
         },
         {
           "ticker": "WSM",
           "pct_1d": -2.97
-        },
-        {
-          "ticker": "W",
-          "pct_1d": -3.36
         }
       ],
       "bucket": null
@@ -6131,5 +6135,5 @@
   ],
   "stock_date": "2026-06-30",
   "updated_at": "2026-06-30 21:35:33",
-  "saved_at": "2026-06-30T22:02:56.823510"
+  "saved_at": "2026-06-30T22:04:08.815377"
 }
