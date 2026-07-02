@@ -127,6 +127,10 @@ function DateSelector({
           minWidth: 34,
           textAlign: "center",
           letterSpacing: "0.02em",
+          padding: "3px 8px",
+          borderRadius: 6,
+          border: "1px solid #4a4d52",
+          background: "#2a2c2f",
         }}
       >
         {label}
