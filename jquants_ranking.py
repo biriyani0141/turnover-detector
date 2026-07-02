@@ -1015,6 +1015,37 @@ def _format_mktcap(mktcap: float) -> str:
         return f"{mktcap / 1e4:.0f}万円"
 
 
+REASON_LOOKBACK_DAYS = 5
+
+
+def _find_prior_reason(reasons_data: dict, code: str, date_str: str) -> str | None:
+    """当日reasonが空の連騰銘柄向け: 直近REASON_LOOKBACK_DAYS営業日分の日付キーを
+    新しい順に遡り、同一コードで最初に非空reasonが見つかった日のテキストを返す。
+    見つからなければNone。
+    """
+    prior_dates = sorted((d for d in reasons_data if d < date_str), reverse=True)
+    for d in prior_dates[:REASON_LOOKBACK_DAYS]:
+        entry = reasons_data[d].get(code)
+        if entry and entry.get("reason"):
+            return entry["reason"]
+    return None
+
+
+def _compute_streak(date_str: str, trading_dates: list[str], stophigh_dates: set[str]) -> int:
+    """date_strを含め、直前の営業日が連続でstophigh_datesに含まれる日数(連騰日数)を数える。
+    REASON_LOOKBACK_DAYS(前回理由の遡り件数)と揃え、最大でもその日数までしか数えない。
+    """
+    if date_str not in trading_dates:
+        return 1
+    idx = trading_dates.index(date_str)
+    streak = 0
+    i = idx
+    while i >= 0 and streak < REASON_LOOKBACK_DAYS and trading_dates[i] in stophigh_dates:
+        streak += 1
+        i -= 1
+    return streak
+
+
 def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
     """
     回転率上位100件のカード用JSONを生成する。
@@ -1225,18 +1256,20 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
         except Exception:
             pass
 
-    # --- stop-high-reasons.json から当日分のS高理由を取得(コードはLocalCode形式で一致) ---
-    reasons_by_code: dict[str, dict] = {}
+    # --- stop-high-reasons.json からS高理由を取得(コードはLocalCode形式で一致) ---
+    # 当日分に加え、連騰銘柄の理由欠落対策で過去日付分も保持する(_find_prior_reason用)
+    reasons_data: dict[str, dict] = {}
     if STOPHIGH_REASONS_FILE.exists():
         try:
             reasons_data = json.loads(STOPHIGH_REASONS_FILE.read_text(encoding="utf-8"))
-            reasons_by_code = reasons_data.get(date_str, {})
         except Exception:
             pass
+    reasons_by_code: dict[str, dict] = reasons_data.get(date_str, {})
 
     # --- 直近60営業日の日足収集 ---
     json_files = sorted(DAILY_DIR.glob("*.json"))
     recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
+    trading_dates = [p.stem for p in json_files]  # 連騰日数カウント用(全営業日)
 
     candles_map: dict[str, list] = {code: [] for code in stophigh_codes}
     volumes_map: dict[str, list] = {code: [] for code in stophigh_codes}
@@ -1336,14 +1369,26 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
             "volumes": volumes_map.get(code, []),
         }
 
-        # S高理由(reasonが空の銘柄はキー自体を付けない → フロント側で欄非表示)
+        # S高理由(当日分が空の連騰銘柄はREASON_LOOKBACK_DAYS営業日分遡って前回理由を
+        # 併記。それも無ければキー自体を付けない → フロント側で欄非表示)
         reason_entry = reasons_by_code.get(code)
         if reason_entry and reason_entry.get("reason"):
             card["reason"] = {
+                "kind": "today",
                 "status": reason_entry.get("status"),
                 "text": reason_entry["reason"],
                 "orders": reason_entry.get("orders") or None,
             }
+        else:
+            prev_text = _find_prior_reason(reasons_data, code, date_str)
+            if prev_text:
+                streak_dates = set(touch_dates) | set(closed_dates)
+                streak_days = _compute_streak(date_str, trading_dates, streak_dates)
+                card["reason"] = {
+                    "kind": "streak",
+                    "streakDays": streak_days,
+                    "prevText": prev_text,
+                }
 
         stophigh_cards.append(card)
 
