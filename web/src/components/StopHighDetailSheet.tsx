@@ -492,7 +492,8 @@ export default function StopHighDetailSheet({
           left: 0,
           right: 0,
           bottom: 0,
-          maxHeight: "88vh",
+          // vhはiOS Safariのツールバー開閉で可視領域とズレてフルスクリーン化するためdvhを使う
+          maxHeight: "88dvh",
           background: SHEET_BG,
           borderRadius: "20px 20px 0 0",
           boxShadow: "0 -4px 24px rgba(20,25,40,0.2)",
