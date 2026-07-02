@@ -487,9 +487,6 @@ export default function StopHighDetailSheet({
 
       {/* シート本体 */}
       <div
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         style={{
           position: "absolute",
           left: 0,
@@ -505,8 +502,13 @@ export default function StopHighDetailSheet({
           transition: dragging ? "none" : "transform 0.28s cubic-bezier(0.32,0.72,0,1)",
         }}
       >
-        {/* ハンドル */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 6px" }}>
+        {/* ハンドル: ここを掴んでドラッグしたときだけ閉じる(本文スクロール中の誤爆を防ぐ) */}
+        <div
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ display: "flex", justifyContent: "center", padding: "14px 0 10px", flexShrink: 0 }}
+        >
           <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(107,114,128,0.3)" }} />
         </div>
 
