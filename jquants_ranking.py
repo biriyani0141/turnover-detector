@@ -14,6 +14,7 @@ from jquants_backbone import calc_returns
 APPEARANCE_FILE = Path(__file__).parent / "data" / "jquants" / "appearance.json"
 RANKING_FILE    = Path(__file__).parent / "data" / "jquants" / "ranking.json"
 RANKING_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "ranking.json"
+STOPHIGH_REASONS_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
 
 META_FILE  = Path(__file__).parent / "data" / "jquants" / "meta.json"
 DAILY_DIR  = Path(__file__).parent / "data" / "jquants" / "daily"
@@ -1224,6 +1225,15 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
         except Exception:
             pass
 
+    # --- stop-high-reasons.json から当日分のS高理由を取得(コードはLocalCode形式で一致) ---
+    reasons_by_code: dict[str, dict] = {}
+    if STOPHIGH_REASONS_FILE.exists():
+        try:
+            reasons_data = json.loads(STOPHIGH_REASONS_FILE.read_text(encoding="utf-8"))
+            reasons_by_code = reasons_data.get(date_str, {})
+        except Exception:
+            pass
+
     # --- 直近60営業日の日足収集 ---
     json_files = sorted(DAILY_DIR.glob("*.json"))
     recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
@@ -1304,7 +1314,7 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
         is_limit_up = date_str in touch_dates or date_str in closed_dates
         app_entry = appearance_by_code.get(code, {})
 
-        stophigh_cards.append({
+        card: dict = {
             "code": code,
             "name": stock.get("name", ""),
             "market": market,
@@ -1324,7 +1334,18 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
             "stophighCount": int(app_entry.get("stophigh_50", 0)),  # 50日窓
             "candles": candles,
             "volumes": volumes_map.get(code, []),
-        })
+        }
+
+        # S高理由(reasonが空の銘柄はキー自体を付けない → フロント側で欄非表示)
+        reason_entry = reasons_by_code.get(code)
+        if reason_entry and reason_entry.get("reason"):
+            card["reason"] = {
+                "status": reason_entry.get("status"),
+                "text": reason_entry["reason"],
+                "orders": reason_entry.get("orders") or None,
+            }
+
+        stophigh_cards.append(card)
 
     output = {
         "_meta": {

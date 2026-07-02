@@ -24,6 +24,8 @@ type Volume = {
   value: number;
 };
 
+type StopHighReason = { status: string | null; text: string; orders: string | null };
+
 export type CardStock = {
   code: string;
   name: string;
@@ -40,6 +42,7 @@ export type CardStock = {
   closedLimitUpDates?: string[];
   occCount?: number;
   stophighCount?: number;
+  reason?: StopHighReason;
   candles: Candle[];
   volumes: Volume[];
 };
@@ -220,13 +223,13 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
   }, [stock]);
 
   return (
+    <div style={{ marginBottom: 12 }}>
     <div
       style={{
         height: 278,
         background: "#FFFFFF",
         border: "1px solid #DDE1EC",
         borderRadius: 4,
-        marginBottom: 12,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -384,6 +387,48 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
           userSelect: "none",
         }}
       />
+    </div>
+
+    {/* S高理由コメント欄(出来高チャート下、reasonが空の銘柄は非表示) */}
+    {stock.reason && (
+      <div
+        style={{
+          marginTop: 6,
+          background: "#FFFFFF",
+          border: "1px solid #DDE1EC",
+          borderRadius: 4,
+          padding: "8px 10px",
+          boxShadow: "0 1px 4px rgba(30,40,80,0.06)",
+          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+          {stock.reason.status && (
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: "#FFFFFF",
+                background: "#F5A623",
+                borderRadius: 3,
+                padding: "1px 5px",
+                flexShrink: 0,
+              }}
+            >
+              {stock.reason.status}
+            </span>
+          )}
+          <span style={{ fontSize: 12, fontWeight: 500, color: "#3A4050", lineHeight: 1.5 }}>
+            {stock.reason.text}
+          </span>
+        </div>
+        {stock.reason.orders && (
+          <div style={{ fontSize: 10.5, color: "#9098A9", marginTop: 4, lineHeight: 1.5 }}>
+            {stock.reason.orders}
+          </div>
+        )}
+      </div>
+    )}
     </div>
   );
 }
