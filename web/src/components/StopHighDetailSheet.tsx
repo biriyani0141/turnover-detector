@@ -512,7 +512,7 @@ export default function StopHighDetailSheet({
           <div style={{ width: 36, height: 4, borderRadius: 2, background: "rgba(107,114,128,0.3)" }} />
         </div>
 
-        <div style={{ overflowY: "auto", padding: "6px 18px 28px" }}>
+        <div style={{ flex: "1 1 auto", minHeight: 0, overflowY: "auto", padding: "6px 18px 28px" }}>
           <SheetContent key={displayStock.code} stock={displayStock} />
         </div>
       </div>

@@ -17,6 +17,7 @@ const DISCLOSURE_TITLE_EXCLUDE = [
   "コーポレートガバナンスに関する報告書",
   "コーポレート・ガバナンスに関する報告書",
   "インタビュー",
+  "支配株主等に関する事項について",
 ];
 
 type Excluded = {
@@ -444,8 +445,11 @@ export default function PickupClient({
               <p className="text-[10px] text-gray-400 mb-1">
                 以下のキーワードを含む開示情報は、理由欄の開示情報表示から除外しています
               </p>
-              <p className="text-[10px] text-gray-400 leading-5 mb-3">
+              <p className="text-[10px] text-gray-400 leading-5 mb-1">
                 {DISCLOSURE_TITLE_EXCLUDE.join(" / ")}
+              </p>
+              <p className="text-[10px] text-gray-400 leading-5 mb-3">
+                和文記事の英語重複版(タイトルに日本語を含まないもの)も除外しています
               </p>
               {excluded.length > 0 && (
                 <>

@@ -1055,8 +1055,17 @@ DISCLOSURE_TITLE_EXCLUDE = [
     "コーポレートガバナンスに関する報告書",
     "コーポレート・ガバナンスに関する報告書",  # kabutan実データは中黒(・)入りの表記もある
     "インタビュー",
+    "支配株主等に関する事項について",
 ]
 DISCLOSURE_MAX_ITEMS = 10
+
+# ひらがな・カタカナ・漢字(CJK統合漢字)を一切含まないタイトルは、和文記事の
+# 英語重複版とみなして除外する(同日同時刻に和文/英訳ペアで掲載されるケース対応)
+_JP_CHAR_RE = re.compile(r"[぀-ゟ゠-ヿ一-鿿]")
+
+
+def _is_english_only_title(title: str) -> bool:
+    return _JP_CHAR_RE.search(title) is None
 
 
 def _find_recent_disclosures(
@@ -1087,6 +1096,8 @@ def _find_recent_disclosures(
             continue
         title = n.get("title", "")
         if any(kw in title for kw in DISCLOSURE_TITLE_EXCLUDE):
+            continue
+        if _is_english_only_title(title):
             continue
         items.append({"date": n_date, "title": title})
         if len(items) >= DISCLOSURE_MAX_ITEMS:
