@@ -52,7 +52,10 @@ export default async function Home() {
   let shRows: CardStock[] = [];
   try {
     const stophighData = await readJson<{ ranking?: CardStock[] }>("data/stophigh_cards.json");
-    shRows = stophighData.ranking ?? [];
+    shRows = (stophighData.ranking ?? []).map((r) => ({
+      ...r,
+      creditType: CREDIT_LABEL[marginStocks[r.code.slice(0, 4)]] ?? "-",
+    }));
   } catch (e) {
     console.error("stophigh_cards.json read failed:", e);
   }

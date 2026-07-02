@@ -89,6 +89,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
   const closedDates = stock.closedLimitUpDates ?? [];
   const occCount = stock.occCount ?? 0;
   const stophighCount = stock.stophighCount ?? 0;
+  const isMargin = stock.creditType === "貸借";
 
   useEffect(() => {
     if (!chartRef.current) return;
@@ -290,6 +291,22 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
           >
             {stock.name}
           </span>
+          {isLimitUp && (
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: "#FFFFFF",
+                background: "#E03A2F",
+                borderRadius: 3,
+                padding: "1px 4px",
+                letterSpacing: "0.02em",
+                flexShrink: 0,
+              }}
+            >
+              S高
+            </span>
+          )}
           {badge && (
             <span
               className={badge.bgClass}
@@ -318,11 +335,24 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
             overflow: "hidden",
           }}
         >
-          {/* コード・市場タグ */}
+          {/* コード・市場タグ（コードタグは貸借区分で色分け） */}
           <div style={{ display: "flex", gap: 3, flexShrink: 0 }}>
-            {[stock.code.slice(0, 4), stock.market].filter(Boolean).map((t) => (
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 500,
+                color: isMargin ? "#1E40AF" : "#707A8A",
+                border: isMargin ? "1px solid rgba(30,64,175,0.25)" : "1px solid rgba(112,122,138,0.28)",
+                borderRadius: 3,
+                padding: "1px 4px",
+                background: isMargin ? "#DBEAFE" : "rgba(112,122,138,0.06)",
+                lineHeight: 1.4,
+              }}
+            >
+              {stock.code.slice(0, 4)}
+            </span>
+            {stock.market && (
               <span
-                key={t}
                 style={{
                   fontSize: 9,
                   fontWeight: 500,
@@ -334,9 +364,9 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
                   lineHeight: 1.4,
                 }}
               >
-                {t}
+                {stock.market}
               </span>
-            ))}
+            )}
           </div>
 
           {/* 株価 */}
@@ -348,24 +378,6 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
           <span style={{ fontSize: 11, fontWeight: 600, color, letterSpacing: "-0.01em", flexShrink: 0 }}>
             {sign}{fmtNum(stock.change)} ({sign}{stock.changePct.toFixed(2)}%)
           </span>
-
-          {/* S高バッジ */}
-          {isLimitUp && (
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 700,
-                color: "#FFFFFF",
-                background: "#E03A2F",
-                borderRadius: 3,
-                padding: "1px 4px",
-                letterSpacing: "0.02em",
-                flexShrink: 0,
-              }}
-            >
-              S高
-            </span>
-          )}
 
           {/* スペーサー */}
           <div style={{ flex: 1, minWidth: 4 }} />

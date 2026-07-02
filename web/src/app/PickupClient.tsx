@@ -8,6 +8,13 @@ import StopHighDetailSheet from "../components/StopHighDetailSheet";
 
 const LAZY_CHART = true;
 
+// 信用区分の表示ラベルへのマッピング（page.tsxのcreditType join処理と同一内容）
+const CREDIT_LABEL: Record<string, string> = {
+  "貸借銘柄": "貸借",
+  "制度信用銘柄": "信用",
+  // "非制度信用銘柄" は表示しない
+};
+
 // jquants_ranking.py の DISCLOSURE_TITLE_EXCLUDE と同一内容(表示用に複製)
 const DISCLOSURE_TITLE_EXCLUDE = [
   "第三者割当",
@@ -214,18 +221,30 @@ export default function PickupClient({
     }
 
     const excl = excludedCodesRef.current;
-    const [cardsData, popularData, popularCardsData, stophighData] = await Promise.all([
+    const [cardsData, popularData, popularCardsData, stophighData, marginData] = await Promise.all([
       fetch(`/data/ranking_cards_${date}.json`).then((r) => r.json()),
       fetch(`/data/popular_${date}.json`).then((r) => r.json()),
       fetch(`/data/popular_cards_${date}.json`).then((r) => r.json()),
       fetch(`/data/stophigh_cards_${date}.json`).then((r) => r.json()),
+      fetch("/data/margin_list.json")
+        .then((r) => (r.ok ? r.json() : { stocks: {} }))
+        .catch(() => ({ stocks: {} })),
     ]);
+
+    const marginStocks: Record<string, string> = marginData.stocks ?? {};
 
     const newRows: CardStock[] = ((cardsData.ranking ?? []) as CardStock[])
       .filter((r) => !excl.has(r.code))
-      .slice(0, 30);
+      .slice(0, 30)
+      .map((r) => ({
+        ...r,
+        creditType: CREDIT_LABEL[marginStocks[r.code.slice(0, 4)]] ?? "-",
+      }));
 
-    const newShRows: CardStock[] = stophighData.ranking ?? [];
+    const newShRows: CardStock[] = ((stophighData.ranking ?? []) as CardStock[]).map((r) => ({
+      ...r,
+      creditType: CREDIT_LABEL[marginStocks[r.code.slice(0, 4)]] ?? "-",
+    }));
 
     const population: Row[] = ((popularData.popular ?? []) as Row[]).filter(
       (r) => !excl.has(r.code)
