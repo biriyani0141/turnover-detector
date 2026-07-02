@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "水産・農林業",
   "header": {
-    "price": 1125,
-    "change": -256,
-    "changePct": -18.5,
+    "price": 1114,
+    "change": -11,
+    "changePct": -1.0,
     "isStopHigh": false,
-    "turnoverPct": 3.6,
-    "marketCap": 857250000,
+    "turnoverPct": 1.4,
+    "marketCap": 848868000,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-17",
-      "o": 1706,
-      "h": 1713,
-      "l": 1660,
-      "c": 1668,
-      "v": 4200,
-      "ma5": 1718.2,
-      "ma25": 1766.9,
-      "ma75": 1805.3,
-      "ma200": 1900.2
-    },
     {
       "date": "2026-04-20",
       "o": 1654,
@@ -617,6 +605,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-02",
+      "o": 1118,
+      "h": 1126,
+      "l": 1111,
+      "c": 1114,
+      "v": 10500,
+      "ma5": 1300.0,
+      "ma25": 1445.6,
+      "ma75": 1599.6,
+      "ma200": 1818.1
     }
   ]
 }
