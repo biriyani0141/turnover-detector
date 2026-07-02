@@ -23,6 +23,8 @@ jobs:
           python-version: "3.12"
       - name: Install deps
         run: pip install -r requirements.txt
+      - name: DEBUG kabutan CI diagnostics (temporary)
+        run: python kabutan_debug_ci.py
       - name: Fetch daily quotes
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
