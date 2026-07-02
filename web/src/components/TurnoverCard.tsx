@@ -24,9 +24,12 @@ type Volume = {
   value: number;
 };
 
+type DisclosureItem = { date: string; title: string };
+
 type StopHighReason =
   | { kind: "today"; status: string | null; text: string; orders: string | null }
-  | { kind: "streak"; streakDays: number; prevText: string };
+  | { kind: "streak"; streakDays: number; prevText: string }
+  | { kind: "disclosure"; items: DisclosureItem[] };
 
 export type CardStock = {
   code: string;
@@ -66,6 +69,11 @@ function reasonStatusBadge(status: string | null): { bg: string; label: string }
   if (status === "一時") return { bg: "#F5A623", label: "一時" };
   if (status === null) return { bg: UP, label: "S高" };
   return { bg: "#F5A623", label: status };
+}
+
+function fmtCompactDate(isoDate: string): string {
+  const [, mm, dd] = isoDate.split("-");
+  return `${parseInt(mm, 10)}/${parseInt(dd, 10)}`;
 }
 
 export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge?: { text: string; bgClass: string } }) {
@@ -443,7 +451,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
               </div>
             )}
           </>
-        ) : (
+        ) : stock.reason.kind === "streak" ? (
           <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
             <span
               style={{
@@ -462,6 +470,17 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
               {stock.reason.prevText}
               <span style={{ fontSize: 10, color: "#B4B8C0", marginLeft: 4 }}>(前回理由)</span>
             </span>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            {stock.reason.items.map((item, i) => (
+              <div key={i} style={{ fontSize: 10.5, color: "#9098A9", lineHeight: 1.5 }}>
+                <span style={{ fontVariantNumeric: "tabular-nums", fontSize: 10.5, color: "#9098A9", marginRight: 5 }}>
+                  {fmtCompactDate(item.date)}
+                </span>
+                {item.title}
+              </div>
+            ))}
           </div>
         )}
       </div>

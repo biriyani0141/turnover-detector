@@ -15,6 +15,7 @@ APPEARANCE_FILE = Path(__file__).parent / "data" / "jquants" / "appearance.json"
 RANKING_FILE    = Path(__file__).parent / "data" / "jquants" / "ranking.json"
 RANKING_FILE_WEB = Path(__file__).parent / "web" / "public" / "data" / "ranking.json"
 STOPHIGH_REASONS_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
+STOPHIGH_DETAIL_FILE = Path(__file__).parent / "web" / "public" / "data" / "stop-high-detail.json"
 
 META_FILE  = Path(__file__).parent / "data" / "jquants" / "meta.json"
 DAILY_DIR  = Path(__file__).parent / "data" / "jquants" / "daily"
@@ -1046,6 +1047,51 @@ def _compute_streak(date_str: str, trading_dates: list[str], stophigh_dates: set
     return streak
 
 
+DISCLOSURE_TITLE_EXCLUDE = [
+    "第三者割当",
+    "定款",
+    "独立役員届出書",
+    "新株予約権",
+    "コーポレートガバナンスに関する報告書",
+]
+DISCLOSURE_MAX_ITEMS = 10
+
+
+def _find_recent_disclosures(
+    detail_data: dict, code: str, date_str: str, trading_dates: list[str]
+) -> list[dict]:
+    """理由・連騰理由とも見つからない銘柄向けの代替表示: stop-high-detail.jsonのnewsから
+    tag=開示・直近REASON_LOOKBACK_DAYS営業日以内・定型文書除外後、
+    最大DISCLOSURE_MAX_ITEMS件を新しい順に返す。
+    """
+    date_entry = detail_data.get(date_str, {})
+    detail = date_entry.get(code)
+    if not detail:
+        return []
+    news = detail.get("news", [])
+
+    if date_str in trading_dates:
+        idx = trading_dates.index(date_str)
+        window_start = trading_dates[max(0, idx - REASON_LOOKBACK_DAYS + 1)]
+    else:
+        window_start = date_str
+
+    items: list[dict] = []
+    for n in news:
+        if n.get("tag") != "開示":
+            continue
+        n_date = (n.get("date") or "")[:10]
+        if n_date < window_start:
+            continue
+        title = n.get("title", "")
+        if any(kw in title for kw in DISCLOSURE_TITLE_EXCLUDE):
+            continue
+        items.append({"date": n_date, "title": title})
+        if len(items) >= DISCLOSURE_MAX_ITEMS:
+            break
+    return items
+
+
 def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
     """
     回転率上位100件のカード用JSONを生成する。
@@ -1266,6 +1312,14 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
             pass
     reasons_by_code: dict[str, dict] = reasons_data.get(date_str, {})
 
+    # --- stop-high-detail.json(既存、開示ニュース含む)を理由欠落時の代替表示用に取得 ---
+    detail_data: dict[str, dict] = {}
+    if STOPHIGH_DETAIL_FILE.exists():
+        try:
+            detail_data = json.loads(STOPHIGH_DETAIL_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
     # --- 直近60営業日の日足収集 ---
     json_files = sorted(DAILY_DIR.glob("*.json"))
     recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
@@ -1389,6 +1443,10 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
                     "streakDays": streak_days,
                     "prevText": prev_text,
                 }
+            else:
+                disclosures = _find_recent_disclosures(detail_data, code, date_str, trading_dates)
+                if disclosures:
+                    card["reason"] = {"kind": "disclosure", "items": disclosures}
 
         stophigh_cards.append(card)
 
