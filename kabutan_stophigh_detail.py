@@ -1,8 +1,16 @@
 """
-S高カード用ポップアップの詳細データをkabutan.jpからスクレイプする(データ取得部分のみ)。
+S高カード・出来高率カード共通のポップアップ詳細データをkabutan.jpから
+スクレイプする(データ取得部分のみ)。
 
-対象: data/jquants/stop-high-reasons.json の最新日付キーに含まれる銘柄のみ
-(kabutan_stophigh_reasons.py 実行後に呼ぶ前提)。
+対象:
+  - S高タブ: data/jquants/stop-high-reasons.json の最新日付キーに含まれる銘柄
+    (kabutan_stophigh_reasons.py 実行後に呼ぶ前提)。上限は環境変数
+    STOPHIGH_DETAIL_LIMIT(未設定/0なら無制限、現状維持)。
+  - 出来高率タブ: data/jquants/ranking.json の"all"配列(全市場top100、
+    va降順)をturnover_pctで降順に並べ替え、上位N件(環境変数
+    TURNOVER_DETAIL_LIMIT、デフォルト30)。表示中の回転率タブ(turnover_pct
+    降順)と一致させるためここで並べ替える。
+  両者の合算(重複除去、S高側を優先した順序)がスクレイプ対象。
 
 4ページから取得:
   A: s.kabutan.jp/stocks/{code}/ → 会社名/コード/市場/業種/時価総額/発行済株式数/
@@ -29,6 +37,7 @@ S高カード用ポップアップの詳細データをkabutan.jpからスクレ
 """
 
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -40,11 +49,16 @@ from bs4 import BeautifulSoup
 from kabutan_stophigh_reasons import HEADERS
 
 REASONS_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
+RANKING_FILE = Path(__file__).parent / "data" / "jquants" / "ranking.json"
 OUT_FILE = Path(__file__).parent / "web" / "public" / "data" / "stop-high-detail.json"
 
 MARGIN_WEEKS = 16
 NEWS_LIMIT = 30
 SLEEP_BETWEEN_STOCKS = 1.0
+
+# 対象銘柄数の上限(タブごとに独立、環境変数で可変)。0以下は無制限。
+STOPHIGH_DETAIL_LIMIT = int(os.environ.get("STOPHIGH_DETAIL_LIMIT", "0"))
+TURNOVER_DETAIL_LIMIT = int(os.environ.get("TURNOVER_DETAIL_LIMIT", "30"))
 
 # 市況全体の定型速報シリーズ(個別銘柄名にたまたま言及されるだけで、その銘柄固有の
 # ニュースではない)。直近ニュース一覧の取得枠を埋めて個別開示を押し出してしまうため
@@ -67,7 +81,33 @@ def load_target_codes() -> tuple[str, list[str]]:
     if not data:
         raise ScrapeError(f"{REASONS_FILE} が空、対象日が特定できない")
     date_key = max(data.keys())
-    local_codes = list(data[date_key].keys())
+    stophigh_codes = list(data[date_key].keys())
+    if STOPHIGH_DETAIL_LIMIT > 0:
+        stophigh_codes = stophigh_codes[:STOPHIGH_DETAIL_LIMIT]
+
+    turnover_codes: list[str] = []
+    if RANKING_FILE.exists() and TURNOVER_DETAIL_LIMIT > 0:
+        try:
+            ranking_data = json.loads(RANKING_FILE.read_text(encoding="utf-8"))
+            # build_ranking_by_market()の出力(全市場top100はvaソート)をturnover_pctで
+            # 並べ替え、出来高率タブの実際の表示順(ranking_cards.jsonと同じ基準)に合わせる
+            sorted_entries = sorted(
+                ranking_data.get("all", []),
+                key=lambda r: r.get("turnover_pct") or 0,
+                reverse=True,
+            )
+            turnover_codes = [r["code"] for r in sorted_entries[:TURNOVER_DETAIL_LIMIT]]
+        except Exception:
+            pass
+
+    # 重複除去(S高側の順序を優先)
+    seen: set[str] = set()
+    local_codes: list[str] = []
+    for code in stophigh_codes + turnover_codes:
+        if code not in seen:
+            seen.add(code)
+            local_codes.append(code)
+
     return date_key, local_codes
 
 

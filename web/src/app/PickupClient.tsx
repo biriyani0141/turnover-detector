@@ -444,10 +444,12 @@ export default function PickupClient({
           </div>
           <TurnoverCardList
             stocks={displayRows}
-            onCardClick={mode === "stophigh" ? (stock) => setDetailStock(stock) : undefined}
+            onCardClick={
+              mode === "stophigh" || mode === "turnover" ? (stock) => setDetailStock(stock) : undefined
+            }
           />
 
-          {mode === "stophigh" && (
+          {(mode === "stophigh" || mode === "turnover") && (
             <div className="mt-6 pt-4 border-t border-gray-200">
               <p className="text-xs font-medium text-gray-500 mb-2">※ 注意事項</p>
               <p className="text-[10px] text-gray-400 mb-1">
@@ -476,7 +478,7 @@ export default function PickupClient({
         </>
       )}
 
-      {excluded.length > 0 && mode !== "stophigh" && (
+      {excluded.length > 0 && mode !== "stophigh" && mode !== "turnover" && (
         <div className="mt-8 pt-4 border-t border-gray-200">
           <p className="text-xs font-medium text-gray-500 mb-1">
             除外銘柄（手動）

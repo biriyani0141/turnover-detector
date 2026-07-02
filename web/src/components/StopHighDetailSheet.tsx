@@ -679,20 +679,22 @@ function SheetContent({ stock }: { stock: CardStock }) {
             {stock.changePct.toFixed(2)}%)
           </span>
 
-          <span
-            style={{
-              fontSize: 9,
-              fontWeight: 700,
-              color: "#FFFFFF",
-              background: "#E03A2F",
-              borderRadius: 3,
-              padding: "1px 4px",
-              letterSpacing: "0.02em",
-              flexShrink: 0,
-            }}
-          >
-            S高
-          </span>
+          {stock.isLimitUp && (
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: "#FFFFFF",
+                background: "#E03A2F",
+                borderRadius: 3,
+                padding: "1px 4px",
+                letterSpacing: "0.02em",
+                flexShrink: 0,
+              }}
+            >
+              S高
+            </span>
+          )}
 
           <div style={{ flex: 1, minWidth: 4 }} />
 

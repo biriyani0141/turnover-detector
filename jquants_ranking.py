@@ -5,6 +5,7 @@ pandas / SQLite 不使用。標準 json のみ。
 """
 from __future__ import annotations
 import json
+import os
 import re
 import datetime
 import shutil
@@ -1016,32 +1017,35 @@ def _format_mktcap(mktcap: float) -> str:
         return f"{mktcap / 1e4:.0f}万円"
 
 
-REASON_LOOKBACK_DAYS = 5
+# タブごとに独立して設定可能な「前回理由・開示情報を遡る営業日数」。
+# S高タブは速報性重視で短く、出来高率タブは母数が多く理由が付きにくいため長めに取る。
+STOPHIGH_NEWS_LOOKBACK_DAYS = int(os.environ.get("STOPHIGH_NEWS_LOOKBACK_DAYS", "5"))
+TURNOVER_NEWS_LOOKBACK_DAYS = int(os.environ.get("TURNOVER_NEWS_LOOKBACK_DAYS", "10"))
 
 
-def _find_prior_reason(reasons_data: dict, code: str, date_str: str) -> str | None:
-    """当日reasonが空の連騰銘柄向け: 直近REASON_LOOKBACK_DAYS営業日分の日付キーを
+def _find_prior_reason(reasons_data: dict, code: str, date_str: str, lookback_days: int) -> str | None:
+    """当日reasonが空の連騰銘柄向け: 直近lookback_days営業日分の日付キーを
     新しい順に遡り、同一コードで最初に非空reasonが見つかった日のテキストを返す。
     見つからなければNone。
     """
     prior_dates = sorted((d for d in reasons_data if d < date_str), reverse=True)
-    for d in prior_dates[:REASON_LOOKBACK_DAYS]:
+    for d in prior_dates[:lookback_days]:
         entry = reasons_data[d].get(code)
         if entry and entry.get("reason"):
             return entry["reason"]
     return None
 
 
-def _compute_streak(date_str: str, trading_dates: list[str], stophigh_dates: set[str]) -> int:
+def _compute_streak(date_str: str, trading_dates: list[str], stophigh_dates: set[str], lookback_days: int) -> int:
     """date_strを含め、直前の営業日が連続でstophigh_datesに含まれる日数(連騰日数)を数える。
-    REASON_LOOKBACK_DAYS(前回理由の遡り件数)と揃え、最大でもその日数までしか数えない。
+    lookback_days(前回理由の遡り件数)と揃え、最大でもその日数までしか数えない。
     """
     if date_str not in trading_dates:
         return 1
     idx = trading_dates.index(date_str)
     streak = 0
     i = idx
-    while i >= 0 and streak < REASON_LOOKBACK_DAYS and trading_dates[i] in stophigh_dates:
+    while i >= 0 and streak < lookback_days and trading_dates[i] in stophigh_dates:
         streak += 1
         i -= 1
     return streak
@@ -1071,10 +1075,10 @@ def _is_english_only_title(title: str) -> bool:
 
 
 def _find_recent_disclosures(
-    detail_data: dict, code: str, date_str: str, trading_dates: list[str]
+    detail_data: dict, code: str, date_str: str, trading_dates: list[str], lookback_days: int
 ) -> list[dict]:
     """reasonの有無に関わらず常時表示する直近開示情報: stop-high-detail.jsonのnewsから
-    tag=開示・直近REASON_LOOKBACK_DAYS営業日以内・定型文書除外後、
+    tag=開示・直近lookback_days営業日以内・定型文書除外後、
     最大DISCLOSURE_MAX_ITEMS件を新しい順に返す。
     """
     date_entry = detail_data.get(date_str, {})
@@ -1085,7 +1089,7 @@ def _find_recent_disclosures(
 
     if date_str in trading_dates:
         idx = trading_dates.index(date_str)
-        window_start = trading_dates[max(0, idx - REASON_LOOKBACK_DAYS + 1)]
+        window_start = trading_dates[max(0, idx - lookback_days + 1)]
     else:
         window_start = date_str
 
@@ -1105,6 +1109,45 @@ def _find_recent_disclosures(
         if len(items) >= DISCLOSURE_MAX_ITEMS:
             break
     return items
+
+
+def _attach_reason_and_disclosures(
+    card: dict,
+    code: str,
+    date_str: str,
+    reasons_by_code: dict,
+    reasons_data: dict,
+    detail_data: dict,
+    trading_dates: list[str],
+    touch_dates: list[str],
+    closed_dates: list[str],
+    lookback_days: int,
+) -> None:
+    """S高タブ・出来高率タブ共通のS高理由/開示情報の付与処理。
+    build_stophigh_cards()とbuild_ranking_cards()で共有する(タブごとにlookback_daysのみ変える)。
+    """
+    reason_entry = reasons_by_code.get(code)
+    if reason_entry and reason_entry.get("reason"):
+        card["reason"] = {
+            "kind": "today",
+            "status": reason_entry.get("status"),
+            "text": reason_entry["reason"],
+            "orders": reason_entry.get("orders") or None,
+        }
+    else:
+        prev_text = _find_prior_reason(reasons_data, code, date_str, lookback_days)
+        if prev_text:
+            streak_dates = set(touch_dates) | set(closed_dates)
+            streak_days = _compute_streak(date_str, trading_dates, streak_dates, lookback_days)
+            card["reason"] = {
+                "kind": "streak",
+                "streakDays": streak_days,
+                "prevText": prev_text,
+            }
+
+    disclosures = _find_recent_disclosures(detail_data, code, date_str, trading_dates, lookback_days)
+    if disclosures:
+        card["disclosures"] = disclosures
 
 
 def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> None:
@@ -1168,9 +1211,26 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
         except Exception:
             pass
 
+    # --- stop-high-reasons.json / stop-high-detail.json(S高タブと共通ロジックで理由・開示情報を付与) ---
+    reasons_data: dict[str, dict] = {}
+    if STOPHIGH_REASONS_FILE.exists():
+        try:
+            reasons_data = json.loads(STOPHIGH_REASONS_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    reasons_by_code: dict[str, dict] = reasons_data.get(date_str, {})
+
+    detail_data: dict[str, dict] = {}
+    if STOPHIGH_DETAIL_FILE.exists():
+        try:
+            detail_data = json.loads(STOPHIGH_DETAIL_FILE.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+
     # --- 直近60営業日の日足収集 ---
     json_files = sorted(DAILY_DIR.glob("*.json"))
     recent_files = json_files[-60:] if len(json_files) >= 60 else json_files
+    trading_dates = [p.stem for p in json_files]  # 連騰日数カウント用(全営業日)
 
     candles_map: dict[str, list] = {code: [] for code in top_codes}
     volumes_map: dict[str, list] = {code: [] for code in top_codes}
@@ -1239,7 +1299,7 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
         is_limit_up = date_str in touch_dates or date_str in closed_dates
         app_entry = appearance_by_code.get(code, {})
 
-        ranking_cards.append({
+        card: dict = {
             "code": code,
             "name": stock.get("name", ""),
             "market": market,
@@ -1259,7 +1319,15 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
             "stophighCount": int(app_entry.get("stophigh_50", 0)),  # 50日窓
             "candles": candles,
             "volumes": volumes_map.get(code, []),
-        })
+        }
+
+        # S高理由・直近開示情報(タブ共通ロジック、出来高率タブはTURNOVER_NEWS_LOOKBACK_DAYS営業日分遡る)
+        _attach_reason_and_disclosures(
+            card, code, date_str, reasons_by_code, reasons_data, detail_data,
+            trading_dates, touch_dates, closed_dates, TURNOVER_NEWS_LOOKBACK_DAYS,
+        )
+
+        ranking_cards.append(card)
 
     output = {
         "_meta": {
@@ -1438,31 +1506,11 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
             "volumes": volumes_map.get(code, []),
         }
 
-        # S高理由(当日分が空の連騰銘柄はREASON_LOOKBACK_DAYS営業日分遡って前回理由を
-        # 併記。それも無ければキー自体を付けない → フロント側で欄非表示)
-        reason_entry = reasons_by_code.get(code)
-        if reason_entry and reason_entry.get("reason"):
-            card["reason"] = {
-                "kind": "today",
-                "status": reason_entry.get("status"),
-                "text": reason_entry["reason"],
-                "orders": reason_entry.get("orders") or None,
-            }
-        else:
-            prev_text = _find_prior_reason(reasons_data, code, date_str)
-            if prev_text:
-                streak_dates = set(touch_dates) | set(closed_dates)
-                streak_days = _compute_streak(date_str, trading_dates, streak_dates)
-                card["reason"] = {
-                    "kind": "streak",
-                    "streakDays": streak_days,
-                    "prevText": prev_text,
-                }
-
-        # 直近開示情報(reasonの有無に関わらず常時付与。無ければキー自体を付けない)
-        disclosures = _find_recent_disclosures(detail_data, code, date_str, trading_dates)
-        if disclosures:
-            card["disclosures"] = disclosures
+        # S高理由・直近開示情報(タブ共通ロジック、S高タブはSTOPHIGH_NEWS_LOOKBACK_DAYS営業日分遡る)
+        _attach_reason_and_disclosures(
+            card, code, date_str, reasons_by_code, reasons_data, detail_data,
+            trading_dates, touch_dates, closed_dates, STOPHIGH_NEWS_LOOKBACK_DAYS,
+        )
 
         stophigh_cards.append(card)
 
