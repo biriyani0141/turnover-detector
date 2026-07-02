@@ -6,6 +6,7 @@ type MarginWeek = {
   date: string;
   close_price: number | null;
   buy_balance: number;
+  sell_balance: number;
   pct_of_shares: number | null;
 };
 type Stockholder = { name: string; pct: number | null; shares: number | null };
@@ -33,6 +34,7 @@ const UP = "#E03A2F";
 const DOWN = "#1B8C7D";
 const ROYAL_BLUE = "#2E5EEA";
 const ROYAL_BLUE_LIGHT = "#CBD8F5"; // 棒グラフを淡くして株価ラインと役割分離
+const SELL_VIOLET = "#4A3AA7"; // 売り残(買い残=青と対の系列色。dataviz skillでCVD検証済みペア)
 const PRICE_LINE = "#F5A623"; // 株価ラインはアクセントのオレンジ系(棒=青と衝突しない)
 const SKY_BLUE = "#6FA8FF";
 const PALE_BLUE = "#B8D0FC";
@@ -148,7 +150,7 @@ const GRID_LINE_FRACTIONS = [0, 0.5];
 function MarginBarChart({ weeks }: { weeks: MarginWeek[] }) {
   // 古い→新しいの時系列に並べ替え(scraper側は新しい順)
   const chrono = [...weeks].reverse();
-  const maxVal = Math.max(...chrono.map((w) => w.buy_balance), 1);
+  const maxVal = Math.max(...chrono.map((w) => Math.max(w.buy_balance, w.sell_balance)), 1);
 
   const prices = chrono.map((w) => w.close_price).filter((p): p is number => p !== null);
   const hasPriceLine = prices.length >= 2;
@@ -203,7 +205,7 @@ function MarginBarChart({ weeks }: { weeks: MarginWeek[] }) {
             />
           ))}
 
-          {/* 棒グラフ */}
+          {/* 棒グラフ(買い残・売り残の2本組) */}
           <div
             style={{
               position: "relative",
@@ -215,7 +217,8 @@ function MarginBarChart({ weeks }: { weeks: MarginWeek[] }) {
           >
             {chrono.map((w, i) => {
               const isLatest = i === chrono.length - 1;
-              const h = Math.max(2, (w.buy_balance / maxVal) * CHART_H - 8);
+              const buyH = Math.max(2, (w.buy_balance / maxVal) * CHART_H - 8);
+              const sellH = Math.max(2, (w.sell_balance / maxVal) * CHART_H - 8);
               return (
                 <div
                   key={w.date}
@@ -230,30 +233,55 @@ function MarginBarChart({ weeks }: { weeks: MarginWeek[] }) {
                   }}
                 >
                   {isLatest && (
-                    <span
-                      style={{
-                        fontSize: 9,
-                        fontWeight: W_NUM,
-                        fontFamily: MONO_FONT,
-                        fontVariantNumeric: "tabular-nums",
-                        color: INK,
-                        whiteSpace: "nowrap",
-                        marginBottom: 3,
-                      }}
-                    >
-                      {fmtCompactShares(w.buy_balance)}
-                    </span>
+                    <div style={{ display: "flex", gap: 3, marginBottom: 3 }}>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: W_NUM,
+                          fontFamily: MONO_FONT,
+                          fontVariantNumeric: "tabular-nums",
+                          color: INK,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {fmtCompactShares(w.buy_balance)}
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: W_NUM,
+                          fontFamily: MONO_FONT,
+                          fontVariantNumeric: "tabular-nums",
+                          color: INK,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {fmtCompactShares(w.sell_balance)}
+                      </span>
+                    </div>
                   )}
-                  <div
-                    title={`${w.date}: ${w.buy_balance.toLocaleString("ja-JP")}株`}
-                    style={{
-                      width: "100%",
-                      maxWidth: 16,
-                      height: h,
-                      background: isLatest ? ROYAL_BLUE : ROYAL_BLUE_LIGHT,
-                      borderRadius: "2px 2px 0 0",
-                    }}
-                  />
+                  <div style={{ display: "flex", gap: 2, alignItems: "flex-end", width: "100%", justifyContent: "center" }}>
+                    <div
+                      title={`${w.date} 買い残: ${w.buy_balance.toLocaleString("ja-JP")}株`}
+                      style={{
+                        width: "50%",
+                        maxWidth: 7,
+                        height: buyH,
+                        background: isLatest ? ROYAL_BLUE : ROYAL_BLUE_LIGHT,
+                        borderRadius: "2px 2px 0 0",
+                      }}
+                    />
+                    <div
+                      title={`${w.date} 売り残: ${w.sell_balance.toLocaleString("ja-JP")}株`}
+                      style={{
+                        width: "50%",
+                        maxWidth: 7,
+                        height: sellH,
+                        background: isLatest ? SELL_VIOLET : "#DCD5F2",
+                        borderRadius: "2px 2px 0 0",
+                      }}
+                    />
+                  </div>
                 </div>
               );
             })}
@@ -297,6 +325,18 @@ function MarginBarChart({ weeks }: { weeks: MarginWeek[] }) {
             </span>
           );
         })}
+      </div>
+
+      {/* 凡例(2系列のため常設) */}
+      <div style={{ display: "flex", gap: 12, paddingLeft: 28, paddingTop: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: ROYAL_BLUE, flexShrink: 0 }} />
+          <span style={{ fontSize: 9, color: MUTED }}>買い残</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <span style={{ width: 8, height: 8, borderRadius: 2, background: SELL_VIOLET, flexShrink: 0 }} />
+          <span style={{ fontSize: 9, color: MUTED }}>売り残</span>
+        </div>
       </div>
     </div>
   );
@@ -526,6 +566,7 @@ function SheetContent({ stock }: { stock: CardStock }) {
   const [loadError, setLoadError] = useState(false);
   const [overviewOpen, setOverviewOpen] = useState(false);
   const [newsOpen, setNewsOpen] = useState(false);
+  const [marginOpen, setMarginOpen] = useState(false);
 
   useEffect(() => {
     loadDetailData()
@@ -820,20 +861,24 @@ function SheetContent({ stock }: { stock: CardStock }) {
         </div>
       )}
 
-      {/* B: 週次信用買い残(白カード) */}
+      {/* B: 週次信用残(白カード、折りたたみ・デフォルト閉じ) */}
       <div style={cardBlockStyle}>
-        <div
+        <button
+          type="button"
+          onClick={() => setMarginOpen((o) => !o)}
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            paddingBottom: 8,
-            marginBottom: 10,
-            borderBottom: `1px solid ${DIVIDER}`,
+            width: "100%",
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
           }}
         >
           <span style={{ fontSize: 11, fontWeight: W_BOLD, color: MUTED, letterSpacing: "0.02em" }}>
-            信用残・{detail.margin_weekly.length}週
+            信用残
           </span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {(() => {
@@ -867,7 +912,7 @@ function SheetContent({ stock }: { stock: CardStock }) {
                     fontWeight: 700,
                     color: badge.fg,
                     background: badge.bg,
-                    border: badge.bg === "transparent" ? `1px solid ${DIVIDER}` : "none",
+                    border: badge.bg === "transparent" ? "1px solid #707A8A" : "none",
                     borderRadius: 4,
                     padding: "2px 7px",
                     whiteSpace: "nowrap",
@@ -877,9 +922,24 @@ function SheetContent({ stock }: { stock: CardStock }) {
                 </span>
               );
             })()}
+            <span
+              style={{
+                fontSize: 9,
+                color: FAINT,
+                transform: marginOpen ? "rotate(180deg)" : "none",
+                transition: "transform 0.15s",
+              }}
+            >
+              ▼
+            </span>
           </div>
-        </div>
-        <MarginBarChart weeks={detail.margin_weekly} />
+        </button>
+
+        {marginOpen && (
+          <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${DIVIDER}` }}>
+            <MarginBarChart weeks={detail.margin_weekly} />
+          </div>
+        )}
       </div>
 
       {/* C: 大株主(白カード) */}

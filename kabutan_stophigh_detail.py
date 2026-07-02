@@ -7,8 +7,8 @@ S高カード用ポップアップの詳細データをkabutan.jpからスクレ
 4ページから取得:
   A: s.kabutan.jp/stocks/{code}/ → 会社名/コード/市場/業種/時価総額/発行済株式数/
      概要(基本情報テーブルの「概要」行)/関連テーマ(themeContainer内のli a)
-  B: s.kabutan.jp/stocks/{code}/historical_prices/margin/ → 週次信用買い残(直近16週)
-     + 同テーブルの週次終値(株価ライン重ね描画用)。
+  B: s.kabutan.jp/stocks/{code}/historical_prices/margin/ → 週次信用買い残・売り残
+     (直近16週) + 同テーブルの週次終値(株価ライン重ね描画用)。
      発行済株式数から買い残/発行済株式数の比率(%)を算出
   C: s.kabutan.jp/stocks/{code}/stockholders/ → data-value="0"パネル(最新期)の全株主
   D: s.kabutan.jp/stocks/{code}/news/ → 直近ニュース最大30件(日付/タイトル/タグ)。
@@ -157,6 +157,8 @@ def fetch_margin_weekly(session: requests.Session, raw_code: str, shares_outstan
         date_label = cells[0].get_text(strip=True)
         close_price_text = cells[1].get_text(strip=True)
         close_price = float(re.sub(r"[^\d.]", "", close_price_text) or 0) or None
+        sell_balance_text = cells[5].get_text(strip=True)
+        sell_balance = int(re.sub(r"[^\d]", "", sell_balance_text) or 0)
         buy_balance_text = cells[6].get_text(strip=True)
         buy_balance = int(re.sub(r"[^\d]", "", buy_balance_text) or 0)
         pct_of_shares = (
@@ -167,6 +169,7 @@ def fetch_margin_weekly(session: requests.Session, raw_code: str, shares_outstan
                 "date": date_label,
                 "close_price": close_price,
                 "buy_balance": buy_balance,
+                "sell_balance": sell_balance,
                 "pct_of_shares": pct_of_shares,
             }
         )
