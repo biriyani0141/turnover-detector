@@ -1057,6 +1057,7 @@ DISCLOSURE_TITLE_EXCLUDE = [
     "インタビュー",
     "支配株主等に関する事項について",
     "補足説明資料",
+    "役員人事",
 ]
 DISCLOSURE_MAX_ITEMS = 10
 

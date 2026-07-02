@@ -19,6 +19,7 @@ const DISCLOSURE_TITLE_EXCLUDE = [
   "インタビュー",
   "支配株主等に関する事項について",
   "補足説明資料",
+  "役員人事",
 ];
 
 type Excluded = {
@@ -85,6 +86,17 @@ function LazyCard({
   );
 }
 
+// pickedがavailableDates(昇順)のいずれとも一致しない場合(週末・休場日等)、
+// picked以前で最も新しい利用可能日にスナップする。pickedが最古日より前ならそれを返す。
+function snapToAvailableDate(picked: string, availableDates: string[]): string {
+  let result = availableDates[0];
+  for (const d of availableDates) {
+    if (d <= picked) result = d;
+    else break;
+  }
+  return result;
+}
+
 function DateSelector({
   availableDates,
   selectedDate,
@@ -97,38 +109,16 @@ function DateSelector({
   if (availableDates.length < 2) return null;
 
   const latest = availableDates[availableDates.length - 1];
+  const earliest = availableDates[0];
   const current = selectedDate ?? latest;
   const idx = availableDates.indexOf(current);
   if (idx === -1) return null;
 
   const isLatest = idx === availableDates.length - 1;
-  const isEarliest = idx === 0;
   const label = current.slice(5).replace("-", "/");
 
-  const btnStyle = (disabled: boolean): React.CSSProperties => ({
-    padding: "0 6px",
-    background: "transparent",
-    border: "none",
-    color: disabled ? "#3c3c3c" : "#707A8A",
-    cursor: disabled ? "default" : "pointer",
-    fontSize: 13,
-    lineHeight: 1,
-    userSelect: "none",
-  });
-
   return (
-    <div style={{ display: "flex", alignItems: "center", marginLeft: "auto" }}>
-      <button
-        type="button"
-        disabled={isEarliest}
-        onClick={() => {
-          const prev = availableDates[idx - 1];
-          onChange(prev === latest ? null : prev);
-        }}
-        style={btnStyle(isEarliest)}
-      >
-        ◀
-      </button>
+    <div style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: "auto" }}>
       <span
         style={{
           fontSize: 11,
@@ -141,17 +131,30 @@ function DateSelector({
       >
         {label}
       </span>
-      <button
-        type="button"
-        disabled={isLatest}
-        onClick={() => {
-          const next = availableDates[idx + 1];
-          onChange(next === latest ? null : next);
+      <input
+        type="date"
+        value={current}
+        min={earliest}
+        max={latest}
+        aria-label="日付を選択"
+        onChange={(e) => {
+          const picked = e.target.value;
+          if (!picked) return;
+          const snapped = snapToAvailableDate(picked, availableDates);
+          onChange(snapped === latest ? null : snapped);
         }}
-        style={btnStyle(isLatest)}
-      >
-        ▶
-      </button>
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          opacity: 0,
+          cursor: "pointer",
+          border: "none",
+          padding: 0,
+          margin: 0,
+        }}
+      />
     </div>
   );
 }
