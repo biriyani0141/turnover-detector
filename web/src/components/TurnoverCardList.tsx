@@ -5,7 +5,13 @@ import TurnoverCard, { type CardStock } from "./TurnoverCard";
 const LAZY_CHART = true; // falseで全描画に切替（PickUpタブのLazyCardと同じ仕組み）
 
 // ビューポートに入るまでチャート描画を遅延させるラッパー（TurnoverCard自体は無改修）
-function LazyChart({ stock }: { stock: CardStock }) {
+function LazyChart({
+  stock,
+  onCardClick,
+}: {
+  stock: CardStock;
+  onCardClick?: (stock: CardStock) => void;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(!LAZY_CHART);
 
@@ -27,7 +33,11 @@ function LazyChart({ stock }: { stock: CardStock }) {
   }, [visible]);
 
   return (
-    <div ref={ref}>
+    <div
+      ref={ref}
+      onClick={onCardClick ? () => onCardClick(stock) : undefined}
+      style={onCardClick ? { cursor: "pointer" } : undefined}
+    >
       {visible ? (
         <TurnoverCard stock={stock} />
       ) : (
@@ -45,11 +55,17 @@ function LazyChart({ stock }: { stock: CardStock }) {
   );
 }
 
-export default function TurnoverCardList({ stocks }: { stocks: CardStock[] }) {
+export default function TurnoverCardList({
+  stocks,
+  onCardClick,
+}: {
+  stocks: CardStock[];
+  onCardClick?: (stock: CardStock) => void;
+}) {
   return (
     <div>
       {stocks.map((s) => (
-        <LazyChart key={s.code} stock={s} />
+        <LazyChart key={s.code} stock={s} onCardClick={onCardClick} />
       ))}
     </div>
   );

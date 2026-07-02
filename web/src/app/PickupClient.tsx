@@ -4,6 +4,7 @@ import TurnoverCard, { type CardStock } from "../components/TurnoverCard";
 import TurnoverCardList from "../components/TurnoverCardList";
 import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGates } from "@/lib/classify";
 import ExportMenu from "../components/ExportMenu";
+import StopHighDetailSheet from "../components/StopHighDetailSheet";
 
 const LAZY_CHART = true;
 
@@ -159,6 +160,7 @@ export default function PickupClient({
 }) {
   const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
+  const [detailStock, setDetailStock] = useState<CardStock | null>(null);
 
   // === 10日振り返り ===
   const [availableDates, setAvailableDates] = useState<string[]>([]);
@@ -420,7 +422,10 @@ export default function PickupClient({
           <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8 }}>
             <ExportMenu codes={displayRows.map((r) => r.code)} />
           </div>
-          <TurnoverCardList stocks={displayRows} />
+          <TurnoverCardList
+            stocks={displayRows}
+            onCardClick={mode === "stophigh" ? (stock) => setDetailStock(stock) : undefined}
+          />
         </>
       )}
 
@@ -439,6 +444,8 @@ export default function PickupClient({
           ))}
         </div>
       )}
+
+      <StopHighDetailSheet stock={detailStock} onClose={() => setDetailStock(null)} />
     </div>
   );
 }

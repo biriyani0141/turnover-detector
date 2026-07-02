@@ -4,27 +4,33 @@ S高カード用ポップアップの詳細データをkabutan.jpからスクレ
 対象: data/jquants/stop-high-reasons.json の最新日付キーに含まれる銘柄のみ
 (kabutan_stophigh_reasons.py 実行後に呼ぶ前提)。
 
-3ページから取得:
-  A: s.kabutan.jp/stocks/{code}/ → 会社名/コード/市場/業種/時価総額/発行済株式数
-  B: s.kabutan.jp/stocks/{code}/historical_prices/margin/ → 週次信用買い残(直近8週)
+4ページから取得:
+  A: s.kabutan.jp/stocks/{code}/ → 会社名/コード/市場/業種/時価総額/発行済株式数/
+     概要(基本情報テーブルの「概要」行)/関連テーマ(themeContainer内のli a)
+  B: s.kabutan.jp/stocks/{code}/historical_prices/margin/ → 週次信用買い残(直近16週)
+     + 同テーブルの週次終値(株価ライン重ね描画用)。
      発行済株式数から買い残/発行済株式数の比率(%)を算出
   C: s.kabutan.jp/stocks/{code}/stockholders/ → data-value="0"パネル(最新期)の全株主
+  D: s.kabutan.jp/stocks/{code}/news/ → 直近ニュース10件(日付/タイトル/タグ)。
+     ニュース一覧は ul.py-2.px-3 > li > a の構造(li直下、ページ内で唯一)。
+     tdnet開示PDFへの外部リンクとkabutan内記事リンクが混在するがどちらも
+     同じli構造のため区別せず扱う(本文リンクは表示しないため問題ない)。
 
-出力: data/jquants/stop-high-detail.json (日付キー > コードキー)
+出力: web/public/data/stop-high-detail.json (日付キー > コードキー)
+フロントエンドが直接fetchするファイルのため、他のカード用JSON
+(stophigh_cards.json等)と同じくweb/public/data/配下に置く
+(data/jquants/ではない。data/jquants/はraw internal用でNext.jsからは
+読めないため)。
 コードキーは kabutan_stophigh_reasons.py と同じ LocalCode 形式(生コード+"0")。
 生コード(URL用)は local_code[:-1] で復元する(生コードは常に4文字という
 既に確認済みの前提に基づく、to_local_code() の逆変換)。
-
-未確定事項: UI仕様の「概要は2行+トグル展開」用の事業内容テキストの取得元が
-未特定(/stocks/{code}/ と /stocks/{code}/finance/ を確認したが該当テキストが
-見つからなかった。meta descriptionは定型SEO文言のみで概要文言としては使えない)。
-overview_text は None のまま出力する。りゅに確認要。
 """
 
 import json
 import re
 import time
 from pathlib import Path
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -32,9 +38,10 @@ from bs4 import BeautifulSoup
 from kabutan_stophigh_reasons import HEADERS
 
 REASONS_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
-OUT_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-detail.json"
+OUT_FILE = Path(__file__).parent / "web" / "public" / "data" / "stop-high-detail.json"
 
 MARGIN_WEEKS = 16
+NEWS_LIMIT = 10
 SLEEP_BETWEEN_STOCKS = 1.0
 
 
@@ -102,6 +109,11 @@ def fetch_overview(session: requests.Session, raw_code: str) -> dict:
     if overview_text is None:
         raise ScrapeError(f"{url}: 概要(基本情報テーブル)が見つからない")
 
+    themes: list[str] = []
+    theme_container = soup.select_one('[data-stocks--basic-info-target="themeContainer"]')
+    if theme_container is not None:
+        themes = [a.get_text(strip=True) for a in theme_container.select("li a")]
+
     return {
         "name": name,
         "market": market,
@@ -109,6 +121,7 @@ def fetch_overview(session: requests.Session, raw_code: str) -> dict:
         "market_cap": market_cap,
         "shares_outstanding": shares_outstanding,
         "overview_text": overview_text,
+        "themes": themes,
     }
 
 
@@ -131,6 +144,8 @@ def fetch_margin_weekly(session: requests.Session, raw_code: str, shares_outstan
         if len(cells) < 8:
             continue
         date_label = cells[0].get_text(strip=True)
+        close_price_text = cells[1].get_text(strip=True)
+        close_price = float(re.sub(r"[^\d.]", "", close_price_text) or 0) or None
         buy_balance_text = cells[6].get_text(strip=True)
         buy_balance = int(re.sub(r"[^\d]", "", buy_balance_text) or 0)
         pct_of_shares = (
@@ -139,6 +154,7 @@ def fetch_margin_weekly(session: requests.Session, raw_code: str, shares_outstan
         rows.append(
             {
                 "date": date_label,
+                "close_price": close_price,
                 "buy_balance": buy_balance,
                 "pct_of_shares": pct_of_shares,
             }
@@ -183,11 +199,48 @@ def fetch_stockholders(session: requests.Session, raw_code: str) -> list[dict]:
     return holders
 
 
+def fetch_news(session: requests.Session, raw_code: str) -> list[dict]:
+    url = f"https://s.kabutan.jp/stocks/{raw_code}/news/"
+    r = session.get(url, headers=HEADERS, timeout=10)
+    r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    ul = soup.select_one("ul.py-2.px-3")
+    if ul is None:
+        raise ScrapeError(f"{url}: ニュース一覧(ul.py-2.px-3)が見つからない")
+
+    news = []
+    for li in ul.find_all("li", recursive=False):
+        if len(news) >= NEWS_LIMIT:
+            break
+        a = li.find("a")
+        if a is None:
+            continue
+        title_div = a.find("div", class_="line-clamp-2")
+        title = title_div.get_text(" ", strip=True) if title_div else None
+        tag_span = a.find("span", class_=re.compile(r"^news_category-"))
+        tag = tag_span.get_text(strip=True) if tag_span else None
+        time_el = a.find("time")
+        dt_raw = time_el.get("datetime") if time_el else None
+        date = dt_raw[:16] if dt_raw else None  # "2026-07-02 15:40:05 +0900" -> "2026-07-02 15:40"
+        href = a.get("href")
+        if title is None or tag is None or date is None or href is None:
+            continue
+        # kabutan内記事は相対パス、tdnet開示PDFは絶対URLのまま(urljoinはどちらも正しく処理する)
+        news.append({"date": date, "title": title, "tag": tag, "url": urljoin(url, href)})
+
+    if not news:
+        raise ScrapeError(f"{url}: ニュースが1件も取れなかった")
+
+    return news
+
+
 def build_detail_for_code(session: requests.Session, local_code: str) -> dict:
     raw_code = local_code[:-1]
     overview = fetch_overview(session, raw_code)
     margin_weekly = fetch_margin_weekly(session, raw_code, overview["shares_outstanding"])
     stockholders = fetch_stockholders(session, raw_code)
+    news = fetch_news(session, raw_code)
 
     return {
         "code": raw_code,
@@ -197,8 +250,10 @@ def build_detail_for_code(session: requests.Session, local_code: str) -> dict:
         "market_cap": overview["market_cap"],
         "shares_outstanding": overview["shares_outstanding"],
         "overview_text": overview["overview_text"],
+        "themes": overview["themes"],
         "margin_weekly": margin_weekly,
         "stockholders": stockholders,
+        "news": news,
     }
 
 
@@ -226,6 +281,6 @@ if __name__ == "__main__":
     date_key, result = scrape()
     print(f"{date_key}: {len(result)}件")
     for code, d in result.items():
-        print(f"  {code} {d['name']} 時価総額={d['market_cap']} 発行済={d['shares_outstanding']} margin_weeks={len(d['margin_weekly'])} holders={len(d['stockholders'])}")
+        print(f"  {code} {d['name']} 時価総額={d['market_cap']} 発行済={d['shares_outstanding']} margin_weeks={len(d['margin_weekly'])} holders={len(d['stockholders'])} news={len(d['news'])}")
     save(date_key, result)
     print(f"保存先: {OUT_FILE}")
