@@ -1056,6 +1056,7 @@ DISCLOSURE_TITLE_EXCLUDE = [
     "コーポレート・ガバナンスに関する報告書",  # kabutan実データは中黒(・)入りの表記もある
     "インタビュー",
     "支配株主等に関する事項について",
+    "補足説明資料",
 ]
 DISCLOSURE_MAX_ITEMS = 10
 
@@ -1091,15 +1092,15 @@ def _find_recent_disclosures(
     for n in news:
         if n.get("tag") != "開示":
             continue
-        n_date = (n.get("date") or "")[:10]
-        if n_date < window_start:
+        n_datetime = n.get("date") or ""  # "YYYY-MM-DD HH:MM"
+        if n_datetime[:10] < window_start:
             continue
         title = n.get("title", "")
         if any(kw in title for kw in DISCLOSURE_TITLE_EXCLUDE):
             continue
         if _is_english_only_title(title):
             continue
-        items.append({"date": n_date, "title": title})
+        items.append({"date": n_datetime, "title": title})
         if len(items) >= DISCLOSURE_MAX_ITEMS:
             break
     return items

@@ -561,6 +561,9 @@ function SheetContent({ stock }: { stock: CardStock }) {
     );
   }
 
+  // 取得元は最大30件だが、アコーディオン表示は元仕様通り直近10件までに絞る
+  const visibleNews = detail.news.slice(0, 10);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingTop: 6, paddingBottom: 6 }}>
       {/* A: ヘッダー基本情報 */}
@@ -718,7 +721,7 @@ function SheetContent({ stock }: { stock: CardStock }) {
       </div>
 
       {/* 直近ニュース(白カード、折りたたみ・デフォルト閉じ) */}
-      {detail.news.length > 0 && (
+      {visibleNews.length > 0 && (
         <div style={cardBlockStyle}>
           <button
             type="button"
@@ -753,7 +756,7 @@ function SheetContent({ stock }: { stock: CardStock }) {
 
           {newsOpen && (
             <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${DIVIDER}` }}>
-              {detail.news.map((n, i) => {
+              {visibleNews.map((n, i) => {
                 const tagStyle = newsTagStyle(n.tag);
                 return (
                   <a
@@ -766,7 +769,7 @@ function SheetContent({ stock }: { stock: CardStock }) {
                       flexDirection: "column",
                       gap: 2,
                       padding: "7px 0",
-                      borderBottom: i < detail.news.length - 1 ? `1px solid ${DIVIDER}` : "none",
+                      borderBottom: i < visibleNews.length - 1 ? `1px solid ${DIVIDER}` : "none",
                       textDecoration: "none",
                       cursor: "pointer",
                     }}

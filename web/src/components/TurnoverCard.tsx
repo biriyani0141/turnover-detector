@@ -71,9 +71,11 @@ function reasonStatusBadge(status: string | null): { bg: string; label: string }
   return { bg: "#F5A623", label: status };
 }
 
-function fmtCompactDate(isoDate: string): string {
-  const [, mm, dd] = isoDate.split("-");
-  return `${parseInt(mm, 10)}/${parseInt(dd, 10)}`;
+function fmtCompactDate(dateTime: string): string {
+  const [datePart, timePart] = dateTime.split(" ");
+  const [, mm, dd] = datePart.split("-");
+  const compact = `${parseInt(mm, 10)}/${parseInt(dd, 10)}`;
+  return timePart ? `${compact} ${timePart}` : compact;
 }
 
 export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge?: { text: string; bgClass: string } }) {

@@ -11,10 +11,12 @@ S高カード用ポップアップの詳細データをkabutan.jpからスクレ
      + 同テーブルの週次終値(株価ライン重ね描画用)。
      発行済株式数から買い残/発行済株式数の比率(%)を算出
   C: s.kabutan.jp/stocks/{code}/stockholders/ → data-value="0"パネル(最新期)の全株主
-  D: s.kabutan.jp/stocks/{code}/news/ → 直近ニュース10件(日付/タイトル/タグ)。
+  D: s.kabutan.jp/stocks/{code}/news/ → 直近ニュース最大30件(日付/タイトル/タグ)。
      ニュース一覧は ul.py-2.px-3 > li > a の構造(li直下、ページ内で唯一)。
      tdnet開示PDFへの外部リンクとkabutan内記事リンクが混在するがどちらも
      同じli構造のため区別せず扱う(本文リンクは表示しないため問題ない)。
+     市況全体の定型速報シリーズ(NEWS_TITLE_EXCLUDE)は個別銘柄ニュースの
+     取得枠を圧迫するため取得時点で除外する。
 
 出力: web/public/data/stop-high-detail.json (日付キー > コードキー)
 フロントエンドが直接fetchするファイルのため、他のカード用JSON
@@ -41,8 +43,17 @@ REASONS_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.j
 OUT_FILE = Path(__file__).parent / "web" / "public" / "data" / "stop-high-detail.json"
 
 MARGIN_WEEKS = 16
-NEWS_LIMIT = 10
+NEWS_LIMIT = 30
 SLEEP_BETWEEN_STOCKS = 1.0
+
+# 市況全体の定型速報シリーズ(個別銘柄名にたまたま言及されるだけで、その銘柄固有の
+# ニュースではない)。直近ニュース一覧の取得枠を埋めて個別開示を押し出してしまうため
+# 取得時点で除外する。
+NEWS_TITLE_EXCLUDE = [
+    "本日の【",
+    "新興市場銘柄ダイジェスト",
+    "前日に動いた銘柄",
+]
 
 
 class ScrapeError(RuntimeError):
@@ -225,6 +236,8 @@ def fetch_news(session: requests.Session, raw_code: str) -> list[dict]:
         date = dt_raw[:16] if dt_raw else None  # "2026-07-02 15:40:05 +0900" -> "2026-07-02 15:40"
         href = a.get("href")
         if title is None or tag is None or date is None or href is None:
+            continue
+        if any(kw in title for kw in NEWS_TITLE_EXCLUDE):
             continue
         # kabutan内記事は相対パス、tdnet開示PDFは絶対URLのまま(urljoinはどちらも正しく処理する)
         news.append({"date": date, "title": title, "tag": tag, "url": urljoin(url, href)})

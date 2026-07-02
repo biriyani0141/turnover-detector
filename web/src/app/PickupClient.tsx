@@ -18,6 +18,7 @@ const DISCLOSURE_TITLE_EXCLUDE = [
   "コーポレート・ガバナンスに関する報告書",
   "インタビュー",
   "支配株主等に関する事項について",
+  "補足説明資料",
 ];
 
 type Excluded = {
