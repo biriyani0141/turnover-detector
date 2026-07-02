@@ -1053,6 +1053,8 @@ DISCLOSURE_TITLE_EXCLUDE = [
     "独立役員届出書",
     "新株予約権",
     "コーポレートガバナンスに関する報告書",
+    "コーポレート・ガバナンスに関する報告書",  # kabutan実データは中黒(・)入りの表記もある
+    "インタビュー",
 ]
 DISCLOSURE_MAX_ITEMS = 10
 
@@ -1060,7 +1062,7 @@ DISCLOSURE_MAX_ITEMS = 10
 def _find_recent_disclosures(
     detail_data: dict, code: str, date_str: str, trading_dates: list[str]
 ) -> list[dict]:
-    """理由・連騰理由とも見つからない銘柄向けの代替表示: stop-high-detail.jsonのnewsから
+    """reasonの有無に関わらず常時表示する直近開示情報: stop-high-detail.jsonのnewsから
     tag=開示・直近REASON_LOOKBACK_DAYS営業日以内・定型文書除外後、
     最大DISCLOSURE_MAX_ITEMS件を新しい順に返す。
     """
@@ -1443,10 +1445,11 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
                     "streakDays": streak_days,
                     "prevText": prev_text,
                 }
-            else:
-                disclosures = _find_recent_disclosures(detail_data, code, date_str, trading_dates)
-                if disclosures:
-                    card["reason"] = {"kind": "disclosure", "items": disclosures}
+
+        # 直近開示情報(reasonの有無に関わらず常時付与。無ければキー自体を付けない)
+        disclosures = _find_recent_disclosures(detail_data, code, date_str, trading_dates)
+        if disclosures:
+            card["disclosures"] = disclosures
 
         stophigh_cards.append(card)
 

@@ -28,8 +28,7 @@ type DisclosureItem = { date: string; title: string };
 
 type StopHighReason =
   | { kind: "today"; status: string | null; text: string; orders: string | null }
-  | { kind: "streak"; streakDays: number; prevText: string }
-  | { kind: "disclosure"; items: DisclosureItem[] };
+  | { kind: "streak"; streakDays: number; prevText: string };
 
 export type CardStock = {
   code: string;
@@ -48,6 +47,7 @@ export type CardStock = {
   occCount?: number;
   stophighCount?: number;
   reason?: StopHighReason;
+  disclosures?: DisclosureItem[];
   candles: Candle[];
   volumes: Volume[];
 };
@@ -407,8 +407,8 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
       />
     </div>
 
-    {/* S高理由コメント欄(出来高チャート下、reasonが空の銘柄は非表示) */}
-    {stock.reason && (
+    {/* S高理由コメント欄(出来高チャート下、reason・disclosuresどちらも無い銘柄は非表示) */}
+    {(stock.reason || (stock.disclosures && stock.disclosures.length > 0)) && (
       <div
         style={{
           marginTop: 6,
@@ -420,60 +420,74 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
           fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
         }}
       >
-        {stock.reason.kind === "today" ? (
-          <>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-              {(() => {
-                const badge = reasonStatusBadge(stock.reason.status);
-                return (
-                  <span
-                    style={{
-                      fontSize: 9,
-                      fontWeight: 700,
-                      color: "#FFFFFF",
-                      background: badge.bg,
-                      borderRadius: 3,
-                      padding: "1px 5px",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {badge.label}
+        {stock.reason && (
+          <div style={{ marginBottom: stock.disclosures && stock.disclosures.length > 0 ? 6 : 0 }}>
+            {stock.reason.kind === "today" ? (
+              <>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+                  {(() => {
+                    const badge = reasonStatusBadge(stock.reason.status);
+                    return (
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 700,
+                          color: "#FFFFFF",
+                          background: badge.bg,
+                          borderRadius: 3,
+                          padding: "1px 5px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {badge.label}
+                      </span>
+                    );
+                  })()}
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "#3A4050", lineHeight: 1.5 }}>
+                    {stock.reason.text}
                   </span>
-                );
-              })()}
-              <span style={{ fontSize: 12, fontWeight: 500, color: "#3A4050", lineHeight: 1.5 }}>
-                {stock.reason.text}
-              </span>
-            </div>
-            {stock.reason.orders && (
-              <div style={{ fontSize: 10.5, color: "#9098A9", marginTop: 4, lineHeight: 1.5 }}>
-                {stock.reason.orders}
+                </div>
+                {stock.reason.orders && (
+                  <div style={{ fontSize: 10.5, color: "#9098A9", marginTop: 4, lineHeight: 1.5 }}>
+                    {stock.reason.orders}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+                <span
+                  style={{
+                    fontSize: 9,
+                    fontWeight: 700,
+                    color: "#FFFFFF",
+                    background: "#8B0000",
+                    borderRadius: 3,
+                    padding: "1px 5px",
+                    flexShrink: 0,
+                  }}
+                >
+                  連騰{stock.reason.streakDays}日目
+                </span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", lineHeight: 1.5 }}>
+                  {stock.reason.prevText}
+                  <span style={{ fontSize: 10, color: "#B4B8C0", marginLeft: 4 }}>(前回理由)</span>
+                </span>
               </div>
             )}
-          </>
-        ) : stock.reason.kind === "streak" ? (
-          <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-            <span
-              style={{
-                fontSize: 9,
-                fontWeight: 700,
-                color: "#FFFFFF",
-                background: "#8B0000",
-                borderRadius: 3,
-                padding: "1px 5px",
-                flexShrink: 0,
-              }}
-            >
-              連騰{stock.reason.streakDays}日目
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", lineHeight: 1.5 }}>
-              {stock.reason.prevText}
-              <span style={{ fontSize: 10, color: "#B4B8C0", marginLeft: 4 }}>(前回理由)</span>
-            </span>
           </div>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {stock.reason.items.map((item, i) => (
+        )}
+
+        {stock.disclosures && stock.disclosures.length > 0 && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 3,
+              paddingTop: stock.reason ? 6 : 0,
+              borderTop: stock.reason ? "1px solid #EEEEEE" : "none",
+            }}
+          >
+            {stock.disclosures.map((item, i) => (
               <div key={i} style={{ fontSize: 10.5, color: "#9098A9", lineHeight: 1.5 }}>
                 <span style={{ fontVariantNumeric: "tabular-nums", fontSize: 10.5, color: "#9098A9", marginRight: 5 }}>
                   {fmtCompactDate(item.date)}

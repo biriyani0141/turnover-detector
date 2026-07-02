@@ -8,6 +8,17 @@ import StopHighDetailSheet from "../components/StopHighDetailSheet";
 
 const LAZY_CHART = true;
 
+// jquants_ranking.py の DISCLOSURE_TITLE_EXCLUDE と同一内容(表示用に複製)
+const DISCLOSURE_TITLE_EXCLUDE = [
+  "第三者割当",
+  "定款",
+  "独立役員届出書",
+  "新株予約権",
+  "コーポレートガバナンスに関する報告書",
+  "コーポレート・ガバナンスに関する報告書",
+  "インタビュー",
+];
+
 type Excluded = {
   code: string;
   name: string;
@@ -426,10 +437,34 @@ export default function PickupClient({
             stocks={displayRows}
             onCardClick={mode === "stophigh" ? (stock) => setDetailStock(stock) : undefined}
           />
+
+          {mode === "stophigh" && (
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <p className="text-xs font-medium text-gray-500 mb-2">※ 注意事項</p>
+              <p className="text-[10px] text-gray-400 mb-1">
+                以下のキーワードを含む開示情報は、理由欄の開示情報表示から除外しています
+              </p>
+              <p className="text-[10px] text-gray-400 leading-5 mb-3">
+                {DISCLOSURE_TITLE_EXCLUDE.join(" / ")}
+              </p>
+              {excluded.length > 0 && (
+                <>
+                  <p className="text-[10px] text-gray-400 mb-1">
+                    除外銘柄（手動）: 以下は構造的ノイズとして一覧から除外中
+                  </p>
+                  {excluded.map((e) => (
+                    <div key={e.code} className="text-[10px] text-gray-400 leading-5">
+                      {e.code} {e.name} ― {e.reason}
+                    </div>
+                  ))}
+                </>
+              )}
+            </div>
+          )}
         </>
       )}
 
-      {excluded.length > 0 && (
+      {excluded.length > 0 && mode !== "stophigh" && (
         <div className="mt-8 pt-4 border-t border-gray-200">
           <p className="text-xs font-medium text-gray-500 mb-1">
             除外銘柄（手動）
