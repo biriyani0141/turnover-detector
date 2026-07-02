@@ -23,10 +23,6 @@ jobs:
           python-version: "3.12"
       - name: Install deps
         run: pip install -r requirements.txt
-      - name: DEBUG kabutan s.kabutan.jp article URL (temporary)
-        run: python debug/kabutan_debug.py --url "https://s.kabutan.jp/news/marketnews/?b=n202607020834"
-      - name: DEBUG kabutan s.kabutan.jp list URL (temporary)
-        run: python debug/kabutan_debug.py --url "https://s.kabutan.jp/news/marketnews/"
       - name: Fetch daily quotes
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}

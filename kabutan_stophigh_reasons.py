@@ -3,14 +3,20 @@ kabutan.jp の日次「本日の【ストップ高／ストップ安】」記事
 S高銘柄ごとの理由テキストをスクレイプする。
 
 2段構え:
-  1) https://kabutan.jp/news/marketnews/ の「TOPニュース」ウィジェット
-     (div.sub_news_box) から当日の該当記事ID(b=n...)を特定
+  1) https://s.kabutan.jp/market_news/?category_org_id=2 (材料カテゴリ)の
+     直近フィードから当日の該当記事ID(/news/n.../)を特定
   2) https://s.kabutan.jp/news/marketnews/?b=<id> をパースし、
      div.monospaced 内の p.narrow を順に走査してS高銘柄一覧を抽出
 
+kabutan.jp(PC版ドメイン)はAWS WAF Bot ControlにGitHub Actionsランナーの
+IPがブロックされる(HTTP 405、Human Verificationページを返される)ことを
+2026-07-02にCI実測で確認済みのため、ID解決も含め s.kabutan.jp のみで完結させる。
+
 HTML構造はサイト改修で変わりうるので、想定と異なる箇所に当たったら
 無言で skip せず、即エラーで気付けるようにする(理由データの欠落を
-握りつぶさない)。
+握りつぶさない)。今回は1ページ目(直近フィード)で見つからない場合も
+ページネーションは行わずエラーにする(平日16:40/17:40 JST実行なら
+記事発行(15:40頃)から1〜2h以内で1ページ目に収まることを実測確認済み)。
 
 出力: data/jquants/stop-high-reasons.json に日付キーで追記していく。
   {"2026-07-02": {"265A0": {"status": "配分", "reason": "...", "orders": "..."}}}
@@ -37,7 +43,7 @@ HEADERS = {
     ),
 }
 
-LIST_URL = "https://kabutan.jp/news/marketnews/"
+LIST_URL = "https://s.kabutan.jp/market_news/?category_org_id=2"
 ARTICLE_URL = "https://s.kabutan.jp/news/marketnews/?b={article_id}"
 
 OUT_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
@@ -58,34 +64,30 @@ class ScrapeError(RuntimeError):
 
 
 def find_today_article_id(session: requests.Session) -> str:
-    """一覧ページの TOP ニュースウィジェットから当日のS高/S安記事IDを特定する。"""
+    """材料カテゴリの直近フィード(1ページ目)から当日のS高/S安記事IDを特定する。"""
     r = session.get(LIST_URL, headers=HEADERS, timeout=10)
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
 
-    box = soup.select_one("div.sub_news_box")
-    if box is None:
-        raise ScrapeError("div.sub_news_box が見つからない(サイト構造変更の疑い)")
-
     candidates: list[tuple[int, str]] = []
-    for a in box.select("li a[href*='b=n']"):
+    for a in soup.select("a[href^='/news/n']"):
         title = a.get_text(strip=True)
         if not title.startswith(TITLE_PREFIX):
             continue
         if "引け" not in title:
             continue
-        m = re.search(r"b=(n\d+)", a["href"])
+        m = re.match(r"/news/(n\d+)/", a["href"])
         if not m:
             continue
         article_id = m.group(1)
-        # b=n + YYYYMMDD + 連番。連番部分を数値化して最新判定に使う。
+        # n + YYYYMMDD + 連番。連番部分を数値化して最新判定に使う。
         sort_key = int(article_id[1:])
         candidates.append((sort_key, article_id))
 
     if not candidates:
         raise ScrapeError(
-            "TOPニュースウィジェットに「本日の【ストップ高／ストップ安】...引け」"
-            "に一致する記事が見つからない"
+            f"{LIST_URL} の1ページ目に「本日の【ストップ高／ストップ安】...引け」"
+            "に一致する記事が見つからない(ページネーション未対応)"
         )
 
     candidates.sort(key=lambda t: t[0])
