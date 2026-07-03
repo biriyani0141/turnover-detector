@@ -1005,6 +1005,86 @@ _MARKET_NAME_MAP = {
 
 RANKING_CARDS_FILE_DATA = Path(__file__).parent / "data" / "jquants" / "ranking_cards.json"
 RANKING_CARDS_FILE_WEB  = Path(__file__).parent / "web" / "public" / "data" / "ranking_cards.json"
+TURNOVER_POPULATION_FILE = Path(__file__).parent / "data" / "jquants" / "turnover_population.json"
+
+
+def _compute_turnover_top100(
+    split_events: dict[str, list[tuple[str, float]]]
+) -> tuple[str, list[dict]]:
+    """turnover_pct(当日売買代金÷時価総額)降順の上位100件を計算する。
+    build_turnover_population()とbuild_ranking_cards()の母集団計算を共有し、
+    どちらか片方だけ修正してロジックがズレることを防ぐ。
+    戻り値: (date_str, top100)。top100の各要素はcode/_stock/C/mktcap/va/turnover_pct/ret_1dを含む。
+    """
+    if not META_FILE.exists():
+        print(f"エラー: meta.json が見つかりません: {META_FILE}")
+        raise SystemExit(1)
+    meta = json.loads(META_FILE.read_text(encoding="utf-8"))
+    stocks_meta: dict[str, dict] = meta["stocks"]
+
+    targets = {
+        code: s
+        for code, s in stocks_meta.items()
+        if s.get("prodcat") == "011" and s.get("shares")
+    }
+
+    date_str, code_to_close, code_to_va = _latest_daily_close()
+
+    results: list[dict] = []
+    for code, stock in targets.items():
+        shares = get_adjusted_shares(code, date_str, stock, split_events)
+        if shares is None:
+            continue
+        c = code_to_close.get(code)
+        if c is None:
+            continue
+        mktcap = c * shares
+        va = code_to_va.get(code)
+        if va is None or mktcap == 0:
+            continue
+        results.append({
+            "code": code,
+            "C": c,
+            "mktcap": mktcap,
+            "va": va,
+            "turnover_pct": va / mktcap * 100,
+            "_stock": stock,
+        })
+
+    results.sort(key=lambda x: x["turnover_pct"], reverse=True)
+
+    returns_all = calc_returns()
+    for r in results:
+        ret = returns_all.get(r["code"])
+        r["ret_1d"] = ret.get("1d") if ret else None
+
+    top100 = results[:100]
+    return date_str, top100
+
+
+def build_turnover_population(split_events: dict[str, list[tuple[str, float]]]) -> None:
+    """kabutan_stophigh_detail.pyが出来高率タブの対象銘柄選定に使う軽量な母集団ファイルを出力する。
+    stop-high-reasons.json/stop-high-detail.jsonに依存せず、meta.json+当日終値のみで完結するため、
+    kabutanスクレイプ(reason/detail)より前段に置ける。
+    出力先: data/jquants/turnover_population.json
+    """
+    date_str, top100 = _compute_turnover_top100(split_events)
+    codes = [r["code"] for r in top100]
+
+    output = {
+        "_meta": {
+            "generated": datetime.datetime.now().isoformat(),
+            "date": date_str,
+            "count": len(codes),
+        },
+        "codes": codes,
+    }
+
+    TURNOVER_POPULATION_FILE.parent.mkdir(parents=True, exist_ok=True)
+    TURNOVER_POPULATION_FILE.write_text(
+        json.dumps(output, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    print(f"turnover_population.json 出力: {len(codes)}件")
 
 
 def _format_mktcap(mktcap: float) -> str:
@@ -1156,50 +1236,7 @@ def build_ranking_cards(split_events: dict[str, list[tuple[str, float]]]) -> Non
     candles / volumes に直近60営業日分の日足を含む。
     出力先: data/jquants/ranking_cards.json と web/public/data/ranking_cards.json
     """
-    if not META_FILE.exists():
-        print(f"エラー: meta.json が見つかりません: {META_FILE}")
-        raise SystemExit(1)
-    meta = json.loads(META_FILE.read_text(encoding="utf-8"))
-    stocks_meta: dict[str, dict] = meta["stocks"]
-
-    targets = {
-        code: s
-        for code, s in stocks_meta.items()
-        if s.get("prodcat") == "011" and s.get("shares")
-    }
-
-    date_str, code_to_close, code_to_va = _latest_daily_close()
-
-    # --- 回転率計算 ---
-    results: list[dict] = []
-    for code, stock in targets.items():
-        shares = get_adjusted_shares(code, date_str, stock, split_events)
-        if shares is None:
-            continue
-        c = code_to_close.get(code)
-        if c is None:
-            continue
-        mktcap = c * shares
-        va = code_to_va.get(code)
-        if va is None or mktcap == 0:
-            continue
-        results.append({
-            "code": code,
-            "C": c,
-            "mktcap": mktcap,
-            "va": va,
-            "turnover_pct": va / mktcap * 100,
-            "_stock": stock,
-        })
-
-    results.sort(key=lambda x: x["turnover_pct"], reverse=True)
-
-    returns_all = calc_returns()
-    for r in results:
-        ret = returns_all.get(r["code"])
-        r["ret_1d"] = ret.get("1d") if ret else None
-
-    top100 = results[:100]
+    date_str, top100 = _compute_turnover_top100(split_events)
     top_codes = {r["code"] for r in top100}
 
     # --- appearance.json から出現回数・S高回数を取得 ---
@@ -1848,6 +1885,8 @@ if __name__ == "__main__":
         build_window_scores()
     elif len(sys.argv) > 1 and sys.argv[1] == "build_popular":
         build_popular(split_events)
+    elif len(sys.argv) > 1 and sys.argv[1] == "build_turnover_population":
+        build_turnover_population(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_ranking_cards":
         build_ranking_cards(split_events)
     elif len(sys.argv) > 1 and sys.argv[1] == "build_stophigh_cards":

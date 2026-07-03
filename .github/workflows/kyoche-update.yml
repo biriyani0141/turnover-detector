@@ -61,14 +61,18 @@ jobs:
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python jquants_ranking.py build_popular
-      - name: Build ranking cards
+      - name: Build turnover population
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
-        run: python jquants_ranking.py build_ranking_cards
+        run: python jquants_ranking.py build_turnover_population
       - name: Scrape kabutan stophigh reasons
         run: python kabutan_stophigh_reasons.py
       - name: Scrape kabutan stophigh detail
         run: python kabutan_stophigh_detail.py
+      - name: Build ranking cards
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python jquants_ranking.py build_ranking_cards
       - name: Build stophigh cards
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}

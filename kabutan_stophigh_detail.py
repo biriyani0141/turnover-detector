@@ -6,13 +6,19 @@ S高カード・出来高率カード共通のポップアップ詳細データ�
   - S高タブ: data/jquants/stop-high-reasons.json の最新日付キーに含まれる銘柄
     (kabutan_stophigh_reasons.py 実行後に呼ぶ前提)。上限は環境変数
     STOPHIGH_DETAIL_LIMIT(未設定/0なら無制限、現状維持)。
-  - 出来高率タブ: web/public/data/ranking_cards.json の"ranking"配列
-    (turnover_pct降順、表示中の回転率タブと同一ソース)の上位N件
+  - 出来高率タブ: data/jquants/turnover_population.json の"codes"配列
+    (turnover_pct降順、表示中の回転率タブと同一ロジックで計算)の上位N件
     (環境変数TURNOVER_DETAIL_LIMIT、デフォルト30)。
     ※ data/jquants/ranking.json はva(売買代金)降順のtop100であり、
     turnover_pctで再ソートしても「turnover_pctは高いがvaは低い」銘柄が
     そもそもリストに含まれず欠落する(実際にリベルタ4935で発生・修正済み)。
-    ranking_cards.json は元からturnover_pct降順のため、この問題が起きない。
+    turnover_population.json は jquants_ranking.py の _compute_turnover_top100()
+    (build_ranking_cards()と共有)で最初からturnover_pct降順に計算するため、
+    この問題が起きない。かつこのファイルはkabutan detail/reasonsスクレイプより
+    前段(meta.json+当日終値のみ)で生成できるため、本スクリプトを
+    build_ranking_cardsより前に実行しても循環依存が起きない
+    (2026-07-03、build_ranking_cards→detail scrapeの実行順序バグ修正の一環で
+    ranking_cards.json依存から切り替え)。
   両者の合算(重複除去、S高側を優先した順序)がスクレイプ対象。
 
 4ページから取得:
@@ -52,7 +58,7 @@ from bs4 import BeautifulSoup
 from kabutan_stophigh_reasons import HEADERS
 
 REASONS_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
-RANKING_CARDS_FILE = Path(__file__).parent / "web" / "public" / "data" / "ranking_cards.json"
+TURNOVER_POPULATION_FILE = Path(__file__).parent / "data" / "jquants" / "turnover_population.json"
 OUT_FILE = Path(__file__).parent / "web" / "public" / "data" / "stop-high-detail.json"
 
 MARGIN_WEEKS = 16
@@ -89,16 +95,14 @@ def load_target_codes() -> tuple[str, list[str]]:
         stophigh_codes = stophigh_codes[:STOPHIGH_DETAIL_LIMIT]
 
     turnover_codes: list[str] = []
-    if RANKING_CARDS_FILE.exists() and TURNOVER_DETAIL_LIMIT > 0:
+    if TURNOVER_POPULATION_FILE.exists() and TURNOVER_DETAIL_LIMIT > 0:
         try:
-            ranking_cards_data = json.loads(RANKING_CARDS_FILE.read_text(encoding="utf-8"))
-            # ranking_cards.jsonは既にturnover_pct降順(build_ranking_cards()参照)なので
-            # そのまま先頭N件を使う。表示中の回転率タブと完全に同じ並び順・同じ母集団。
-            turnover_codes = [
-                r["code"] for r in ranking_cards_data.get("ranking", [])[:TURNOVER_DETAIL_LIMIT]
-            ]
+            population_data = json.loads(TURNOVER_POPULATION_FILE.read_text(encoding="utf-8"))
+            # turnover_population.jsonは既にturnover_pct降順なのでそのまま先頭N件を使う。
+            # 表示中の回転率タブと完全に同じ並び順・同じ母集団(_compute_turnover_top100共有)。
+            turnover_codes = population_data.get("codes", [])[:TURNOVER_DETAIL_LIMIT]
         except Exception as e:
-            print(f"警告: {RANKING_CARDS_FILE} の読み込みに失敗、出来高率タブ分の対象銘柄は空になる: {e}")
+            print(f"警告: {TURNOVER_POPULATION_FILE} の読み込みに失敗、出来高率タブ分の対象銘柄は空になる: {e}")
 
     # 重複除去(S高側の順序を優先)
     seen: set[str] = set()
