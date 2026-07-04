@@ -453,27 +453,28 @@ export default function TurnoverCard({
   );
 }
 
-const NOTE_MAX_LINES = 3;
-const NOTE_LINE_HEIGHT = 18; // fontSize 12 * lineHeight 1.5
-const DISCLOSURE_MAX_LINES = 3;
-const DISCLOSURE_LINE_HEIGHT = 15.75; // fontSize 10.5 * lineHeight 1.5
-// 計測(scrollHeight)と実描画(snapdomのdpr:2キャプチャ)の間のサブピクセル差異を吸収する安全マージン。
-// 境界ぎりぎりで収まると判定した項目が、実際の画像出力では途中の行で見切れる事象が確認されたため。
-const FIT_SAFETY_MARGIN = 3;
-
-// 本文ブロック(タグ+本文+orders)と開示情報ブロックを、区切り線(border-top)を挟んで分けて表示する。
-// タグは本文の先頭行に同居させ(個別画面NoteContentの「今日」パターンと同じ)、本文が長い場合は
-// タグの右から回り込んで折り返す。ordersは個別画面と同じくグレー小サイズの別行として本文の下に置く。
-// 本文ブロック(タグ行+本文+orders)は3行相当まで。本文は超過時に二分探索で文字を切り省略記号
-// 「…」を付ける。ordersは全体がその3行枠に収まる場合のみ表示し、収まらなければ(部分表示や
-// 省略記号なしで)丸ごと非表示にする。
+// 補足ブロック(本文+開示情報)は個別画面NoteContentと同じ構造(タグは本文の先頭行に同居、
+// 本文が長い場合はタグの右から回り込んで折り返す。ordersはグレー小サイズの別行、開示情報は
+// 区切り線を挟んだ別ブロックで1件1行)で表示しつつ、全体の高さはCSSで固定する(下のJSXの
+// height/maxHeightの値が唯一の真実で、JS側に同じ値を別定数として持たない)。
 //
-// 開示情報ブロックは本文とは別に3行相当の枠を持つが、こちらも項目単位の全部/非表示切り替えのみ
-// で、行の途中で途切れる項目があれば(文字を切って省略記号を付けず)その項目ごと非表示にする。
+// 開示情報に割り当てる高さは固定枠を持たず、ブロック全体の実測高さ(clientHeight)から本文
+// ブロックの実測高さ(offsetHeight)と開示ブロック自身のCSS上のoverhead(margin/padding/border、
+// これもgetComputedStyleで実測)を差し引いた残りを都度算出する。本文が短ければ開示情報が
+// その分多く入り、下端の余白が残らない。
 //
-// 省略記号をCSSのwebkit-line-clampに任せず実DOM計測(scrollHeight)で手動計算しているのは、
+// 開示情報は1件ずつ、実際に表示するDOM(クローンではない)に追加しながらoffsetHeight/scrollHeightを
+// 累積計測し、残り高さに収まらなくなった時点でそれ以降を丸ごと非表示にする(部分表示・省略記号は
+// 付けない)。以前は計測用に別要素のクローンを使っていたが、flex/gapなどのスタイルが実要素と
+// 微妙にズレて境界ぎりぎりの項目が見切れる不具合があったため、実要素そのもので計測する方式に
+// 変更した。
+//
+// 本文の省略記号「…」はCSSのwebkit-line-clampに任せず実DOM計測(scrollHeight)で手動計算している。
 // 画像まとめ出力に使うsnapdomのキャプチャ結果だけ省略記号が描画されない(文字が中途半端に
 // 切れる)事象を実データで確認したため。
+//
+// コンテナ幅が変わると本文の折り返しや開示情報の行数も変わるため、ResizeObserverで再計測し
+// レスポンシブでも正しく動作するようにしている。
 function CompactNoteContent({ stock }: { stock: CardStock }) {
   let badge: { bg: string; label: string } | null = null;
   let mainText = "";
@@ -492,113 +493,120 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
     }
   }
 
+  const blockRef = useRef<HTMLDivElement>(null);
   const reasonBlockRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
   const ordersRef = useRef<HTMLDivElement>(null);
+  const disclosureRef = useRef<HTMLDivElement>(null);
+  const disclosureItems = stock.disclosures ?? [];
+  const disclosureKey = disclosureItems.map((d) => `${d.date}|${d.title}`).join("");
 
   // 計測結果をReactのstateに戻さず直接DOMへ書き込む。setStateで再レンダリングすると
   // react-hooks/set-state-in-effectのカスケード再レンダリング警告に抵触する上、
   // ここはReactが管理する子要素を持たない末端要素なので直接書き込んでも競合しない。
   useLayoutEffect(() => {
+    const blockEl = blockRef.current;
     const textEl = textRef.current;
     const ordersEl = ordersRef.current;
     const reasonBlock = reasonBlockRef.current;
-    if (!textEl || !ordersEl || !reasonBlock) return;
+    const disclosureHost = disclosureRef.current;
+    if (!blockEl || !textEl || !ordersEl || !reasonBlock) return;
 
-    const maxHeight = NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1;
+    function recomputeReason() {
+      const reasonMaxHeight = parseFloat(getComputedStyle(reasonBlock!).maxHeight) || Infinity;
 
-    if (!mainText) {
-      textEl.replaceChildren();
-    } else {
-      const clone = document.createElement("span");
-      clone.style.position = "absolute";
-      clone.style.visibility = "hidden";
-      clone.style.width = `${textEl.clientWidth}px`;
-      clone.style.display = "block";
-      clone.style.fontSize = "12px";
-      clone.style.lineHeight = "1.5";
-      textEl.parentElement?.appendChild(clone);
+      if (!mainText) {
+        textEl!.replaceChildren();
+      } else {
+        const clone = document.createElement("span");
+        clone.style.position = "absolute";
+        clone.style.visibility = "hidden";
+        clone.style.width = `${textEl!.clientWidth}px`;
+        clone.style.display = "block";
+        clone.style.fontSize = "12px";
+        clone.style.lineHeight = "1.5";
+        textEl!.parentElement?.appendChild(clone);
 
-      let visibleText = mainText;
-      clone.textContent = mainText;
-      if (clone.scrollHeight > maxHeight) {
-        let lo = 0;
-        let hi = mainText.length;
-        while (lo < hi) {
-          const mid = Math.ceil((lo + hi) / 2);
-          clone.textContent = mainText.slice(0, mid) + "…";
-          if (clone.scrollHeight <= maxHeight) lo = mid;
-          else hi = mid - 1;
+        let visibleText = mainText;
+        clone.textContent = mainText;
+        if (clone.scrollHeight > reasonMaxHeight) {
+          let lo = 0;
+          let hi = mainText.length;
+          while (lo < hi) {
+            const mid = Math.ceil((lo + hi) / 2);
+            clone.textContent = mainText.slice(0, mid) + "…";
+            if (clone.scrollHeight <= reasonMaxHeight) lo = mid;
+            else hi = mid - 1;
+          }
+          visibleText = mainText.slice(0, lo) + (lo < mainText.length ? "…" : "");
         }
-        visibleText = mainText.slice(0, lo) + (lo < mainText.length ? "…" : "");
+        clone.remove();
+        textEl!.textContent = visibleText;
       }
-      clone.remove();
-      textEl.textContent = visibleText;
-    }
 
-    // ordersは本文込みの合計高さが3行枠に収まる場合のみ全文表示し、収まらなければ丸ごと非表示。
-    ordersEl.textContent = ordersText || "";
-    if (ordersText && reasonBlock.scrollHeight > maxHeight - FIT_SAFETY_MARGIN) {
-      ordersEl.replaceChildren();
-    }
-  }, [mainText, ordersText]);
-
-  const disclosureRef = useRef<HTMLDivElement>(null);
-  const disclosureItems = stock.disclosures ?? [];
-  const disclosureKey = disclosureItems.map((d) => `${d.date}|${d.title}`).join("");
-
-  useLayoutEffect(() => {
-    const host = disclosureRef.current;
-    if (!host) return;
-    host.replaceChildren();
-    if (disclosureItems.length === 0) return;
-
-    const maxHeight = DISCLOSURE_LINE_HEIGHT * DISCLOSURE_MAX_LINES + 1;
-    const measureHost = document.createElement("div");
-    measureHost.style.position = "absolute";
-    measureHost.style.visibility = "hidden";
-    measureHost.style.width = `${host.clientWidth}px`;
-    // 実要素(host)と同じflex/gapを再現しないと、gap分の高さが計測に反映されず
-    // 実描画時にoverflow:hiddenで開示情報が途中の行で見切れる不具合が起きるため揃える。
-    measureHost.style.display = "flex";
-    measureHost.style.flexDirection = "column";
-    measureHost.style.gap = "3px";
-    host.parentElement?.appendChild(measureHost);
-
-    const makeItemEl = (item: DisclosureItem): HTMLDivElement => {
-      const el = document.createElement("div");
-      el.style.fontSize = "10.5px";
-      el.style.color = "#9098A9";
-      el.style.lineHeight = "1.5";
-      const dateSpan = document.createElement("span");
-      dateSpan.style.fontVariantNumeric = "tabular-nums";
-      dateSpan.style.marginRight = "5px";
-      dateSpan.textContent = fmtCompactDate(item.date);
-      el.appendChild(dateSpan);
-      el.appendChild(document.createTextNode(item.title));
-      return el;
-    };
-
-    const kept: HTMLElement[] = [];
-    for (const item of disclosureItems) {
-      const el = makeItemEl(item);
-      measureHost.appendChild(el);
-      if (measureHost.scrollHeight > maxHeight - FIT_SAFETY_MARGIN) {
-        measureHost.removeChild(el);
-        break;
+      // ordersは本文込みの合計高さが本文ブロックの枠(CSSのmaxHeight)に収まる場合のみ全文表示し、
+      // 収まらなければ丸ごと非表示。
+      ordersEl!.textContent = ordersText || "";
+      if (ordersText && reasonBlock!.scrollHeight > reasonMaxHeight) {
+        ordersEl!.replaceChildren();
       }
-      kept.push(el);
     }
-    measureHost.remove();
-    host.replaceChildren(...kept);
-  }, [disclosureKey]);
+
+    function recomputeDisclosures() {
+      const host = disclosureHost;
+      if (!host) return;
+      host.replaceChildren();
+      if (disclosureItems.length === 0) return;
+
+      // 開示情報に使える高さ = ブロック全体の実測高さ − 本文ブロックの実測高さ − 開示ブロック自身の
+      // overhead(margin/padding/border、getComputedStyleで実測)。固定値をJS側に持たない。
+      const cs = getComputedStyle(host);
+      const overhead = parseFloat(cs.marginTop) + parseFloat(cs.paddingTop) + parseFloat(cs.borderTopWidth);
+      const budget = blockEl!.clientHeight - reasonBlock!.offsetHeight - overhead;
+      if (budget <= 0) return;
+
+      const makeItemEl = (item: DisclosureItem): HTMLDivElement => {
+        const el = document.createElement("div");
+        el.style.fontSize = "10.5px";
+        el.style.color = "#9098A9";
+        el.style.lineHeight = "1.5";
+        const dateSpan = document.createElement("span");
+        dateSpan.style.fontVariantNumeric = "tabular-nums";
+        dateSpan.style.marginRight = "5px";
+        dateSpan.textContent = fmtCompactDate(item.date);
+        el.appendChild(dateSpan);
+        el.appendChild(document.createTextNode(item.title));
+        return el;
+      };
+
+      // クローンではなく実際に表示するDOMそのものへ1件ずつ追加しながら累積のscrollHeightを測る。
+      // 別要素のクローンで測ると、そのクローンにflex/gap等のスタイルを再現し忘れて実描画との
+      // ズレが生じ、境界ぎりぎりの項目が見切れる不具合が過去にあったため、この方式に変更した。
+      for (const item of disclosureItems) {
+        const el = makeItemEl(item);
+        host.appendChild(el);
+        if (host.scrollHeight > budget) {
+          host.removeChild(el);
+          break;
+        }
+      }
+    }
+
+    recomputeReason();
+    recomputeDisclosures();
+
+    // コンテナ幅が変わると本文の折り返しや開示情報の件数も変わるため再計算する(レスポンシブ対応)。
+    const ro = new ResizeObserver(() => {
+      recomputeReason();
+      recomputeDisclosures();
+    });
+    ro.observe(blockEl);
+    return () => ro.disconnect();
+  }, [mainText, mainColor, ordersText, disclosureKey]);
 
   return (
-    <div>
-      <div
-        ref={reasonBlockRef}
-        style={{ maxHeight: NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1, overflow: "hidden" }}
-      >
+    <div ref={blockRef} style={{ height: 93, overflow: "hidden" }}>
+      <div ref={reasonBlockRef} style={{ maxHeight: 55, overflow: "hidden" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 6 }}>
           {badge && (
             <span
@@ -639,8 +647,6 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
             marginTop: 6,
             paddingTop: 6,
             borderTop: "1px solid #EEEEEE",
-            maxHeight: DISCLOSURE_LINE_HEIGHT * DISCLOSURE_MAX_LINES + 1,
-            overflow: "hidden",
           }}
         />
       )}
