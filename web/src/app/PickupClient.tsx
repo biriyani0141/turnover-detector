@@ -188,6 +188,7 @@ export default function PickupClient({
 }) {
   const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
   const [detailStock, setDetailStock] = useState<CardStock | null>(null);
   const imageSummary = useImageSummaryExport();
 
@@ -481,27 +482,48 @@ export default function PickupClient({
 
           {(mode === "stophigh" || mode === "turnover") && (
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <p className="text-xs font-medium text-gray-500 mb-2">※ 注意事項</p>
-              <p className="text-[10px] text-gray-400 mb-1">
-                以下のキーワードを含む開示情報は、理由欄の開示情報表示から除外しています
-              </p>
-              <p className="text-[10px] text-gray-400 leading-5 mb-1">
-                {DISCLOSURE_TITLE_EXCLUDE.join(" / ")}
-              </p>
-              <p className="text-[10px] text-gray-400 leading-5 mb-3">
-                和文記事の英語重複版(タイトルに日本語を含まないもの)も除外しています
-              </p>
-              {excluded.length > 0 && (
-                <>
+              <button
+                type="button"
+                onClick={() => setNotesOpen((o) => !o)}
+                aria-expanded={notesOpen}
+                className="text-xs font-medium text-gray-500"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  background: "transparent",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                <span>{notesOpen ? "▼" : "▶"}</span>
+                <span>※ 注意事項</span>
+              </button>
+              {notesOpen && (
+                <div className="mt-2">
                   <p className="text-[10px] text-gray-400 mb-1">
-                    除外銘柄（手動）: 以下は構造的ノイズとして一覧から除外中
+                    以下のキーワードを含む開示情報は、理由欄の開示情報表示から除外しています
                   </p>
-                  {excluded.map((e) => (
-                    <div key={e.code} className="text-[10px] text-gray-400 leading-5">
-                      {e.code} {e.name} ― {e.reason}
-                    </div>
-                  ))}
-                </>
+                  <p className="text-[10px] text-gray-400 leading-5 mb-1">
+                    {DISCLOSURE_TITLE_EXCLUDE.join(" / ")}
+                  </p>
+                  <p className="text-[10px] text-gray-400 leading-5 mb-3">
+                    和文記事の英語重複版(タイトルに日本語を含まないもの)も除外しています
+                  </p>
+                  {excluded.length > 0 && (
+                    <>
+                      <p className="text-[10px] text-gray-400 mb-1">
+                        除外銘柄（手動）: 以下は構造的ノイズとして一覧から除外中
+                      </p>
+                      {excluded.map((e) => (
+                        <div key={e.code} className="text-[10px] text-gray-400 leading-5">
+                          {e.code} {e.name} ― {e.reason}
+                        </div>
+                      ))}
+                    </>
+                  )}
+                </div>
               )}
             </div>
           )}
