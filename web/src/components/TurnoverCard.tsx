@@ -455,15 +455,13 @@ export default function TurnoverCard({
 
 // 補足ブロック(本文+開示情報)は個別画面NoteContentと同じ構造(タグは本文の先頭行に同居、
 // 本文が長い場合はタグの右から回り込んで折り返す。ordersはグレー小サイズの別行、開示情報は
-// 区切り線を挟んだ別ブロックで1件1行)で表示する。ブロック全体はheightではなくmaxHeight(下の
-// JSXの値が唯一の真実で、JS側に同じ値を別定数として持たない)にしており、内容が少なければ
-// ブロックごと自然に縮む。カード全体の高さもこの補足ブロックの実際の高さに追従するため、
-// 開示が少ない/無い銘柄でカード下部に無駄な余白が残らない。
+// 区切り線を挟んだ別ブロックで1件1行)で表示しつつ、全体の高さはCSSで固定する(下のJSXの
+// height/maxHeightの値が唯一の真実で、JS側に同じ値を別定数として持たない)。
 //
-// 開示情報に割り当てる高さは固定枠を持たず、ブロックのCSS上の上限(maxHeight)から本文
+// 開示情報に割り当てる高さは固定枠を持たず、ブロック全体の実測高さ(clientHeight)から本文
 // ブロックの実測高さ(offsetHeight)と開示ブロック自身のCSS上のoverhead(margin/padding/border、
 // これもgetComputedStyleで実測)を差し引いた残りを都度算出する。本文が短ければ開示情報が
-// その分多く入り、上限までは余白を残さず詰め込む。
+// その分多く入り、下端の余白が残らない。
 //
 // 開示情報は1件ずつ、実際に表示するDOM(クローンではない)に追加しながらoffsetHeight/scrollHeightを
 // 累積計測し、残り高さに収まらなくなった時点でそれ以降を丸ごと非表示にする(部分表示・省略記号は
@@ -560,16 +558,11 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
       host.replaceChildren();
       if (disclosureItems.length === 0) return;
 
-      // 開示情報に使える高さ = ブロック全体の上限(CSSのmaxHeight) − 本文ブロックの実測高さ −
-      // 開示ブロック自身のoverhead(margin/padding/border、getComputedStyleで実測)。
-      // ブロック自体はheightではなくmaxHeightにしてあり、内容が少なければブロックごと自然に
-      // 縮む(カード全体に無駄な余白を残さないため)。そのため上限はblockEl.clientHeightではなく
-      // CSSのmaxHeight値そのものを読む — 本文が短い場合に開示情報を多く詰め込む挙動はこちらで
-      // 維持しつつ、実際のブロックの高さは詰め込んだ結果に応じて自然に決まる。
-      const blockMaxHeight = parseFloat(getComputedStyle(blockEl!).maxHeight) || Infinity;
+      // 開示情報に使える高さ = ブロック全体の実測高さ − 本文ブロックの実測高さ − 開示ブロック自身の
+      // overhead(margin/padding/border、getComputedStyleで実測)。固定値をJS側に持たない。
       const cs = getComputedStyle(host);
       const overhead = parseFloat(cs.marginTop) + parseFloat(cs.paddingTop) + parseFloat(cs.borderTopWidth);
-      const budget = blockMaxHeight - reasonBlock!.offsetHeight - overhead;
+      const budget = blockEl!.clientHeight - reasonBlock!.offsetHeight - overhead;
       if (budget <= 0) return;
 
       const makeItemEl = (item: DisclosureItem): HTMLDivElement => {
@@ -612,7 +605,7 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
   }, [mainText, mainColor, ordersText, disclosureKey]);
 
   return (
-    <div ref={blockRef} style={{ maxHeight: 93, overflow: "hidden" }}>
+    <div ref={blockRef} style={{ height: 93, overflow: "hidden" }}>
       <div ref={reasonBlockRef} style={{ maxHeight: 55, overflow: "hidden" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 6 }}>
           {badge && (
