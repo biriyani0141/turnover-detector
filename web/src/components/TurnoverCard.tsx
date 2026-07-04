@@ -457,6 +457,12 @@ const NOTE_MAX_LINES = 3;
 const NOTE_LINE_HEIGHT = 18; // fontSize 12 * lineHeight 1.5
 // 本文ブロック自体の上限(元値55px、縮小しない)。本文はここまで二分探索で文字を切り詰める。
 const REASON_MAX_HEIGHT = NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1;
+// 開示リストの実測利用可能高に対する上限キャップ(件数固定ではなく高さ基準)。イノバセルの実データで
+// 実測: 開示2件("7/3 15:55"+"7/2 16:00")まではhost合計107px(border込み108px)で収まり、3件目
+// ("7/1 16:00 FUNDINNO...")を含めると合計142px相当まで増え溢れる。この2件/3件の境界(border-box
+// 換算で74px以上108px未満)の中間を取ってキャップとしている。他カードもこのキャップに従うため、
+// 開示件数はカードごとに変動しうる(高さ基準であり件数固定ではない)。
+const DISCLOSURE_HEIGHT_CAP = 90;
 
 // 本文ブロック(タグ+本文+orders)と開示情報ブロックを、区切り線(border-top)を挟んで分けて表示する。
 // タグは本文の先頭行に同居させ(個別画面NoteContentの「今日」パターンと同じ)、本文が長い場合は
@@ -589,7 +595,7 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
         reasonBlock.offsetHeight -
         disclosureMarginTop;
 
-      host.style.maxHeight = `${Math.max(0, available)}px`;
+      host.style.maxHeight = `${Math.max(0, Math.min(available, DISCLOSURE_HEIGHT_CAP))}px`;
     } else {
       // 想定したDOM構造(画像まとめキャプチャの外枠)が見つからない場合の保険。通常は発生しない。
       host.style.maxHeight = "none";
