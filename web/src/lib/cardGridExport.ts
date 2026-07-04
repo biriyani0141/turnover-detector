@@ -43,7 +43,12 @@ const SUBTITLE_COLOR = "#707A8A";
 const TITLE_FONT = "700 28px 'Inter','Helvetica Neue','Noto Sans JP',Arial,sans-serif";
 const SUBTITLE_FONT = "500 16px 'Inter','Helvetica Neue','Noto Sans JP',Arial,sans-serif";
 
-/** キャプチャ済みカードキャンバス群を1枚のグリッド画像に合成する(固定3列×5行、各カードはGRID_SCALEに縮小) */
+/**
+ * キャプチャ済みカードキャンバス群を1枚のグリッド画像に合成する(固定3列×5行、各カードはGRID_SCALEに縮小)。
+ * カードごとの実際の高さ(補足欄の内容量)は可変なので、各カードを引き伸ばさず自身の高さで描画し、
+ * 行の高さはその行内で最も高いカードに合わせる(行内の空白は不可避だが、全カード共通の
+ * 固定高さにする場合に比べて無駄な余白を大幅に減らせる)。
+ */
 export function composeGrid(
   cards: HTMLCanvasElement[],
   header: { title: string; subtitle: string }
@@ -51,10 +56,21 @@ export function composeGrid(
   const cols = GRID_COLS;
   const rows = Math.max(1, Math.min(GRID_ROWS, Math.ceil(cards.length / cols)));
   const cardW = Math.round((cards[0]?.width ?? 0) * GRID_SCALE);
-  const cardH = Math.round((cards[0]?.height ?? 0) * GRID_SCALE);
+  const scaledHeights = cards.map((c) => Math.round(c.height * GRID_SCALE));
+
+  const rowHeights: number[] = [];
+  for (let r = 0; r < rows; r++) {
+    let maxH = 0;
+    for (let c = 0; c < cols; c++) {
+      const idx = r * cols + c;
+      if (idx < scaledHeights.length) maxH = Math.max(maxH, scaledHeights[idx]);
+    }
+    rowHeights.push(maxH);
+  }
+  const cardsHeight = rowHeights.reduce((a, b) => a + b, 0) + (rows - 1) * GAP;
 
   const width = MARGIN * 2 + cols * cardW + (cols - 1) * GAP;
-  const height = MARGIN * 2 + HEADER_H + rows * cardH + (rows - 1) * GAP;
+  const height = MARGIN * 2 + HEADER_H + cardsHeight;
 
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -74,13 +90,16 @@ export function composeGrid(
   ctx.font = SUBTITLE_FONT;
   ctx.fillText(header.subtitle, MARGIN, MARGIN + 40);
 
-  cards.forEach((card, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const x = MARGIN + col * (cardW + GAP);
-    const y = MARGIN + HEADER_H + row * (cardH + GAP);
-    ctx.drawImage(card, x, y, cardW, cardH);
-  });
+  let rowY = MARGIN + HEADER_H;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const idx = r * cols + c;
+      if (idx >= cards.length) continue;
+      const x = MARGIN + c * (cardW + GAP);
+      ctx.drawImage(cards[idx], x, rowY, cardW, scaledHeights[idx]);
+    }
+    rowY += rowHeights[r] + GAP;
+  }
 
   return canvas;
 }
