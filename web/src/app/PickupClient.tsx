@@ -5,6 +5,7 @@ import TurnoverCardList from "../components/TurnoverCardList";
 import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGates } from "@/lib/classify";
 import ExportMenu from "../components/ExportMenu";
 import StopHighDetailSheet from "../components/StopHighDetailSheet";
+import { useImageSummaryExport } from "../components/ImageSummaryExport";
 
 const LAZY_CHART = true;
 
@@ -188,6 +189,7 @@ export default function PickupClient({
   const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
   const [detailStock, setDetailStock] = useState<CardStock | null>(null);
+  const imageSummary = useImageSummaryExport();
 
   // === 10日振り返り ===
   const [availableDates, setAvailableDates] = useState<string[]>([]);
@@ -459,7 +461,14 @@ export default function PickupClient({
       ) : (
         <>
           <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8 }}>
-            <ExportMenu codes={displayRows.map((r) => r.code)} />
+            <ExportMenu
+              codes={displayRows.map((r) => r.code)}
+              onImageSummary={
+                mode === "stophigh"
+                  ? () => imageSummary.run(displayRows, headerDate)
+                  : undefined
+              }
+            />
           </div>
           <TurnoverCardList
             stocks={displayRows}
@@ -514,6 +523,29 @@ export default function PickupClient({
       )}
 
       <StopHighDetailSheet stock={detailStock} onClose={() => setDetailStock(null)} />
+
+      {imageSummary.generating && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 80,
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#323232",
+            color: "#e8eaed",
+            fontSize: 13,
+            fontFamily: "ui-monospace, monospace",
+            padding: "10px 20px",
+            borderRadius: 20,
+            zIndex: 300,
+            boxShadow: "0 2px 10px rgba(0,0,0,0.5)",
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
+          }}
+        >
+          画像生成中… {imageSummary.progress ? `${imageSummary.progress.done}/${imageSummary.progress.total}` : ""}
+        </div>
+      )}
     </div>
   );
 }

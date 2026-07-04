@@ -41,11 +41,21 @@ function CopyIcon() {
   );
 }
 
+function ImageIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" />
+    </svg>
+  );
+}
+
 type Props = {
   codes: string[];
+  /** 渡された場合のみ「画像まとめ」メニュー項目を表示する */
+  onImageSummary?: () => void;
 };
 
-export default function ExportMenu({ codes }: Props) {
+export default function ExportMenu({ codes, onImageSummary }: Props) {
   const [open, setOpen] = useState(false);
   const [toast, setToast] = useState(false);
   const isMobile = useSyncExternalStore(mqSubscribe, mqSnapshot, mqServerSnapshot);
@@ -105,6 +115,19 @@ export default function ExportMenu({ codes }: Props) {
       icon: <CopyIcon />,
       onClick: handleTV,
     },
+    ...(onImageSummary
+      ? [
+          {
+            label: "画像まとめ",
+            sublabel: "PNG生成・ダウンロード",
+            icon: <ImageIcon />,
+            onClick: () => {
+              onImageSummary();
+              setOpen(false);
+            },
+          },
+        ]
+      : []),
   ];
 
   return (

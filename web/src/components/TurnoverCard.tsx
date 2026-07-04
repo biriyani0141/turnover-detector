@@ -54,6 +54,9 @@ export type CardStock = {
 
 const UP = "#E03A2F";
 const DOWN = "#1B8C7D";
+// 日本語フォントを明示指定しないとhtml2canvasのCJKフォールバック描画が実ブラウザと異なる字形になる
+// (StopHighDetailSheet.tsxのFONT定数と同じ構成に合わせる)
+const CJK_FONT = "'Inter', 'Helvetica Neue', 'Noto Sans JP', 'Yu Gothic', 'Hiragino Sans', Arial, sans-serif";
 
 function fmtNum(n: number): string {
   return n % 1 === 0 ? n.toFixed(0) : n.toFixed(1);
@@ -78,7 +81,36 @@ function fmtCompactDate(dateTime: string): string {
   return timePart ? `${compact} ${timePart}` : compact;
 }
 
-export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge?: { text: string; bgClass: string } }) {
+// 画像まとめ出力用: 補足欄をタグ+本文1本に集約する(reason優先・無ければ開示情報の先頭1件)
+type NoteDigest = { badge: { bg: string; label: string } | null; text: string };
+
+function noteDigest(stock: CardStock): NoteDigest {
+  if (stock.reason) {
+    if (stock.reason.kind === "today") {
+      return { badge: reasonStatusBadge(stock.reason.status), text: stock.reason.text };
+    }
+    return { badge: { bg: "#8B0000", label: `連騰${stock.reason.streakDays}日目` }, text: stock.reason.prevText };
+  }
+  if (stock.disclosures && stock.disclosures.length > 0) {
+    const d = stock.disclosures[0];
+    return { badge: null, text: `${fmtCompactDate(d.date)} ${d.title}` };
+  }
+  return { badge: null, text: "" };
+}
+
+// タグ+本文3行(超過は省略記号)。カード下端を揃えるため固定高さにする(padding16+border2+3行分54)
+const NOTE_COMPACT_HEIGHT = 72;
+
+export default function TurnoverCard({
+  stock,
+  badge,
+  compact,
+}: {
+  stock: CardStock;
+  badge?: { text: string; bgClass: string };
+  // 画像まとめ出力用: 補足欄をタグ+本文3行(超過は省略記号)に制限する
+  compact?: boolean;
+}) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   const isUp = stock.change >= 0;
@@ -255,7 +287,7 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
         flexDirection: "column",
         overflow: "hidden",
         boxShadow: "0 1px 4px rgba(30,40,80,0.06)",
-        fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+        fontFamily: CJK_FONT,
       }}
     >
       {/* 情報エリア（2行） */}
@@ -431,88 +463,140 @@ export default function TurnoverCard({ stock, badge }: { stock: CardStock; badge
           borderRadius: 4,
           padding: "8px 10px",
           boxShadow: "0 1px 4px rgba(30,40,80,0.06)",
-          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
+          fontFamily: CJK_FONT,
+          ...(compact
+            ? { height: NOTE_COMPACT_HEIGHT, boxSizing: "border-box" as const, overflow: "hidden" }
+            : {}),
         }}
       >
-        {stock.reason && (
-          <div style={{ marginBottom: stock.disclosures && stock.disclosures.length > 0 ? 6 : 0 }}>
-            {stock.reason.kind === "today" ? (
-              <>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-                  {(() => {
-                    const badge = reasonStatusBadge(stock.reason.status);
-                    return (
-                      <span
-                        style={{
-                          fontSize: 9,
-                          fontWeight: 700,
-                          color: "#FFFFFF",
-                          background: badge.bg,
-                          borderRadius: 3,
-                          padding: "1px 5px",
-                          flexShrink: 0,
-                        }}
-                      >
-                        {badge.label}
-                      </span>
-                    );
-                  })()}
-                  <span style={{ fontSize: 12, fontWeight: 500, color: "#3A4050", lineHeight: 1.5 }}>
-                    {stock.reason.text}
-                  </span>
-                </div>
-                {stock.reason.orders && (
-                  <div style={{ fontSize: 10.5, color: "#9098A9", marginTop: 4, lineHeight: 1.5 }}>
-                    {stock.reason.orders}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
-                <span
-                  style={{
-                    fontSize: 9,
-                    fontWeight: 700,
-                    color: "#FFFFFF",
-                    background: "#8B0000",
-                    borderRadius: 3,
-                    padding: "1px 5px",
-                    flexShrink: 0,
-                  }}
-                >
-                  連騰{stock.reason.streakDays}日目
-                </span>
-                <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", lineHeight: 1.5 }}>
-                  {stock.reason.prevText}
-                  <span style={{ fontSize: 10, color: "#B4B8C0", marginLeft: 4 }}>(前回理由)</span>
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        {stock.disclosures && stock.disclosures.length > 0 && (
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 3,
-              paddingTop: stock.reason ? 6 : 0,
-              borderTop: stock.reason ? "1px solid #EEEEEE" : "none",
-            }}
-          >
-            {stock.disclosures.map((item, i) => (
-              <div key={i} style={{ fontSize: 10.5, color: "#9098A9", lineHeight: 1.5 }}>
-                <span style={{ fontVariantNumeric: "tabular-nums", fontSize: 10.5, color: "#9098A9", marginRight: 5 }}>
-                  {fmtCompactDate(item.date)}
-                </span>
-                {item.title}
-              </div>
-            ))}
-          </div>
-        )}
+        {compact ? <CompactNoteContent stock={stock} /> : <NoteContent stock={stock} />}
       </div>
     )}
     </div>
+  );
+}
+
+function CompactNoteContent({ stock }: { stock: CardStock }) {
+  const { badge, text } = noteDigest(stock);
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 6 }}>
+      {badge && (
+        <span
+          style={{
+            fontSize: 9,
+            fontWeight: 700,
+            color: "#FFFFFF",
+            background: badge.bg,
+            borderRadius: 3,
+            padding: "1px 5px",
+            flexShrink: 0,
+          }}
+        >
+          {badge.label}
+        </span>
+      )}
+      <span
+        style={{
+          fontSize: 12,
+          fontWeight: 500,
+          color: "#3A4050",
+          lineHeight: 1.5,
+          display: "-webkit-box",
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+          // flexアイテムのデフォルトmin-width:autoのままだと幅が制約されず、
+          // line-clampの省略記号(…)が表示されないため明示的に指定する
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+}
+
+function NoteContent({ stock }: { stock: CardStock }) {
+  return (
+    <>
+      {stock.reason && (
+        <div style={{ marginBottom: stock.disclosures && stock.disclosures.length > 0 ? 6 : 0 }}>
+          {stock.reason.kind === "today" ? (
+            <>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+                {(() => {
+                  const badge = reasonStatusBadge(stock.reason.status);
+                  return (
+                    <span
+                      style={{
+                        fontSize: 9,
+                        fontWeight: 700,
+                        color: "#FFFFFF",
+                        background: badge.bg,
+                        borderRadius: 3,
+                        padding: "1px 5px",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {badge.label}
+                    </span>
+                  );
+                })()}
+                <span style={{ fontSize: 12, fontWeight: 500, color: "#3A4050", lineHeight: 1.5 }}>
+                  {stock.reason.text}
+                </span>
+              </div>
+              {stock.reason.orders && (
+                <div style={{ fontSize: 10.5, color: "#9098A9", marginTop: 4, lineHeight: 1.5 }}>
+                  {stock.reason.orders}
+                </div>
+              )}
+            </>
+          ) : (
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6, flexWrap: "wrap" }}>
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: "#FFFFFF",
+                  background: "#8B0000",
+                  borderRadius: 3,
+                  padding: "1px 5px",
+                  flexShrink: 0,
+                }}
+              >
+                連騰{stock.reason.streakDays}日目
+              </span>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", lineHeight: 1.5 }}>
+                {stock.reason.prevText}
+                <span style={{ fontSize: 10, color: "#B4B8C0", marginLeft: 4 }}>(前回理由)</span>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {stock.disclosures && stock.disclosures.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+            paddingTop: stock.reason ? 6 : 0,
+            borderTop: stock.reason ? "1px solid #EEEEEE" : "none",
+          }}
+        >
+          {stock.disclosures.map((item, i) => (
+            <div key={i} style={{ fontSize: 10.5, color: "#9098A9", lineHeight: 1.5 }}>
+              <span style={{ fontVariantNumeric: "tabular-nums", fontSize: 10.5, color: "#9098A9", marginRight: 5 }}>
+                {fmtCompactDate(item.date)}
+              </span>
+              {item.title}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
