@@ -455,21 +455,29 @@ export default function TurnoverCard({
 
 const NOTE_MAX_LINES = 3;
 const NOTE_LINE_HEIGHT = 18; // fontSize 12 * lineHeight 1.5
-const DISCLOSURE_MAX_LINES = 3;
-const DISCLOSURE_LINE_HEIGHT = 15.75; // fontSize 10.5 * lineHeight 1.5
-// 計測(scrollHeight)と実描画(snapdomのdpr:2キャプチャ)の間のサブピクセル差異を吸収する安全マージン。
-// 境界ぎりぎりで収まると判定した項目が、実際の画像出力では途中の行で見切れる事象が確認されたため。
-const FIT_SAFETY_MARGIN = 3;
+// 本文ブロック自体の上限(元値55px、縮小しない)。本文はここまで二分探索で文字を切り詰める。
+const REASON_MAX_HEIGHT = NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1;
 
 // 本文ブロック(タグ+本文+orders)と開示情報ブロックを、区切り線(border-top)を挟んで分けて表示する。
 // タグは本文の先頭行に同居させ(個別画面NoteContentの「今日」パターンと同じ)、本文が長い場合は
 // タグの右から回り込んで折り返す。ordersは個別画面と同じくグレー小サイズの別行として本文の下に置く。
-// 本文ブロック(タグ行+本文+orders)は3行相当まで。本文は超過時に二分探索で文字を切り省略記号
-// 「…」を付ける。ordersは全体がその3行枠に収まる場合のみ表示し、収まらなければ(部分表示や
-// 省略記号なしで)丸ごと非表示にする。
+// 本文ブロック(タグ行+本文+orders)はREASON_MAX_HEIGHTまで。本文は超過時に二分探索で文字を
+// 切り省略記号「…」を付ける。ordersは全体がその枠に収まる場合のみ表示し、収まらなければ(部分
+// 表示や省略記号なしで)丸ごと非表示にする。
 //
-// 開示情報ブロックは本文とは別に3行相当の枠を持つが、こちらも項目単位の全部/非表示切り替えのみ
-// で、行の途中で途切れる項目があれば(文字を切って省略記号を付けず)その項目ごと非表示にする。
+// 開示リストのmax-heightは固定値・計算上の縮小指標を持たず、「補足ブロックが実際に使える
+// 残り高さ全部」を都度DOM実測して割り当てる。画像まとめ出力ではカード全体が外枠(ImageSummaryExport
+// 側のCARD_CLIP_HEIGHT、通常480px)でクリップされるため、その外枠の実測高さから、チャート
+// (メインカード)の実測高さ・補足欄の親コンテナのpadding/border/margin・本文ブロックの実測高さを
+// 差し引いた残りを開示リストのmax-heightとする。定数を直書きせず、DOM構造(このコンポーネントの
+// ルートdiv→補足欄の親コンテナ→カード全体→外枠)を辿って全てrefとgetComputedStyleで実測する。
+//
+// 開示情報は項目単位の全部/非表示切り替えのみで、行の途中で途切れる項目は表示しない。判定は
+// クローンではなく実際に表示するDOM(disclosureRefそのもの)に1件ずつ追加しながらhost.scrollHeight
+// (実コンテンツ高)がhost.clientHeight(max-heightで確定した実際の可視高)を上回るかどうかで
+// 行う。max-height自体にpadding/borderを加減算して比較しようとすると、box-sizing(このプロジェクト
+// はTailwindのCSSリセットでborder-box)次第で基準がズレて境界ぎりぎりの項目が見切れる不具合が
+// あったため、box-sizingに依存しないこの比較方式にしている。
 //
 // 省略記号をCSSのwebkit-line-clampに任せず実DOM計測(scrollHeight)で手動計算しているのは、
 // 画像まとめ出力に使うsnapdomのキャプチャ結果だけ省略記号が描画されない(文字が中途半端に
@@ -505,8 +513,6 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
     const reasonBlock = reasonBlockRef.current;
     if (!textEl || !ordersEl || !reasonBlock) return;
 
-    const maxHeight = NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1;
-
     if (!mainText) {
       textEl.replaceChildren();
     } else {
@@ -521,13 +527,13 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
 
       let visibleText = mainText;
       clone.textContent = mainText;
-      if (clone.scrollHeight > maxHeight) {
+      if (clone.scrollHeight > REASON_MAX_HEIGHT) {
         let lo = 0;
         let hi = mainText.length;
         while (lo < hi) {
           const mid = Math.ceil((lo + hi) / 2);
           clone.textContent = mainText.slice(0, mid) + "…";
-          if (clone.scrollHeight <= maxHeight) lo = mid;
+          if (clone.scrollHeight <= REASON_MAX_HEIGHT) lo = mid;
           else hi = mid - 1;
         }
         visibleText = mainText.slice(0, lo) + (lo < mainText.length ? "…" : "");
@@ -536,34 +542,58 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
       textEl.textContent = visibleText;
     }
 
-    // ordersは本文込みの合計高さが3行枠に収まる場合のみ全文表示し、収まらなければ丸ごと非表示。
+    // ordersは本文込みの合計高さが枠に収まる場合のみ全文表示し、収まらなければ丸ごと非表示。
     ordersEl.textContent = ordersText || "";
-    if (ordersText && reasonBlock.scrollHeight > maxHeight - FIT_SAFETY_MARGIN) {
+    if (ordersText && reasonBlock.scrollHeight > REASON_MAX_HEIGHT) {
       ordersEl.replaceChildren();
     }
   }, [mainText, ordersText]);
 
   const disclosureRef = useRef<HTMLDivElement>(null);
   const disclosureItems = stock.disclosures ?? [];
-  const disclosureKey = disclosureItems.map((d) => `${d.date}|${d.title}`).join("");
+  const disclosureKey = disclosureItems.map((d) => `${d.date}|${d.title}`).join("");
 
+  // 本文ブロックの実測高さに依存するため、本文effectより後(宣言順)に実行させる。Reactの
+  // useLayoutEffectは同一コンポーネント内で宣言順に同期実行されるため、この順序で確定する。
   useLayoutEffect(() => {
     const host = disclosureRef.current;
-    if (!host) return;
+    const reasonBlock = reasonBlockRef.current;
+    if (!host || !reasonBlock) return;
     host.replaceChildren();
     if (disclosureItems.length === 0) return;
 
-    const maxHeight = DISCLOSURE_LINE_HEIGHT * DISCLOSURE_MAX_LINES + 1;
-    const measureHost = document.createElement("div");
-    measureHost.style.position = "absolute";
-    measureHost.style.visibility = "hidden";
-    measureHost.style.width = `${host.clientWidth}px`;
-    // 実要素(host)と同じflex/gapを再現しないと、gap分の高さが計測に反映されず
-    // 実描画時にoverflow:hiddenで開示情報が途中の行で見切れる不具合が起きるため揃える。
-    measureHost.style.display = "flex";
-    measureHost.style.flexDirection = "column";
-    measureHost.style.gap = "3px";
-    host.parentElement?.appendChild(measureHost);
+    // DOM構造を辿って実測する: このコンポーネントのルート(host.parentElement)
+    // → 補足欄の親コンテナ(S高理由コメント欄、noteWrapper)
+    // → カード全体(チャート+補足欄、outerCard)
+    // → 外枠(画像まとめ出力側のCARD_CLIP_HEIGHTでクリップされるcaptureFrame)
+    const noteWrapper = host.parentElement?.parentElement ?? null;
+    const outerCard = noteWrapper?.parentElement ?? null;
+    const captureFrame = outerCard?.parentElement ?? null;
+    const chartBox = outerCard?.firstElementChild as HTMLElement | null;
+
+    if (noteWrapper && outerCard && captureFrame && chartBox) {
+      const wrapperStyle = getComputedStyle(noteWrapper);
+      const wrapperOverhead =
+        parseFloat(wrapperStyle.paddingTop) +
+        parseFloat(wrapperStyle.paddingBottom) +
+        parseFloat(wrapperStyle.borderTopWidth) +
+        parseFloat(wrapperStyle.borderBottomWidth) +
+        parseFloat(wrapperStyle.marginTop) +
+        parseFloat(wrapperStyle.marginBottom);
+      const disclosureMarginTop = parseFloat(getComputedStyle(host).marginTop) || 0;
+
+      const available =
+        captureFrame.clientHeight -
+        chartBox.offsetHeight -
+        wrapperOverhead -
+        reasonBlock.offsetHeight -
+        disclosureMarginTop;
+
+      host.style.maxHeight = `${Math.max(0, available)}px`;
+    } else {
+      // 想定したDOM構造(画像まとめキャプチャの外枠)が見つからない場合の保険。通常は発生しない。
+      host.style.maxHeight = "none";
+    }
 
     const makeItemEl = (item: DisclosureItem): HTMLDivElement => {
       const el = document.createElement("div");
@@ -579,26 +609,22 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
       return el;
     };
 
-    const kept: HTMLElement[] = [];
+    // クローンではなく実際に表示するDOM(host)そのものへ1件ずつ追加し、scrollHeight(実際の
+    // コンテンツの高さ)がclientHeight(max-heightで確定した実際の可視範囲)を上回るかどうかで
+    // 判定する。box-sizingに関係なく常に整合するため、この方式にしている。
     for (const item of disclosureItems) {
       const el = makeItemEl(item);
-      measureHost.appendChild(el);
-      if (measureHost.scrollHeight > maxHeight - FIT_SAFETY_MARGIN) {
-        measureHost.removeChild(el);
+      host.appendChild(el);
+      if (host.scrollHeight > host.clientHeight) {
+        host.removeChild(el);
         break;
       }
-      kept.push(el);
     }
-    measureHost.remove();
-    host.replaceChildren(...kept);
-  }, [disclosureKey]);
+  }, [mainText, ordersText, disclosureKey]);
 
   return (
     <div>
-      <div
-        ref={reasonBlockRef}
-        style={{ maxHeight: NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1, overflow: "hidden" }}
-      >
+      <div ref={reasonBlockRef} style={{ maxHeight: REASON_MAX_HEIGHT, overflow: "hidden" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 6 }}>
           {badge && (
             <span
@@ -639,7 +665,6 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
             marginTop: 6,
             paddingTop: 6,
             borderTop: "1px solid #EEEEEE",
-            maxHeight: DISCLOSURE_LINE_HEIGHT * DISCLOSURE_MAX_LINES + 1,
             overflow: "hidden",
           }}
         />
