@@ -5,7 +5,7 @@ import TurnoverCardList from "../components/TurnoverCardList";
 import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGates } from "@/lib/classify";
 import ExportMenu from "../components/ExportMenu";
 import StopHighDetailSheet from "../components/StopHighDetailSheet";
-import { useImageSummaryExport } from "../components/ImageSummaryExport";
+import { useImageSummaryExport, ImageSummaryOverlay } from "../components/ImageSummaryExport";
 
 const LAZY_CHART = true;
 
@@ -526,28 +526,12 @@ export default function PickupClient({
 
       <StopHighDetailSheet stock={detailStock} onClose={() => setDetailStock(null)} />
 
-      {imageSummary.generating && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 80,
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "#323232",
-            color: "#e8eaed",
-            fontSize: 13,
-            fontFamily: "ui-monospace, monospace",
-            padding: "10px 20px",
-            borderRadius: 20,
-            zIndex: 300,
-            boxShadow: "0 2px 10px rgba(0,0,0,0.5)",
-            whiteSpace: "nowrap",
-            pointerEvents: "none",
-          }}
-        >
-          画像生成中… {imageSummary.progress ? `${imageSummary.progress.done}/${imageSummary.progress.total}` : ""}
-        </div>
-      )}
+      <ImageSummaryOverlay
+        generating={imageSummary.generating}
+        progress={imageSummary.progress}
+        result={imageSummary.result}
+        onClose={imageSummary.closeResult}
+      />
     </div>
   );
 }

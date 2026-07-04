@@ -1,19 +1,5 @@
 // 画像まとめ出力: グリッドレイアウト計算・チャンク分割・キャンバス合成の純粋関数群
 
-// 生成側(ImageSummaryExport.tsx)と表示側(/export)で共有するlocalStorageキー・ペイロード型。
-// 当初BroadcastChannelで受け渡していたが、実機(iOS Safari)で新規タブがバックグラウンド
-// 扱いになっている間はBroadcastChannel/setIntervalが動かず、生成側が送ったメッセージを
-// 受け取れないまま「生成中…」で止まる不具合が確認された。localStorageは値が書き込まれた
-// 時点で永続化されるため、/export側がマウント時・visibilitychange時・storageイベント時の
-// いずれのタイミングで確認しても取りこぼさない。
-export const EXPORT_STORAGE_KEY = "image-summary-payload";
-export type ExportPayload = {
-  title: string;
-  label: string;
-  /** 各ページのPNG画像をdataURL(base64)化したもの。localStorageは文字列しか保持できないため。 */
-  pages: string[];
-};
-
 // 固定: 横3列×縦5行・1枚あたり最大15銘柄。16件以上は15件ごとに複数枚へ分割する。
 const GRID_COLS = 3;
 const GRID_ROWS = 5;
@@ -29,19 +15,6 @@ export function chunkArray<T>(items: T[], size: number = CHUNK_SIZE): T[][] {
     out.push(items.slice(i, i + size));
   }
   return out;
-}
-
-/** タブ種別ごとのファイル名接頭辞(例: "stophigh_summary", "turnover_summary")を渡す */
-export function buildFilename(
-  filenamePrefix: string,
-  date: string | undefined,
-  pageIndex: number,
-  pageCount: number
-): string {
-  const d = (date ?? new Date().toISOString().slice(0, 10)).replace(/-/g, "");
-  return pageCount > 1
-    ? `${filenamePrefix}_${d}_${pageIndex + 1}of${pageCount}.png`
-    : `${filenamePrefix}_${d}.png`;
 }
 
 /** タブ種別ごとのラベル(例: "S高", "回転率")を渡す */
