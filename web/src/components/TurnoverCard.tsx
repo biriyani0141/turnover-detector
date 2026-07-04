@@ -98,8 +98,8 @@ function noteDigest(stock: CardStock): NoteDigest {
   return { badge: null, text: "" };
 }
 
-// タグ+本文3行(超過は省略記号)。カード下端を揃えるため固定高さにする(padding16+border2+3行分54)
-const NOTE_COMPACT_HEIGHT = 72;
+// タグ+本文4行(超過は省略記号)。カード下端を揃えるため固定高さにする(padding16+border2+4行分72)
+const NOTE_COMPACT_HEIGHT = 90;
 
 export default function TurnoverCard({
   stock,
@@ -502,7 +502,7 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
           color: "#3A4050",
           lineHeight: 1.5,
           display: "-webkit-box",
-          WebkitLineClamp: 3,
+          WebkitLineClamp: 4,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
           // flexアイテムのデフォルトmin-width:autoのままだと幅が制約されず、

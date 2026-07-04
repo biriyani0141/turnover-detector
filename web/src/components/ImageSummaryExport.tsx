@@ -7,9 +7,9 @@ import TurnoverCard, { type CardStock } from "./TurnoverCard";
 import { chunkArray, composeGrid, buildSubtitle, buildFilename, canvasToBlob } from "@/lib/cardGridExport";
 
 const CARD_WIDTH = 380;
-// メインカード(278px)+補足欄マージン(6px)+補足欄固定高さ(72px、TurnoverCardのcompactモード)を
+// メインカード(278px)+補足欄マージン(6px)+補足欄固定高さ(90px、TurnoverCardのcompactモード・4行分)を
 // 上回る値。外側ラッパーの固定height+overflow:hiddenで(念のため)視覚的に切って高さを統一する
-const CARD_CLIP_HEIGHT = 356;
+const CARD_CLIP_HEIGHT = 374;
 
 function waitTwoFrames(): Promise<void> {
   return new Promise((resolve) => {
