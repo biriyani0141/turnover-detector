@@ -4,15 +4,17 @@ import { createRoot } from "react-dom/client";
 import { snapdom } from "@zumer/snapdom";
 import React from "react";
 import TurnoverCard, { type CardStock } from "./TurnoverCard";
-import { chunkArray, composeGrid, buildSubtitle, canvasToBlob } from "@/lib/cardGridExport";
+import { chunkArray, composeGrid, buildSubtitle, canvasToBlob, EXPORT_CHANNEL_NAME } from "@/lib/cardGridExport";
 
 const CARD_WIDTH = 380;
-// メインカード(278px)+補足欄マージン(6px)+補足欄の最大高さ(本文ブロック:タグ+4行分で約91px、
-// 開示情報ブロック:区切り線+5行分で約93px、開示情報がある場合は合計約184px)を上回る値。
+// カード自然高(height指定なし時のoffsetHeight)をS高タブ9件・回転率タブTOP30件で実測した結果、
+// 最大値はいずれもイノバセル/アイズ相当の421pxだった(本文ブロック+開示リストの上限DISCLOSURE_HEIGHT_CAP
+// によって実質的な上限が揃うため、両タブで最大値が一致する)。この421pxに微小マージンを足した値を
+// 全カード共通の固定高さとする(全カード統一のため、最も背の高いカードが見切れない下限に設定)。
 // 補足欄の超過時の省略記号「…」はCSSのline-clampに任せず、TurnoverCard側で実DOM計測による
 // 手動付与に切り替えている(snapdomキャプチャ時にline-clampの省略記号が描画されないことが
 // あったため)。カード全体の高さ統一はこの外側ラッパーの固定height+overflow:hiddenのみで行う
-const CARD_CLIP_HEIGHT = 480;
+const CARD_CLIP_HEIGHT = 430;
 
 function waitTwoFrames(): Promise<void> {
   return new Promise((resolve) => {
@@ -94,49 +96,32 @@ export function useImageSummaryExport() {
     async (stocks: CardStock[], date: string | undefined, options: ImageSummaryOptions) => {
       if (generating || stocks.length === 0) return;
 
-      // ユーザー操作の同期コールスタック内でタブを1回だけ開く。複数ページ分もこの1つのタブに
-      // 後からまとめて流し込むため、window.openはここで一度きりにする(iOS Safari等は非同期処理を
-      // 挟んだ後のwindow.openや、同期スタック内であっても複数回のwindow.openを
-      // ブロックすることがあるため)。
-      const win = window.open("about:blank", "_blank");
+      // ユーザー操作の同期コールスタック内で専用Exportページ(/export)を1回だけ開く(iOS Safari等の
+      // ポップアップブロック回避)。about:blankの空白タブが見える経路やdocument.write方式はやめ、
+      // /export側が自前で「生成中…」を表示しつつBroadcastChannelでのメッセージ到着を待つ。
+      window.open("/export", "_blank");
 
       setGenerating(true);
       setProgress({ done: 0, total: stocks.length });
       try {
         const cardCanvases = await captureCards(stocks, (done, total) => setProgress({ done, total }));
         const chunks = chunkArray(cardCanvases);
-        const urls: string[] = [];
+        const pages: Blob[] = [];
         for (let i = 0; i < chunks.length; i++) {
           const composite = composeGrid(chunks[i], {
             title: options.title,
             subtitle: buildSubtitle(date, stocks.length, i, chunks.length, options.label),
           });
           const blob = await canvasToBlob(composite);
-          if (blob) urls.push(URL.createObjectURL(blob));
+          if (blob) pages.push(blob);
         }
 
-        if (win) {
-          // 1枚のcanvasに合成連結せず、ページごとのblob URLをimgとして縦に並べるだけの軽量HTMLを
-          // 書き込む。iOS Safariでの長押し保存はimg要素単位で効くため、ページごとに個別保存できる。
-          // 既に開いてあるタブに書き込むためdocument.write方式を採用した(blob HTMLをlocationに
-          // 代入する方式だと新規ナビゲーションが発生し、遷移先のタイミングによっては真っ白のまま
-          // 表示が完了しない挙動を確認したため)。
-          const imgTags = urls
-            .map((url) => `<img src="${url}" style="display:block;width:100%;">`)
-            .join("");
-          win.document.open();
-          win.document.write(
-            `<!doctype html><html><head><meta charset="utf-8"><title>${options.title}</title>` +
-              `<meta name="viewport" content="width=device-width,initial-scale=1"></head>` +
-              `<body style="margin:0;background:#F4F6FB;">${imgTags}</body></html>`
-          );
-          win.document.close();
-        }
-
-        // 別タブ側の画像読み込みが終わる前にrevokeすると表示に失敗するため、猶予を持たせて解放する。
-        for (const url of urls) {
-          setTimeout(() => URL.revokeObjectURL(url), 60_000);
-        }
+        // BroadcastChannelはBlob本体を構造化複製でそのまま送れるため、blob URL文字列ではなく
+        // Blobを渡す(URL文字列だと送信側でのrevokeタイミング次第で受信側での表示前に失効する
+        // リスクがあるため、URL生成は受信側の/exportで行う)。
+        const channel = new BroadcastChannel(EXPORT_CHANNEL_NAME);
+        channel.postMessage({ title: options.title, label: options.label, pages });
+        channel.close();
       } finally {
         setGenerating(false);
         setProgress(null);

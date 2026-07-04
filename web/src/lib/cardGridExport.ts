@@ -1,5 +1,13 @@
 // 画像まとめ出力: グリッドレイアウト計算・チャンク分割・キャンバス合成の純粋関数群
 
+// 生成側(ImageSummaryExport.tsx)と表示側(/export)で共有するBroadcastChannel名・メッセージ型。
+export const EXPORT_CHANNEL_NAME = "image-summary-export";
+export type ExportChannelMessage = {
+  title: string;
+  label: string;
+  pages: Blob[];
+};
+
 // 固定: 横3列×縦5行・1枚あたり最大15銘柄。16件以上は15件ごとに複数枚へ分割する。
 const GRID_COLS = 3;
 const GRID_ROWS = 5;
