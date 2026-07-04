@@ -3,7 +3,7 @@
 // 固定: 横3列×縦5行・1枚あたり最大15銘柄。16件以上は15件ごとに複数枚へ分割する。
 const GRID_COLS = 3;
 const GRID_ROWS = 5;
-const CHUNK_SIZE = GRID_COLS * GRID_ROWS;
+export const CHUNK_SIZE = GRID_COLS * GRID_ROWS;
 
 // キャプチャした各カード画像はグリッド配置時にこの倍率へ縮小する
 // (個別画面と同一DOMをそのままキャプチャするため、文字サイズは画像全体を縮小することで釣り合いを取る)
@@ -17,20 +17,28 @@ export function chunkArray<T>(items: T[], size: number = CHUNK_SIZE): T[][] {
   return out;
 }
 
-export function buildFilename(date: string | undefined, pageIndex: number, pageCount: number): string {
+/** タブ種別ごとのファイル名接頭辞(例: "stophigh_summary", "turnover_summary")を渡す */
+export function buildFilename(
+  filenamePrefix: string,
+  date: string | undefined,
+  pageIndex: number,
+  pageCount: number
+): string {
   const d = (date ?? new Date().toISOString().slice(0, 10)).replace(/-/g, "");
   return pageCount > 1
-    ? `stophigh_summary_${d}_${pageIndex + 1}of${pageCount}.png`
-    : `stophigh_summary_${d}.png`;
+    ? `${filenamePrefix}_${d}_${pageIndex + 1}of${pageCount}.png`
+    : `${filenamePrefix}_${d}.png`;
 }
 
+/** タブ種別ごとのラベル(例: "S高", "回転率")を渡す */
 export function buildSubtitle(
   date: string | undefined,
   totalCount: number,
   pageIndex: number,
-  pageCount: number
+  pageCount: number,
+  label: string
 ): string {
-  const base = `${date ?? ""} S高 ${totalCount}件`.trim();
+  const base = `${date ?? ""} ${label} ${totalCount}件`.trim();
   return pageCount > 1 ? `${base} (${pageIndex + 1}/${pageCount})` : base;
 }
 

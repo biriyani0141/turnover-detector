@@ -465,8 +465,10 @@ export default function PickupClient({
               codes={displayRows.map((r) => r.code)}
               onImageSummary={
                 mode === "stophigh"
-                  ? () => imageSummary.run(displayRows, headerDate)
-                  : undefined
+                  ? () => imageSummary.run(displayRows, headerDate, { title: "今日のストップ高", label: "S高" })
+                  : mode === "turnover"
+                    ? () => imageSummary.run(displayRows, headerDate, { title: "回転率TOP30", label: "回転率" })
+                    : undefined
               }
             />
           </div>
