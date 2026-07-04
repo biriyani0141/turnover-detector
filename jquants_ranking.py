@@ -1207,11 +1207,11 @@ def _attach_reason_and_disclosures(
     build_stophigh_cards()とbuild_ranking_cards()で共有する(タブごとにlookback_daysのみ変える)。
     """
     reason_entry = reasons_by_code.get(code)
-    if reason_entry and reason_entry.get("reason"):
+    if reason_entry and (reason_entry.get("reason") or reason_entry.get("status")):
         card["reason"] = {
             "kind": "today",
             "status": reason_entry.get("status"),
-            "text": reason_entry["reason"],
+            "text": reason_entry.get("reason") or "",
             "orders": reason_entry.get("orders") or None,
         }
     else:
