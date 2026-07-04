@@ -453,19 +453,22 @@ export default function TurnoverCard({
   );
 }
 
-const NOTE_MAX_LINES = 4;
+const NOTE_MAX_LINES = 3;
 const NOTE_LINE_HEIGHT = 18; // fontSize 12 * lineHeight 1.5
-const DISCLOSURE_MAX_LINES = 4;
+const DISCLOSURE_MAX_LINES = 3;
 const DISCLOSURE_LINE_HEIGHT = 15.75; // fontSize 10.5 * lineHeight 1.5
+// 計測(scrollHeight)と実描画(snapdomのdpr:2キャプチャ)の間のサブピクセル差異を吸収する安全マージン。
+// 境界ぎりぎりで収まると判定した項目が、実際の画像出力では途中の行で見切れる事象が確認されたため。
+const FIT_SAFETY_MARGIN = 3;
 
 // 本文ブロック(タグ+本文+orders)と開示情報ブロックを、区切り線(border-top)を挟んで分けて表示する。
 // タグは本文の先頭行に同居させ(個別画面NoteContentの「今日」パターンと同じ)、本文が長い場合は
 // タグの右から回り込んで折り返す。ordersは個別画面と同じくグレー小サイズの別行として本文の下に置く。
-// 本文ブロック(タグ行+本文+orders)は4行相当まで。本文は超過時に二分探索で文字を切り省略記号
-// 「…」を付ける。ordersは全体がその4行枠に収まる場合のみ表示し、収まらなければ(部分表示や
+// 本文ブロック(タグ行+本文+orders)は3行相当まで。本文は超過時に二分探索で文字を切り省略記号
+// 「…」を付ける。ordersは全体がその3行枠に収まる場合のみ表示し、収まらなければ(部分表示や
 // 省略記号なしで)丸ごと非表示にする。
 //
-// 開示情報ブロックは本文とは別に4行相当の枠を持つが、こちらも項目単位の全部/非表示切り替えのみ
+// 開示情報ブロックは本文とは別に3行相当の枠を持つが、こちらも項目単位の全部/非表示切り替えのみ
 // で、行の途中で途切れる項目があれば(文字を切って省略記号を付けず)その項目ごと非表示にする。
 //
 // 省略記号をCSSのwebkit-line-clampに任せず実DOM計測(scrollHeight)で手動計算しているのは、
@@ -533,9 +536,9 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
       textEl.textContent = visibleText;
     }
 
-    // ordersは本文込みの合計高さが4行枠に収まる場合のみ全文表示し、収まらなければ丸ごと非表示。
+    // ordersは本文込みの合計高さが3行枠に収まる場合のみ全文表示し、収まらなければ丸ごと非表示。
     ordersEl.textContent = ordersText || "";
-    if (ordersText && reasonBlock.scrollHeight > maxHeight) {
+    if (ordersText && reasonBlock.scrollHeight > maxHeight - FIT_SAFETY_MARGIN) {
       ordersEl.replaceChildren();
     }
   }, [mainText, ordersText]);
@@ -555,6 +558,11 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
     measureHost.style.position = "absolute";
     measureHost.style.visibility = "hidden";
     measureHost.style.width = `${host.clientWidth}px`;
+    // 実要素(host)と同じflex/gapを再現しないと、gap分の高さが計測に反映されず
+    // 実描画時にoverflow:hiddenで開示情報が途中の行で見切れる不具合が起きるため揃える。
+    measureHost.style.display = "flex";
+    measureHost.style.flexDirection = "column";
+    measureHost.style.gap = "3px";
     host.parentElement?.appendChild(measureHost);
 
     const makeItemEl = (item: DisclosureItem): HTMLDivElement => {
@@ -575,7 +583,7 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
     for (const item of disclosureItems) {
       const el = makeItemEl(item);
       measureHost.appendChild(el);
-      if (measureHost.scrollHeight > maxHeight) {
+      if (measureHost.scrollHeight > maxHeight - FIT_SAFETY_MARGIN) {
         measureHost.removeChild(el);
         break;
       }
