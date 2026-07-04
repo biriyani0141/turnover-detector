@@ -22,8 +22,10 @@ auth.json
 
 # jquants 中間データ（webは読まない・容量大のため除外）
 data/jquants/meta.json
+data/jquants/daily/
 
 *.bak*
 *.flag
 *gitlog.txt
 data/jquants/popular.json
+.vercel
