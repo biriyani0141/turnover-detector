@@ -101,6 +101,15 @@ export function useImageSummaryExport() {
       // /export側が自前で「生成中…」を表示しつつBroadcastChannelでのメッセージ到着を待つ。
       window.open("/export", "_blank");
 
+      // /export側のページ読み込みが遅い場合(実機のモバイル回線等)にdataを送っても届かず
+      // 「生成中…」のまま止まる不具合が実機で確認されたため、readyメッセージを受け取ってから
+      // dataを送るハンドシェイクにする。captureCards等の非同期処理より前にリスナーを張っておく。
+      const channel = new BroadcastChannel(EXPORT_CHANNEL_NAME);
+      let exportReady = false;
+      channel.onmessage = (event) => {
+        if (event.data?.type === "ready") exportReady = true;
+      };
+
       setGenerating(true);
       setProgress({ done: 0, total: stocks.length });
       try {
@@ -116,13 +125,18 @@ export function useImageSummaryExport() {
           if (blob) pages.push(blob);
         }
 
+        // readyが届くまで待つ(上限10秒、それでも届かなければ諦めて送るだけ試みる)。
+        const waitStart = Date.now();
+        while (!exportReady && Date.now() - waitStart < 10_000) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
         // BroadcastChannelはBlob本体を構造化複製でそのまま送れるため、blob URL文字列ではなく
         // Blobを渡す(URL文字列だと送信側でのrevokeタイミング次第で受信側での表示前に失効する
         // リスクがあるため、URL生成は受信側の/exportで行う)。
-        const channel = new BroadcastChannel(EXPORT_CHANNEL_NAME);
-        channel.postMessage({ title: options.title, label: options.label, pages });
-        channel.close();
+        channel.postMessage({ type: "data", title: options.title, label: options.label, pages });
       } finally {
+        channel.close();
         setGenerating(false);
         setProgress(null);
       }

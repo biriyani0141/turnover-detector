@@ -15,14 +15,23 @@ export default function ExportClient() {
     const timer = setTimeout(() => setTimedOut(true), RECEIVE_TIMEOUT_MS);
 
     channel.onmessage = (event: MessageEvent<ExportChannelMessage>) => {
+      if (event.data.type !== "data") return;
       clearTimeout(timer);
+      clearInterval(readyInterval);
       const { title, label, pages } = event.data;
       setMeta({ title, label });
       setUrls(pages.map((blob) => URL.createObjectURL(blob)));
     };
 
+    // 生成側が「ready」を受け取ってからdataを送るハンドシェイクのため、こちらから繰り返し
+    // readyを送信する(読み込みタイミングによっては生成側のリスナー登録前に1回目が届かず
+    // 消えてしまうことがあるため、届くまで送り続ける)。
+    channel.postMessage({ type: "ready" });
+    const readyInterval = setInterval(() => channel.postMessage({ type: "ready" }), 500);
+
     return () => {
       clearTimeout(timer);
+      clearInterval(readyInterval);
       channel.close();
     };
   }, []);
