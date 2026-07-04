@@ -1,51 +1,61 @@
 "use client";
-import { useEffect, useState } from "react";
-import { EXPORT_CHANNEL_NAME, type ExportChannelMessage } from "@/lib/cardGridExport";
+import { useEffect, useRef, useState } from "react";
+import { EXPORT_STORAGE_KEY, type ExportPayload } from "@/lib/cardGridExport";
 
-// 生成元タブが離脱する等で一切メッセージが届かない場合に「生成中…」のまま孤立させないための待機上限。
+// 生成元タブが離脱する等で一切データが届かない場合に「生成中…」のまま孤立させないための待機上限。
 const RECEIVE_TIMEOUT_MS = 30_000;
 
 export default function ExportClient() {
   const [meta, setMeta] = useState<{ title: string; label: string } | null>(null);
   const [urls, setUrls] = useState<string[]>([]);
   const [timedOut, setTimedOut] = useState(false);
+  const consumedRef = useRef(false);
 
   useEffect(() => {
-    const channel = new BroadcastChannel(EXPORT_CHANNEL_NAME);
     const timer = setTimeout(() => setTimedOut(true), RECEIVE_TIMEOUT_MS);
 
-    channel.onmessage = (event: MessageEvent<ExportChannelMessage>) => {
-      if (event.data.type !== "data") return;
+    // localStorageから読み取り、あれば消費して表示する。マウント時・visibilitychange時・
+    // storageイベント時の3経路すべてから呼ぶことで、いずれのタイミングで書き込まれても取りこぼさない
+    // (iOS Safariで新規タブがバックグラウンド扱いの間はイベントが遅延することがあるため)。
+    function tryConsume() {
+      if (consumedRef.current) return;
+      const raw = localStorage.getItem(EXPORT_STORAGE_KEY);
+      if (!raw) return;
+      let payload: ExportPayload;
+      try {
+        payload = JSON.parse(raw);
+      } catch {
+        return;
+      }
+      consumedRef.current = true;
+      localStorage.removeItem(EXPORT_STORAGE_KEY);
       clearTimeout(timer);
-      clearInterval(readyInterval);
-      const { title, label, pages } = event.data;
-      setMeta({ title, label });
-      setUrls(pages.map((blob) => URL.createObjectURL(blob)));
-    };
+      setMeta({ title: payload.title, label: payload.label });
+      setUrls(payload.pages);
+    }
 
-    // 生成側が「ready」を受け取ってからdataを送るハンドシェイクのため、こちらから繰り返し
-    // readyを送信する(読み込みタイミングによっては生成側のリスナー登録前に1回目が届かず
-    // 消えてしまうことがあるため、届くまで送り続ける)。
-    channel.postMessage({ type: "ready" });
-    const readyInterval = setInterval(() => channel.postMessage({ type: "ready" }), 500);
+    tryConsume();
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") tryConsume();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === EXPORT_STORAGE_KEY) tryConsume();
+    };
+    window.addEventListener("storage", onStorage);
 
     return () => {
       clearTimeout(timer);
-      clearInterval(readyInterval);
-      channel.close();
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 
   useEffect(() => {
     if (meta) document.title = meta.title;
   }, [meta]);
-
-  // blob URLはこのページ限りでしか使わないため、アンマウント時にまとめて解放する。
-  useEffect(() => {
-    return () => {
-      urls.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [urls]);
 
   if (urls.length === 0) {
     return (
@@ -73,7 +83,7 @@ export default function ExportClient() {
   return (
     <div style={{ margin: 0, background: "#F4F6FB", minHeight: "100vh" }}>
       {urls.map((url, i) => (
-        <img key={url} src={url} alt={`${meta?.title ?? ""} ${i + 1}`} style={{ display: "block", width: "100%" }} />
+        <img key={i} src={url} alt={`${meta?.title ?? ""} ${i + 1}`} style={{ display: "block", width: "100%" }} />
       ))}
     </div>
   );

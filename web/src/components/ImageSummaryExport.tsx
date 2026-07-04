@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { snapdom } from "@zumer/snapdom";
 import React from "react";
 import TurnoverCard, { type CardStock } from "./TurnoverCard";
-import { chunkArray, composeGrid, buildSubtitle, canvasToBlob, EXPORT_CHANNEL_NAME } from "@/lib/cardGridExport";
+import { chunkArray, composeGrid, buildSubtitle, EXPORT_STORAGE_KEY, type ExportPayload } from "@/lib/cardGridExport";
 
 const CARD_WIDTH = 380;
 // カード自然高(height指定なし時のoffsetHeight)をS高タブ9件・回転率タブTOP30件で実測した結果、
@@ -98,45 +98,32 @@ export function useImageSummaryExport() {
 
       // ユーザー操作の同期コールスタック内で専用Exportページ(/export)を1回だけ開く(iOS Safari等の
       // ポップアップブロック回避)。about:blankの空白タブが見える経路やdocument.write方式はやめ、
-      // /export側が自前で「生成中…」を表示しつつBroadcastChannelでのメッセージ到着を待つ。
+      // /export側が自前で「生成中…」を表示しつつ画像データの到着を待つ。
       window.open("/export", "_blank");
-
-      // /export側のページ読み込みが遅い場合(実機のモバイル回線等)にdataを送っても届かず
-      // 「生成中…」のまま止まる不具合が実機で確認されたため、readyメッセージを受け取ってから
-      // dataを送るハンドシェイクにする。captureCards等の非同期処理より前にリスナーを張っておく。
-      const channel = new BroadcastChannel(EXPORT_CHANNEL_NAME);
-      let exportReady = false;
-      channel.onmessage = (event) => {
-        if (event.data?.type === "ready") exportReady = true;
-      };
 
       setGenerating(true);
       setProgress({ done: 0, total: stocks.length });
       try {
         const cardCanvases = await captureCards(stocks, (done, total) => setProgress({ done, total }));
         const chunks = chunkArray(cardCanvases);
-        const pages: Blob[] = [];
-        for (let i = 0; i < chunks.length; i++) {
-          const composite = composeGrid(chunks[i], {
+        // dataURL(base64)化したページ画像をlocalStorageへ書き込む方式。当初BroadcastChannelで
+        // 受け渡していたが、iOS Safariで新規タブがバックグラウンド扱いの間はBroadcastChannel/
+        // setIntervalが動かず、送ったメッセージを受け取れないまま止まる不具合が実機で確認された。
+        // localStorageは書き込んだ時点で永続化されるため、/export側がどのタイミングで確認しても
+        // (マウント時・visibilitychange時・storageイベント時のいずれでも)取りこぼさない。
+        // S高1ページ/回転率2ページの実測でdataURL化後も5MB以内(最大約2.7MB)に収まることを
+        // 確認済みのため、IndexedDBへの切り替えは行っていない。
+        const pages: string[] = chunks.map((chunk, i) => {
+          const composite = composeGrid(chunk, {
             title: options.title,
             subtitle: buildSubtitle(date, stocks.length, i, chunks.length, options.label),
           });
-          const blob = await canvasToBlob(composite);
-          if (blob) pages.push(blob);
-        }
+          return composite.toDataURL("image/png");
+        });
 
-        // readyが届くまで待つ(上限10秒、それでも届かなければ諦めて送るだけ試みる)。
-        const waitStart = Date.now();
-        while (!exportReady && Date.now() - waitStart < 10_000) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-
-        // BroadcastChannelはBlob本体を構造化複製でそのまま送れるため、blob URL文字列ではなく
-        // Blobを渡す(URL文字列だと送信側でのrevokeタイミング次第で受信側での表示前に失効する
-        // リスクがあるため、URL生成は受信側の/exportで行う)。
-        channel.postMessage({ type: "data", title: options.title, label: options.label, pages });
+        const payload: ExportPayload = { title: options.title, label: options.label, pages };
+        localStorage.setItem(EXPORT_STORAGE_KEY, JSON.stringify(payload));
       } finally {
-        channel.close();
         setGenerating(false);
         setProgress(null);
       }

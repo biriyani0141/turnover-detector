@@ -1,14 +1,18 @@
 // 画像まとめ出力: グリッドレイアウト計算・チャンク分割・キャンバス合成の純粋関数群
 
-// 生成側(ImageSummaryExport.tsx)と表示側(/export)で共有するBroadcastChannel名・メッセージ型。
-// /export側のページ読み込みが遅い場合(実機のモバイル回線等)、生成側が先にdataを送ってしまうと
-// /export側のリスナー登録前にメッセージが失われる(BroadcastChannelは遅れて参加した購読先に
-// 過去のメッセージを再送しない)。これを避けるため、/export側は読み込み次第readyを繰り返し送信し、
-// 生成側はreadyを受信してからdataを送るハンドシェイクにしている。
-export const EXPORT_CHANNEL_NAME = "image-summary-export";
-export type ExportChannelMessage =
-  | { type: "ready" }
-  | { type: "data"; title: string; label: string; pages: Blob[] };
+// 生成側(ImageSummaryExport.tsx)と表示側(/export)で共有するlocalStorageキー・ペイロード型。
+// 当初BroadcastChannelで受け渡していたが、実機(iOS Safari)で新規タブがバックグラウンド
+// 扱いになっている間はBroadcastChannel/setIntervalが動かず、生成側が送ったメッセージを
+// 受け取れないまま「生成中…」で止まる不具合が確認された。localStorageは値が書き込まれた
+// 時点で永続化されるため、/export側がマウント時・visibilitychange時・storageイベント時の
+// いずれのタイミングで確認しても取りこぼさない。
+export const EXPORT_STORAGE_KEY = "image-summary-payload";
+export type ExportPayload = {
+  title: string;
+  label: string;
+  /** 各ページのPNG画像をdataURL(base64)化したもの。localStorageは文字列しか保持できないため。 */
+  pages: string[];
+};
 
 // 固定: 横3列×縦5行・1枚あたり最大15銘柄。16件以上は15件ごとに複数枚へ分割する。
 const GRID_COLS = 3;
@@ -101,8 +105,4 @@ export function composeGrid(
   });
 
   return canvas;
-}
-
-export function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
-  return new Promise((resolve) => canvas.toBlob((b) => resolve(b), "image/png"));
 }
