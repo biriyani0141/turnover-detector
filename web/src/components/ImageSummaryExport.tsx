@@ -7,9 +7,12 @@ import TurnoverCard, { type CardStock } from "./TurnoverCard";
 import { chunkArray, composeGrid, buildSubtitle, buildFilename, canvasToBlob } from "@/lib/cardGridExport";
 
 const CARD_WIDTH = 380;
-// メインカード(278px)+補足欄マージン(6px)+補足欄固定高さ(90px、TurnoverCardのcompactモード・4行分)を
-// 上回る値。外側ラッパーの固定height+overflow:hiddenで(念のため)視覚的に切って高さを統一する
-const CARD_CLIP_HEIGHT = 374;
+// メインカード(278px)+補足欄マージン(6px)+補足欄の最大高さ(本文ブロック:タグ+4行分で約91px、
+// 開示情報ブロック:区切り線+5行分で約93px、開示情報がある場合は合計約184px)を上回る値。
+// 補足欄の超過時の省略記号「…」はCSSのline-clampに任せず、TurnoverCard側で実DOM計測による
+// 手動付与に切り替えている(snapdomキャプチャ時にline-clampの省略記号が描画されないことが
+// あったため)。カード全体の高さ統一はこの外側ラッパーの固定height+overflow:hiddenのみで行う
+const CARD_CLIP_HEIGHT = 480;
 
 function waitTwoFrames(): Promise<void> {
   return new Promise((resolve) => {

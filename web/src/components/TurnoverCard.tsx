@@ -454,137 +454,188 @@ export default function TurnoverCard({
 }
 
 const NOTE_MAX_LINES = 4;
-const NOTE_LINE_HEIGHT = 18; // fontSize 12 * lineHeight 1.5(本文側の値。開示情報側は10.5*1.5とより小さいため、行高の上限はこちらが基準になる)
+const NOTE_LINE_HEIGHT = 18; // fontSize 12 * lineHeight 1.5
+const DISCLOSURE_MAX_LINES = 4;
+const DISCLOSURE_LINE_HEIGHT = 15.75; // fontSize 10.5 * lineHeight 1.5
 
-// 個別画面(NoteContent)と同じ構造(タグは独立行、本文はその下、開示情報は1件1行)で表示する。
-// タグ行は4行の内数に含めず、本文+開示情報の合計をタグ+4行相当に収める。
+// 本文ブロック(タグ+本文+orders)と開示情報ブロックを、区切り線(border-top)を挟んで分けて表示する。
+// タグは本文の先頭行に同居させ(個別画面NoteContentの「今日」パターンと同じ)、本文が長い場合は
+// タグの右から回り込んで折り返す。ordersは個別画面と同じくグレー小サイズの別行として本文の下に置く。
+// 本文ブロック(タグ行+本文+orders)は4行相当まで。本文は超過時に二分探索で文字を切り省略記号
+// 「…」を付ける。ordersは全体がその4行枠に収まる場合のみ表示し、収まらなければ(部分表示や
+// 省略記号なしで)丸ごと非表示にする。
 //
-// 超過分の省略記号「…」はCSSのwebkit-line-clampに任せず、実DOM計測(scrollHeight)で
-// 4行に収まる最大文字数を二分探索し、手動で付与している。理由: 本文(fontSize12)と
-// 開示情報(fontSize10.5)でスタイルの異なる子要素を混在させると、通常のブラウザ描画では
-// 省略記号が正しく出るにもかかわらず、画像まとめ出力に使うsnapdomのキャプチャ結果だけ
-// 省略記号が描画されない(文字が中途半端に切れる)事象を実データで確認したため。
-// 行ごとに要素を1つずつ積み上げて計測し、高さ上限を超えた行だけを二分探索で切り詰める。
+// 開示情報ブロックは本文とは別に4行相当の枠を持つが、こちらも項目単位の全部/非表示切り替えのみ
+// で、行の途中で途切れる項目があれば(文字を切って省略記号を付けず)その項目ごと非表示にする。
+//
+// 省略記号をCSSのwebkit-line-clampに任せず実DOM計測(scrollHeight)で手動計算しているのは、
+// 画像まとめ出力に使うsnapdomのキャプチャ結果だけ省略記号が描画されない(文字が中途半端に
+// 切れる)事象を実データで確認したため。
 function CompactNoteContent({ stock }: { stock: CardStock }) {
   let badge: { bg: string; label: string } | null = null;
   let mainText = "";
   let mainColor = "#3A4050";
-  const extraLines: string[] = [];
+  let ordersText = "";
 
   if (stock.reason) {
     if (stock.reason.kind === "today") {
       badge = reasonStatusBadge(stock.reason.status);
       mainText = stock.reason.text;
-      if (stock.reason.orders) extraLines.push(stock.reason.orders);
+      if (stock.reason.orders) ordersText = stock.reason.orders;
     } else {
       badge = { bg: "#8B0000", label: `連騰${stock.reason.streakDays}日目` };
       mainText = stock.reason.prevText;
       mainColor = "#9098A9";
     }
   }
-  if (stock.disclosures) {
-    for (const d of stock.disclosures) {
-      extraLines.push(`${fmtCompactDate(d.date)} ${d.title}`);
-    }
-  }
-  const extraLinesKey = extraLines.join(" ");
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const reasonBlockRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLSpanElement>(null);
+  const ordersRef = useRef<HTMLDivElement>(null);
 
   // 計測結果をReactのstateに戻さず直接DOMへ書き込む。setStateで再レンダリングすると
   // react-hooks/set-state-in-effectのカスケード再レンダリング警告に抵触する上、
-  // ここはReactが管理する子要素を持たない末端のdivなので直接書き込んでも競合しない。
+  // ここはReactが管理する子要素を持たない末端要素なので直接書き込んでも競合しない。
   useLayoutEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    if (!mainText && extraLines.length === 0) {
-      container.replaceChildren();
-      return;
-    }
+    const textEl = textRef.current;
+    const ordersEl = ordersRef.current;
+    const reasonBlock = reasonBlockRef.current;
+    if (!textEl || !ordersEl || !reasonBlock) return;
 
     const maxHeight = NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1;
+
+    if (!mainText) {
+      textEl.replaceChildren();
+    } else {
+      const clone = document.createElement("span");
+      clone.style.position = "absolute";
+      clone.style.visibility = "hidden";
+      clone.style.width = `${textEl.clientWidth}px`;
+      clone.style.display = "block";
+      clone.style.fontSize = "12px";
+      clone.style.lineHeight = "1.5";
+      textEl.parentElement?.appendChild(clone);
+
+      let visibleText = mainText;
+      clone.textContent = mainText;
+      if (clone.scrollHeight > maxHeight) {
+        let lo = 0;
+        let hi = mainText.length;
+        while (lo < hi) {
+          const mid = Math.ceil((lo + hi) / 2);
+          clone.textContent = mainText.slice(0, mid) + "…";
+          if (clone.scrollHeight <= maxHeight) lo = mid;
+          else hi = mid - 1;
+        }
+        visibleText = mainText.slice(0, lo) + (lo < mainText.length ? "…" : "");
+      }
+      clone.remove();
+      textEl.textContent = visibleText;
+    }
+
+    // ordersは本文込みの合計高さが4行枠に収まる場合のみ全文表示し、収まらなければ丸ごと非表示。
+    ordersEl.textContent = ordersText || "";
+    if (ordersText && reasonBlock.scrollHeight > maxHeight) {
+      ordersEl.replaceChildren();
+    }
+  }, [mainText, ordersText]);
+
+  const disclosureRef = useRef<HTMLDivElement>(null);
+  const disclosureItems = stock.disclosures ?? [];
+  const disclosureKey = disclosureItems.map((d) => `${d.date}|${d.title}`).join("");
+
+  useLayoutEffect(() => {
+    const host = disclosureRef.current;
+    if (!host) return;
+    host.replaceChildren();
+    if (disclosureItems.length === 0) return;
+
+    const maxHeight = DISCLOSURE_LINE_HEIGHT * DISCLOSURE_MAX_LINES + 1;
     const measureHost = document.createElement("div");
     measureHost.style.position = "absolute";
     measureHost.style.visibility = "hidden";
-    measureHost.style.width = `${container.clientWidth}px`;
-    container.parentElement?.appendChild(measureHost);
+    measureHost.style.width = `${host.clientWidth}px`;
+    host.parentElement?.appendChild(measureHost);
 
-    const makeMainEl = (text: string): HTMLSpanElement => {
-      const el = document.createElement("span");
-      el.style.display = "block";
-      el.style.fontSize = "12px";
-      el.style.fontWeight = "500";
-      el.style.color = mainColor;
-      el.style.lineHeight = "1.5";
-      el.textContent = text;
-      return el;
-    };
-    const makeExtraEl = (text: string): HTMLDivElement => {
+    const makeItemEl = (item: DisclosureItem): HTMLDivElement => {
       const el = document.createElement("div");
       el.style.fontSize = "10.5px";
       el.style.color = "#9098A9";
       el.style.lineHeight = "1.5";
-      el.textContent = text;
+      const dateSpan = document.createElement("span");
+      dateSpan.style.fontVariantNumeric = "tabular-nums";
+      dateSpan.style.marginRight = "5px";
+      dateSpan.textContent = fmtCompactDate(item.date);
+      el.appendChild(dateSpan);
+      el.appendChild(document.createTextNode(item.title));
       return el;
     };
 
-    const lines: { text: string; make: (t: string) => HTMLElement }[] = [];
-    if (mainText) lines.push({ text: mainText, make: makeMainEl });
-    for (const l of extraLines) lines.push({ text: l, make: makeExtraEl });
-
-    const finalNodes: HTMLElement[] = [];
-    for (const { text, make } of lines) {
-      const el = make(text);
+    const kept: HTMLElement[] = [];
+    for (const item of disclosureItems) {
+      const el = makeItemEl(item);
       measureHost.appendChild(el);
-      if (measureHost.scrollHeight <= maxHeight) {
-        finalNodes.push(el);
-        continue;
+      if (measureHost.scrollHeight > maxHeight) {
+        measureHost.removeChild(el);
+        break;
       }
-      measureHost.removeChild(el);
-      let lo = 0;
-      let hi = text.length;
-      while (lo < hi) {
-        const mid = Math.ceil((lo + hi) / 2);
-        const trial = make(text.slice(0, mid) + "…");
-        measureHost.appendChild(trial);
-        const fits = measureHost.scrollHeight <= maxHeight;
-        measureHost.removeChild(trial);
-        if (fits) lo = mid;
-        else hi = mid - 1;
-      }
-      if (lo > 0) finalNodes.push(make(text.slice(0, lo) + "…"));
-      break;
+      kept.push(el);
     }
-
     measureHost.remove();
-    container.replaceChildren(...finalNodes);
-  }, [mainText, mainColor, extraLinesKey]);
+    host.replaceChildren(...kept);
+  }, [disclosureKey]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {badge && (
-        <span
-          style={{
-            fontSize: 9,
-            fontWeight: 700,
-            color: "#FFFFFF",
-            background: badge.bg,
-            borderRadius: 3,
-            padding: "1px 5px",
-            alignSelf: "flex-start",
-            flexShrink: 0,
-          }}
-        >
-          {badge.label}
-        </span>
-      )}
+    <div>
       <div
-        ref={containerRef}
-        style={{
-          maxHeight: NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1,
-          overflow: "hidden",
-        }}
-      />
+        ref={reasonBlockRef}
+        style={{ maxHeight: NOTE_LINE_HEIGHT * NOTE_MAX_LINES + 1, overflow: "hidden" }}
+      >
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 6 }}>
+          {badge && (
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 700,
+                color: "#FFFFFF",
+                background: badge.bg,
+                borderRadius: 3,
+                padding: "1px 5px",
+                flexShrink: 0,
+              }}
+            >
+              {badge.label}
+            </span>
+          )}
+          <span
+            ref={textRef}
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              color: mainColor,
+              lineHeight: 1.5,
+              flex: 1,
+              minWidth: 0,
+            }}
+          />
+        </div>
+        <div ref={ordersRef} style={{ fontSize: 10.5, color: "#9098A9", lineHeight: 1.5, marginTop: 4 }} />
+      </div>
+      {disclosureItems.length > 0 && (
+        <div
+          ref={disclosureRef}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 3,
+            marginTop: 6,
+            paddingTop: 6,
+            borderTop: "1px solid #EEEEEE",
+            maxHeight: DISCLOSURE_LINE_HEIGHT * DISCLOSURE_MAX_LINES + 1,
+            overflow: "hidden",
+          }}
+        />
+      )}
     </div>
   );
 }
