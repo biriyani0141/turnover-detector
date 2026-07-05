@@ -481,7 +481,7 @@ export default function PickupClient({
           />
 
           {(mode === "stophigh" || mode === "turnover") && (
-            <div className="mt-6 pt-4 border-t border-gray-200">
+            <div className="mt-6 pt-4 border-t border-gray-200" style={{ marginBottom: "1cm" }}>
               <button
                 type="button"
                 onClick={() => setNotesOpen((o) => !o)}
@@ -490,14 +490,42 @@ export default function PickupClient({
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: 4,
+                  gap: 6,
                   background: "transparent",
                   border: "none",
                   padding: 0,
                   cursor: "pointer",
                 }}
               >
-                <span>{notesOpen ? "▼" : "▶"}</span>
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 16,
+                    height: 16,
+                    background: "#E5E7EB",
+                    borderRadius: 3,
+                    flexShrink: 0,
+                  }}
+                >
+                  <svg
+                    width="9"
+                    height="9"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#6B7280"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      transform: notesOpen ? "rotate(90deg)" : "rotate(0deg)",
+                      transition: "transform 0.15s",
+                    }}
+                  >
+                    <polyline points="9 6 15 12 9 18" />
+                  </svg>
+                </span>
                 <span>※ 注意事項</span>
               </button>
               {notesOpen && (
