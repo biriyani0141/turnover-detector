@@ -314,7 +314,7 @@ export default function PickupClient({
   const headerDate = mode === "pullback" ? activePullbackMeta?.date : activeMeta?.date;
 
   return (
-    <div className="p-3">
+    <div className="p-3" style={{ backgroundColor: "#17171a" }}>
       {/* ヘッダー */}
       <div
         style={{
