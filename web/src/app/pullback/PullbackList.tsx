@@ -4,6 +4,7 @@ import { StockRow, StockRowHeader } from "../_components/StockRow";
 import { PageHeader } from "../_components/PageHeader";
 import { STATE_CONFIG, StateLabel, Row, classify } from "@/lib/classify";
 import ExportMenu from "@/components/ExportMenu";
+import { PickupSubTabBar } from "../_components/PickupSubTabBar";
 
 // ─── 時価総額フィルタ ─────────────────────────────────────────────────────────
 const CAP_FILTERS = [
@@ -64,6 +65,7 @@ export default function PullbackList({
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+      <PickupSubTabBar dark />
       <PageHeader
         date={meta?.date}
         description={

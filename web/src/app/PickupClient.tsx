@@ -6,6 +6,7 @@ import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGat
 import ExportMenu from "../components/ExportMenu";
 import StopHighDetailSheet from "../components/StopHighDetailSheet";
 import { useImageSummaryExport, ImageSummaryOverlay } from "../components/ImageSummaryExport";
+import { PickupSubTabBar } from "./_components/PickupSubTabBar";
 
 const LAZY_CHART = true;
 
@@ -178,6 +179,7 @@ export default function PickupClient({
   excluded,
   pullbackSections,
   pullbackMeta,
+  mode,
 }: {
   rows: CardStock[];
   shRows: CardStock[];
@@ -185,8 +187,9 @@ export default function PickupClient({
   excluded: Excluded[];
   pullbackSections: Map<StateLabel, PullbackItem[]>;
   pullbackMeta: { date?: string } | null;
+  /** グローバルナビの各カテゴリ("⭐Pickup"のチャート/"🚀S高"/"🔥回転率")に応じて呼び出し元(page.tsx)が固定で渡す。 */
+  mode: "turnover" | "stophigh" | "pullback";
 }) {
-  const [mode, setMode] = useState<"turnover" | "stophigh" | "pullback">("pullback");
   const [pullbackDescOpen, setPullbackDescOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [detailStock, setDetailStock] = useState<CardStock | null>(null);
@@ -377,65 +380,7 @@ export default function PickupClient({
             }
           </p>
         )}
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={() => setMode("pullback")}
-            style={{
-              flex: 1,
-              padding: "9px 0",
-              borderRadius: 9999,
-              fontFamily: "ui-monospace, monospace",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: 14,
-              textAlign: "center",
-              transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: mode === "pullback" ? "#3c4043" : "#282a2d",
-              border: `1px solid ${mode === "pullback" ? "#5f6368" : "#3c4043"}`,
-              color: mode === "pullback" ? "#e8eaed" : "#8e8e93",
-              fontWeight: mode === "pullback" ? 600 : 500,
-            }}
-          >
-            PickUP
-          </button>
-          <button
-            onClick={() => setMode("turnover")}
-            style={{
-              flex: 1,
-              padding: "9px 0",
-              borderRadius: 9999,
-              fontFamily: "ui-monospace, monospace",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: 14,
-              textAlign: "center",
-              transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: mode === "turnover" ? "#3c4043" : "#282a2d",
-              border: `1px solid ${mode === "turnover" ? "#5f6368" : "#3c4043"}`,
-              color: mode === "turnover" ? "#e8eaed" : "#8e8e93",
-              fontWeight: mode === "turnover" ? 600 : 500,
-            }}
-          >
-            回転率
-          </button>
-          <button
-            onClick={() => setMode("stophigh")}
-            style={{
-              flex: 1,
-              padding: "9px 0",
-              borderRadius: 9999,
-              fontFamily: "ui-monospace, monospace",
-              fontVariantNumeric: "tabular-nums",
-              fontSize: 14,
-              textAlign: "center",
-              transition: "background 0.15s, color 0.15s, border-color 0.15s",
-              background: mode === "stophigh" ? "#3c4043" : "#282a2d",
-              border: `1px solid ${mode === "stophigh" ? "#5f6368" : "#3c4043"}`,
-              color: mode === "stophigh" ? "#e8eaed" : "#8e8e93",
-              fontWeight: mode === "stophigh" ? 600 : 500,
-            }}
-          >
-            S高
-          </button>
-        </div>
+        {mode === "pullback" && <PickupSubTabBar />}
       </div>
 
       {mode === "pullback" ? (

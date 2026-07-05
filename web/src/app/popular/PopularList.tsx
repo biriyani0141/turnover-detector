@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
 import { PageHeader } from "../_components/PageHeader";
 import ExportMenu from "@/components/ExportMenu";
+import { PickupSubTabBar } from "../_components/PickupSubTabBar";
 
 type Row = {
   code: string;
@@ -119,6 +120,7 @@ export default function PopularList({
 
   return (
     <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+      <PickupSubTabBar dark />
       <PageHeader
         date={meta?.date}
         rightContent={

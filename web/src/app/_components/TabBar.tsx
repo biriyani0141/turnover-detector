@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { href: "/", icon: "candlestick_chart" },
-  { href: "/ranking", icon: "leaderboard" },
-  { href: "/popular", icon: "finance_mode" },
-  { href: "/pullback", icon: "electric_bolt" },
+  // ⭐Pickup: チャート("/")・Pickup("/pullback")・人気履歴("/popular")の3ページをまとめて
+  // このアイコン配下として扱う(サブタブはPickupSubTabBarで各ページ内に表示する)。
+  { href: "/", icon: "electric_bolt", matchPaths: ["/", "/pullback", "/popular"] },
+  { href: "/stophigh", icon: "rocket_launch", matchPaths: ["/stophigh"] },
+  { href: "/turnover", icon: "cycle", matchPaths: ["/turnover"] },
+  { href: "/ranking", icon: "list_alt", matchPaths: ["/ranking"] },
 ];
 
 export function TabBar() {
@@ -18,8 +20,8 @@ export function TabBar() {
       className="flex border-b"
       style={{ borderColor: "#1F1F23", backgroundColor: "#09090B" }}
     >
-      {tabs.map(({ href, icon }) => {
-        const isActive = pathname === href;
+      {tabs.map(({ href, icon, matchPaths }) => {
+        const isActive = matchPaths.includes(pathname);
         return (
           <Link
             key={href}
