@@ -6,7 +6,7 @@ import { Row, StateLabel, STATE_CONFIG, classify, computeMktcapRanks, computeGat
 import ExportMenu from "../components/ExportMenu";
 import StopHighDetailSheet from "../components/StopHighDetailSheet";
 import { useImageSummaryExport, ImageSummaryOverlay } from "../components/ImageSummaryExport";
-import { PickupSubTabBar } from "./_components/PickupSubTabBar";
+import { useHeader } from "./_components/HeaderContext";
 
 const LAZY_CHART = true;
 
@@ -95,82 +95,8 @@ function LazyCard({
   );
 }
 
-// pickedがavailableDates(昇順)のいずれとも一致しない場合(週末・休場日等)、
-// picked以前で最も新しい利用可能日にスナップする。pickedが最古日より前ならそれを返す。
-function snapToAvailableDate(picked: string, availableDates: string[]): string {
-  let result = availableDates[0];
-  for (const d of availableDates) {
-    if (d <= picked) result = d;
-    else break;
-  }
-  return result;
-}
-
-function DateSelector({
-  availableDates,
-  selectedDate,
-  onChange,
-}: {
-  availableDates: string[];
-  selectedDate: string | null;
-  onChange: (date: string | null) => void;
-}) {
-  if (availableDates.length < 2) return null;
-
-  const latest = availableDates[availableDates.length - 1];
-  const earliest = availableDates[0];
-  const current = selectedDate ?? latest;
-  const idx = availableDates.indexOf(current);
-  if (idx === -1) return null;
-
-  const isLatest = idx === availableDates.length - 1;
-  const label = current.slice(5).replace("-", "/");
-
-  return (
-    <div style={{ position: "relative", display: "inline-flex", alignItems: "center", marginLeft: "auto" }}>
-      <span
-        style={{
-          fontSize: 11,
-          fontVariantNumeric: "tabular-nums",
-          color: isLatest ? "#707A8A" : "#c8d0da",
-          minWidth: 34,
-          textAlign: "center",
-          letterSpacing: "0.02em",
-          padding: "3px 8px",
-          borderRadius: 6,
-          border: "1px solid #4a4d52",
-          background: "#2a2c2f",
-        }}
-      >
-        {label}
-      </span>
-      <input
-        type="date"
-        value={current}
-        min={earliest}
-        max={latest}
-        aria-label="日付を選択"
-        onChange={(e) => {
-          const picked = e.target.value;
-          if (!picked) return;
-          const snapped = snapToAvailableDate(picked, availableDates);
-          onChange(snapped === latest ? null : snapped);
-        }}
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: 0,
-          cursor: "pointer",
-          border: "none",
-          padding: 0,
-          margin: 0,
-        }}
-      />
-    </div>
-  );
-}
+const PULLBACK_DESCRIPTION =
+  "直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。";
 
 export default function PickupClient({
   rows,
@@ -312,77 +238,26 @@ export default function PickupClient({
   const displayRows = mode === "turnover" ? activeRows : mode === "stophigh" ? activeShRows ?? [] : [];
   const pullbackTotal = [...activePullbackSections.values()].reduce((sum, items) => sum + items.length, 0);
   const headerDate = mode === "pullback" ? activePullbackMeta?.date : activeMeta?.date;
+  const headerCount =
+    mode === "turnover" ? "TOP30" : mode === "pullback" ? `${pullbackTotal}件` : `${displayRows.length}件`;
+
+  const toggleDesc = useCallback(() => setPullbackDescOpen((o) => !o), []);
+
+  const setHeader = useHeader();
+  useEffect(() => {
+    setHeader({
+      date: headerDate,
+      count: headerCount,
+      dateSelector: { availableDates, selectedDate, onChange: setSelectedDate },
+      descToggle:
+        mode === "pullback"
+          ? { open: pullbackDescOpen, onToggle: toggleDesc, description: PULLBACK_DESCRIPTION }
+          : undefined,
+    });
+  }, [headerDate, headerCount, availableDates, selectedDate, mode, pullbackDescOpen, toggleDesc, setHeader]);
 
   return (
-    <div className="p-3" style={{ backgroundColor: "#17171a" }}>
-      {/* ヘッダー */}
-      <div
-        style={{
-          fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
-          marginBottom: 12,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            fontSize: 11,
-            color: "#707A8A",
-            fontVariantNumeric: "tabular-nums",
-            letterSpacing: "0.01em",
-            marginBottom: pullbackDescOpen ? 4 : 8,
-          }}
-        >
-          {headerDate}
-          <span style={{ margin: "0 4px" }}>·</span>
-          <span style={{ fontWeight: 600 }}>
-            {mode === "turnover"
-              ? "TOP30"
-              : mode === "pullback"
-                ? `${pullbackTotal}件`
-                : `${displayRows.length}件`}
-          </span>
-          {mode === "pullback" && (
-            <button
-              type="button"
-              onClick={() => setPullbackDescOpen((o) => !o)}
-              aria-expanded={pullbackDescOpen}
-              aria-label="説明を表示"
-              style={{
-                padding: 2,
-                marginLeft: 2,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "transparent",
-                border: "none",
-                flexShrink: 0,
-              }}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="#707A8A">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
-              </svg>
-            </button>
-          )}
-          <DateSelector
-            availableDates={availableDates}
-            selectedDate={selectedDate}
-            onChange={setSelectedDate}
-          />
-        </div>
-        {mode === "pullback" && pullbackDescOpen && (
-          <p
-            className="text-[11px] leading-5 whitespace-pre-line"
-            style={{ color: "#9CA3AF", marginBottom: 8 }}
-          >
-            {
-              "直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
-            }
-          </p>
-        )}
-        {mode === "pullback" && <PickupSubTabBar />}
-      </div>
-
+    <div className="p-3" style={{ backgroundColor: "#17171a", paddingTop: mode === "pullback" ? 0 : 4 }}>
       {mode === "pullback" ? (
         <>
           {STATE_CONFIG.map(({ label, headerBg }) => {

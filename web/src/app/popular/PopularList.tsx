@@ -1,9 +1,21 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
-import { PageHeader } from "../_components/PageHeader";
 import ExportMenu from "@/components/ExportMenu";
-import { PickupSubTabBar } from "../_components/PickupSubTabBar";
+import { useHeader } from "../_components/HeaderContext";
+
+const POPULAR_DESCRIPTION =
+  "選んだ期間（25／50／100／200日）の中で、売買代金回転率が5%以上をつけた銘柄を抽出しています。" +
+  "時価総額上位100位の銘柄は、回転率ランキング出現の有無に関わらず例外的に組み入れています。\n\n" +
+  "・「出現」欄：左の数字は、期間内に回転率5%以上をつけた日数（出現回数）。右の数字は、その期間中のストップ高（S高）の回数です。\n" +
+  "・上部の数字ボタンは2種類。「25／50／100／200」は集計期間（日数）の切り替え、「100↓／300↓／1000↓／1000↑」は時価総額フィルターです。\n" +
+  "・各銘柄に並ぶ数値（例：51.7兆）は時価総額を表します。\n" +
+  "・「1d／5d／1m／3m／1y」のカラム見出しをタップすると、その期間の騰落率でソートできます。\n\n" +
+  "・「継続／初動／仕手」は時価総額フィルターとソートをまとめて切り替えるプリセットです。\n" +
+  "　継続：時価総額1000↑＋3mソート（降順）\n" +
+  "　初動：時価総額フィルターなし（全件）＋5dソート（降順）\n" +
+  "　仕手：時価総額1000↓＋出現欄の右側（S高回数）ソート（降順）\n" +
+  "　プリセット適用後にフィルターやソートを手動で変更すると、ハイライトは解除されます。";
 
 type Row = {
   code: string;
@@ -66,6 +78,16 @@ export default function PopularList({
   const [sortKey, setSortKey] = useState<SortKey>("y1");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [activePreset, setActivePreset] = useState<PresetKey | null>(null);
+  const [descOpen, setDescOpen] = useState(false);
+  const toggleDesc = useCallback(() => setDescOpen((o) => !o), []);
+
+  const setHeader = useHeader();
+  useEffect(() => {
+    setHeader({
+      date: meta?.date,
+      descToggle: { open: descOpen, onToggle: toggleDesc, description: POPULAR_DESCRIPTION },
+    });
+  }, [meta?.date, descOpen, toggleDesc, setHeader]);
 
   const handleSort = (key: string) => {
     const k = key as SortKey;
@@ -119,53 +141,30 @@ export default function PopularList({
   }, [allData, capFilter, win, sortKey, sortDir]);
 
   return (
-    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
-      <PageHeader
-        insetX={0}
-        rowMarginBottomClosed={8}
-        rowMarginBottomOpen={4}
-        compactToggle
-        rowMinHeight={24.5}
-        date={meta?.date}
-        rightContent={
-          <div style={{ display: "flex", gap: 6 }}>
-            {PRESETS.map((p) => (
-              <button
-                key={p.key}
-                onClick={() => handlePresetClick(p)}
-                style={{
-                  padding: "2px 10px",
-                  borderRadius: 8,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  lineHeight: "20px",
-                  transition: "background 0.15s, color 0.15s",
-                  background: activePreset === p.key ? "#fff" : "#2c2c2e",
-                  color: activePreset === p.key ? "#000" : "#8e8e93",
-                  border: "none",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-        }
-        description={
-          "選んだ期間（25／50／100／200日）の中で、売買代金回転率が5%以上をつけた銘柄を抽出しています。" +
-          "時価総額上位100位の銘柄は、回転率ランキング出現の有無に関わらず例外的に組み入れています。\n\n" +
-          "・「出現」欄：左の数字は、期間内に回転率5%以上をつけた日数（出現回数）。右の数字は、その期間中のストップ高（S高）の回数です。\n" +
-          "・上部の数字ボタンは2種類。「25／50／100／200」は集計期間（日数）の切り替え、「100↓／300↓／1000↓／1000↑」は時価総額フィルターです。\n" +
-          "・各銘柄に並ぶ数値（例：51.7兆）は時価総額を表します。\n" +
-          "・「1d／5d／1m／3m／1y」のカラム見出しをタップすると、その期間の騰落率でソートできます。\n\n" +
-          "・「継続／初動／仕手」は時価総額フィルターとソートをまとめて切り替えるプリセットです。\n" +
-          "　継続：時価総額1000↑＋3mソート（降順）\n" +
-          "　初動：時価総額フィルターなし（全件）＋5dソート（降順）\n" +
-          "　仕手：時価総額1000↓＋出現欄の右側（S高回数）ソート（降順）\n" +
-          "　プリセット適用後にフィルターやソートを手動で変更すると、ハイライトは解除されます。"
-        }
-      />
-      <PickupSubTabBar />
+    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 0, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
+      {/* プリセット */}
+      <div style={{ marginBottom: 12, display: "flex", justifyContent: "flex-end", gap: 6 }}>
+        {PRESETS.map((p) => (
+          <button
+            key={p.key}
+            onClick={() => handlePresetClick(p)}
+            style={{
+              padding: "2px 10px",
+              borderRadius: 8,
+              fontSize: 12,
+              fontWeight: 600,
+              lineHeight: "20px",
+              transition: "background 0.15s, color 0.15s",
+              background: activePreset === p.key ? "#fff" : "#2c2c2e",
+              color: activePreset === p.key ? "#000" : "#8e8e93",
+              border: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
 
       {/* 窓切替 */}
       <div style={{ display: "flex", gap: 8, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>

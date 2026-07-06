@@ -1,10 +1,17 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { StockRow, StockRowHeader } from "../_components/StockRow";
-import { PageHeader } from "../_components/PageHeader";
 import { STATE_CONFIG, StateLabel, Row, classify } from "@/lib/classify";
 import ExportMenu from "@/components/ExportMenu";
-import { PickupSubTabBar } from "../_components/PickupSubTabBar";
+import { useHeader } from "../_components/HeaderContext";
+
+const PULLBACK_DESCRIPTION =
+  "掲載銘柄について\n\n以下のいずれかの条件を満たす銘柄を掲載しています。\n\n" +
+  "大型株 — 時価総額上位100銘柄のうち、1年リターン+100%以上の継続・押し目・調整局面にある銘柄。流動性が高く長期で追いやすい大型の強い銘柄を網羅します。\n\n" +
+  "大相場 — 1年リターン+200%以上かつ直近50日の回転率上位5%以上が10日以上の銘柄（失速除く）。長期・中期トレンドが強く、売買も伴った本物の大相場銘柄です。\n\n" +
+  "初動 — 直近5日で+15%以上かつ直前15日比で加速が確認された銘柄。出てきたばかりの動意株を逃さず拾います。\n\n" +
+  "常連 — 直近50日の回転率上位5%以上が20日以上の銘柄（対象外除く）。継続的に売買が活発な定番銘柄です。\n\n" +
+  "状態分類について\n\n直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。";
 
 // ─── 時価総額フィルタ ─────────────────────────────────────────────────────────
 const CAP_FILTERS = [
@@ -34,6 +41,16 @@ export default function PullbackList({
   meta: { date: string } | null;
 }) {
   const [capFilter, setCapFilter] = useState<CapFilter>("all");
+  const [descOpen, setDescOpen] = useState(false);
+  const toggleDesc = useCallback(() => setDescOpen((o) => !o), []);
+
+  const setHeader = useHeader();
+  useEffect(() => {
+    setHeader({
+      date: meta?.date,
+      descToggle: { open: descOpen, onToggle: toggleDesc, description: PULLBACK_DESCRIPTION },
+    });
+  }, [meta?.date, descOpen, toggleDesc, setHeader]);
 
   // 状態分類（capFilter前）
   const classified = useMemo<Map<StateLabel, Row[]>>(() => {
@@ -64,25 +81,7 @@ export default function PullbackList({
   const offCount = sections.get("対象外")?.length ?? 0;
 
   return (
-    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
-      <PageHeader
-        insetX={0}
-        rowMarginBottomClosed={8}
-        rowMarginBottomOpen={4}
-        compactToggle
-        rowMinHeight={24.5}
-        date={meta?.date}
-        description={
-          "掲載銘柄について\n\n以下のいずれかの条件を満たす銘柄を掲載しています。\n\n" +
-          "大型株 — 時価総額上位100銘柄のうち、1年リターン+100%以上の継続・押し目・調整局面にある銘柄。流動性が高く長期で追いやすい大型の強い銘柄を網羅します。\n\n" +
-          "大相場 — 1年リターン+200%以上かつ直近50日の回転率上位5%以上が10日以上の銘柄（失速除く）。長期・中期トレンドが強く、売買も伴った本物の大相場銘柄です。\n\n" +
-          "初動 — 直近5日で+15%以上かつ直前15日比で加速が確認された銘柄。出てきたばかりの動意株を逃さず拾います。\n\n" +
-          "常連 — 直近50日の回転率上位5%以上が20日以上の銘柄（対象外除く）。継続的に売買が活発な定番銘柄です。\n\n" +
-          "状態分類について\n\n直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
-        }
-      />
-      <PickupSubTabBar />
-
+    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 0, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
       {/* 時価総額フィルタ */}
       <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
         {CAP_FILTERS.map((f) => (

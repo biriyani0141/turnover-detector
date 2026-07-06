@@ -1,8 +1,15 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Roboto_Mono } from "next/font/google";
-import { PageHeader } from "../_components/PageHeader";
 import ExportMenu from "@/components/ExportMenu";
+import { useHeader } from "../_components/HeaderContext";
+
+const RANKING_DESCRIPTION =
+  "売買代金・回転率・S高の上位銘柄を表示します。\n" +
+  "・タブ「売買代金／回転率／S高」でランキング種別を切り替えます。\n" +
+  "・売買代金タブのみ「プライム／スタンダード／グロース」市場タブと各種フィルターが使えます。\n" +
+  "・回転率10%以上は赤帯、5%以上は橙帯で行をハイライトします。\n" +
+  "・売買代金タブの「出現」欄：左=直近50日で回転率5%以上をつけた日数、右=その期間のS高回数。";
 
 const robotoMono = Roboto_Mono({ weight: ["400", "700"], subsets: ["latin"] });
 
@@ -315,6 +322,16 @@ export default function RankingTabs({
   const [filterTurnover5, setFilterTurnover5] = useState(false);
   const [retFilter, setRetFilter] = useState<"off" | "r5" | "r10">("off");
   const [mktBracket, setMktBracket] = useState<MktBracket>("all");
+  const [descOpen, setDescOpen] = useState(false);
+  const toggleDesc = useCallback(() => setDescOpen((o) => !o), []);
+
+  const setHeader = useHeader();
+  useEffect(() => {
+    setHeader({
+      date: meta?.date,
+      descToggle: { open: descOpen, onToggle: toggleDesc, description: RANKING_DESCRIPTION },
+    });
+  }, [meta?.date, descOpen, toggleDesc, setHeader]);
 
   const filteredRows = useMemo(() => {
     const baseArray = rankingData[subTab] ?? [];
@@ -359,22 +376,7 @@ export default function RankingTabs({
   if (!displayRows) return <div style={{ background: BASE_BG, color: "#555", padding: 16, minHeight: "100vh" }}>loading...</div>;
 
   return (
-    <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
-      <PageHeader
-        insetX={0}
-        rowMarginBottomClosed={8}
-        rowMinHeight={24.5}
-        compactToggle
-        date={meta?.date}
-        description={
-          "売買代金・回転率・S高の上位銘柄を表示します。\n" +
-          "・タブ「売買代金／回転率／S高」でランキング種別を切り替えます。\n" +
-          "・売買代金タブのみ「プライム／スタンダード／グロース」市場タブと各種フィルターが使えます。\n" +
-          "・回転率10%以上は赤帯、5%以上は橙帯で行をハイライトします。\n" +
-          "・売買代金タブの「出現」欄：左=直近50日で回転率5%以上をつけた日数、右=その期間のS高回数。"
-        }
-      />
-
+    <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 0, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
       {/* メインタブ（セグメンテッドコントロール） */}
       <div
         style={{
