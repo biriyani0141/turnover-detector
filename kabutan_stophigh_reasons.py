@@ -14,9 +14,11 @@ IPがブロックされる(HTTP 405、Human Verificationページを返される
 
 HTML構造はサイト改修で変わりうるので、想定と異なる箇所に当たったら
 無言で skip せず、即エラーで気付けるようにする(理由データの欠落を
-握りつぶさない)。今回は1ページ目(直近フィード)で見つからない場合も
-ページネーションは行わずエラーにする(平日16:40/17:40 JST実行なら
-記事発行(15:40頃)から1〜2h以内で1ページ目に収まることを実測確認済み)。
+握りつぶさない)。1ページ目(直近フィード)で見つからない場合は
+2ページ目以降も MAX_PAGES まで走査する(?page=2, 3, ... のページ
+ネーションパラメータは2026-07-06にサイト実物のturbo-stream応答
+(/market_news/paging.turbo_stream)で確認済み)。MAX_PAGES まで
+走査しても見つからない場合はエラーにする。
 
 出力: data/jquants/stop-high-reasons.json に日付キーで追記していく。
   {"2026-07-02": {"265A0": {"status": "配分", "reason": "...", "orders": "..."}}}
@@ -29,6 +31,7 @@ ranking.json 等の既存データを全数チェックし、数字のみ/英字
 
 import json
 import re
+import time
 import unicodedata
 from pathlib import Path
 
@@ -45,6 +48,11 @@ HEADERS = {
 
 LIST_URL = "https://s.kabutan.jp/market_news/?category_org_id=2"
 ARTICLE_URL = "https://s.kabutan.jp/news/marketnews/?b={article_id}"
+
+# 無限ループ防止用の上限ページ数(1ページ目含む)
+MAX_PAGES = 5
+# ページ間の待機時間(kabutan_stophigh_detail.py の SLEEP_BETWEEN_STOCKS に合わせる)
+SLEEP_BETWEEN_PAGES = 1.0
 
 OUT_FILE = Path(__file__).parent / "data" / "jquants" / "stop-high-reasons.json"
 
@@ -64,34 +72,43 @@ class ScrapeError(RuntimeError):
 
 
 def find_today_article_id(session: requests.Session) -> str:
-    """材料カテゴリの直近フィード(1ページ目)から当日のS高/S安記事IDを特定する。"""
-    r = session.get(LIST_URL, headers=HEADERS, timeout=10)
-    r.raise_for_status()
-    soup = BeautifulSoup(r.text, "html.parser")
+    """材料カテゴリの直近フィードから当日のS高/S安記事IDを特定する。
 
-    candidates: list[tuple[int, str]] = []
-    for a in soup.select("a[href^='/news/n']"):
-        title = a.get_text(strip=True)
-        if not title.startswith(TITLE_PREFIX):
-            continue
-        if "引け" not in title:
-            continue
-        m = re.match(r"/news/(n\d+)/", a["href"])
-        if not m:
-            continue
-        article_id = m.group(1)
-        # n + YYYYMMDD + 連番。連番部分を数値化して最新判定に使う。
-        sort_key = int(article_id[1:])
-        candidates.append((sort_key, article_id))
+    1ページ目から順に MAX_PAGES まで走査し、対象記事が見つかった
+    ページで確定する(古いページまで遡って探し直すことはしない)。
+    """
+    for page in range(1, MAX_PAGES + 1):
+        url = LIST_URL if page == 1 else f"{LIST_URL}&page={page}"
+        r = session.get(url, headers=HEADERS, timeout=10)
+        r.raise_for_status()
+        soup = BeautifulSoup(r.text, "html.parser")
 
-    if not candidates:
-        raise ScrapeError(
-            f"{LIST_URL} の1ページ目に「本日の【ストップ高／ストップ安】...引け」"
-            "に一致する記事が見つからない(ページネーション未対応)"
-        )
+        candidates: list[tuple[int, str]] = []
+        for a in soup.select("a[href^='/news/n']"):
+            title = a.get_text(strip=True)
+            if not title.startswith(TITLE_PREFIX):
+                continue
+            if "引け" not in title:
+                continue
+            m = re.match(r"/news/(n\d+)/", a["href"])
+            if not m:
+                continue
+            article_id = m.group(1)
+            # n + YYYYMMDD + 連番。連番部分を数値化して最新判定に使う。
+            sort_key = int(article_id[1:])
+            candidates.append((sort_key, article_id))
 
-    candidates.sort(key=lambda t: t[0])
-    return candidates[-1][1]
+        if candidates:
+            candidates.sort(key=lambda t: t[0])
+            return candidates[-1][1]
+
+        if page < MAX_PAGES:
+            time.sleep(SLEEP_BETWEEN_PAGES)
+
+    raise ScrapeError(
+        f"{LIST_URL} で「本日の【ストップ高／ストップ安】...引け」に一致する記事が"
+        f"MAX_PAGES({MAX_PAGES})まで探索したが未発見"
+    )
 
 
 def normalize_code(raw: str) -> str:
