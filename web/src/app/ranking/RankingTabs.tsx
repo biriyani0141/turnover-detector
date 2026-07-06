@@ -359,8 +359,12 @@ export default function RankingTabs({
   if (!displayRows) return <div style={{ background: BASE_BG, color: "#555", padding: 16, minHeight: "100vh" }}>loading...</div>;
 
   return (
-    <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
+    <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
       <PageHeader
+        insetX={0}
+        rowMarginBottomClosed={8}
+        rowMinHeight={24.5}
+        compactToggle
         date={meta?.date}
         description={
           "売買代金・回転率・S高の上位銘柄を表示します。\n" +
@@ -376,9 +380,7 @@ export default function RankingTabs({
         style={{
           display: "flex",
           gap: 2,
-          marginBottom: 10,
-          marginLeft: 16,
-          marginRight: 16,
+          marginBottom: 12,
           padding: 3,
           borderRadius: 9999,
           background: "#1c1c1f",
@@ -415,7 +417,7 @@ export default function RankingTabs({
       {mainTab === "volume" && (
         <>
           {/* 市場サブタブ */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 10, paddingLeft: 12, paddingRight: 12 }}>
             {SUB_TABS.map(({ key, label }) => (
               <button
                 key={key}
@@ -440,7 +442,7 @@ export default function RankingTabs({
           </div>
 
           {/* フィルター上段：回転率・騰落率（騰落率±5/±10は相互排他） */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 8, paddingLeft: 16, paddingRight: 16 }}>
+          <div style={{ display: "flex", gap: 6, marginBottom: 8, paddingLeft: 12, paddingRight: 12 }}>
             <button onClick={() => setFilterTurnover5((v) => !v)} style={toggleChipStyle(filterTurnover5)}>
               回転率5%↑
             </button>
@@ -453,7 +455,7 @@ export default function RankingTabs({
           </div>
 
           {/* フィルター下段：時価総額 */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
+          <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 12, paddingRight: 12 }}>
             {MKT_BRACKETS.map(({ key, label }) => (
               <button
                 key={key}
@@ -470,7 +472,7 @@ export default function RankingTabs({
       {(mainTab === "turnover" || mainTab === "stophigh") && (
         <>
           {/* フィルター：騰落率（騰落率±5/±10は相互排他） */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 8, paddingLeft: 16, paddingRight: 16 }}>
+          <div style={{ display: "flex", gap: 6, marginBottom: 8, paddingLeft: 12, paddingRight: 12 }}>
             <button onClick={() => setRetFilter((cur) => (cur === "r5" ? "off" : "r5"))} style={toggleChipStyle(retFilter === "r5")}>
               騰落±5%
             </button>
@@ -480,7 +482,7 @@ export default function RankingTabs({
           </div>
 
           {/* フィルター：時価総額 */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 16, paddingRight: 16 }}>
+          <div style={{ display: "flex", gap: 6, marginBottom: 10, paddingLeft: 12, paddingRight: 12 }}>
             {MKT_BRACKETS.map(({ key, label }) => (
               <button
                 key={key}
@@ -495,7 +497,7 @@ export default function RankingTabs({
       )}
 
       {/* チャート生成 */}
-      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8, paddingLeft: 16, paddingRight: 16 }}>
+      <div style={{ marginBottom: 8, display: "flex", justifyContent: "flex-end", gap: 8, paddingLeft: 12, paddingRight: 12 }}>
         <ExportMenu codes={displayRows.map((r) => r.code)} />
         <button
           type="button"

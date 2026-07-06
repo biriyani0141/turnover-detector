@@ -16,11 +16,9 @@ const monoFont = '"SF Mono",SFMono-Regular,ui-monospace,"Roboto Mono",Menlo,Cons
  * next/linkによるURL遷移でタブ切り替えを行う(既存の/pullback・/popularのデータ取得を
  * 統合するコストとリスクを避けるため)。
  * 見た目は/rankingのメインタブ(売買代金/回転率/S高)のセグメンテッドコントロールを流用。
- *
- * dark: /pullback・/popularの背景色(#17171a)に合わせた配色にするかどうか。
- * "/"(旧PickupClient)側はライトテーマのカード一覧のため、この指定はfalseで使う。
+ * 左右の余白は自身では持たず、常に親コンテナのpaddingで揃える。
  */
-export function PickupSubTabBar({ dark = false }: { dark?: boolean }) {
+export function PickupSubTabBar() {
   const pathname = usePathname();
 
   return (
@@ -29,8 +27,8 @@ export function PickupSubTabBar({ dark = false }: { dark?: boolean }) {
         display: "flex",
         gap: 2,
         marginBottom: 12,
-        marginLeft: dark ? 16 : 0,
-        marginRight: dark ? 16 : 0,
+        marginLeft: 0,
+        marginRight: 0,
         padding: 3,
         borderRadius: 9999,
         background: "#1c1c1f",

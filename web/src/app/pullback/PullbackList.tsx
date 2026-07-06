@@ -64,9 +64,13 @@ export default function PullbackList({
   const offCount = sections.get("対象外")?.length ?? 0;
 
   return (
-    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <PickupSubTabBar dark />
+    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
       <PageHeader
+        insetX={0}
+        rowMarginBottomClosed={8}
+        rowMarginBottomOpen={4}
+        compactToggle
+        rowMinHeight={24.5}
         date={meta?.date}
         description={
           "掲載銘柄について\n\n以下のいずれかの条件を満たす銘柄を掲載しています。\n\n" +
@@ -77,6 +81,7 @@ export default function PullbackList({
           "状態分類について\n\n直近50日間で売買が活況な銘柄（回転率5%以上）を、異なる時間軸の騰落率と突き合わせて状態分類しています。\n\n「継続／初動・再加速／短期押し目／調整／調整予備軍／中立帯／失速」などの状態に振り分け、押し目・拾い場の候補を状態別に並べています。"
         }
       />
+      <PickupSubTabBar />
 
       {/* 時価総額フィルタ */}
       <div style={{ display: "flex", gap: 6, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>

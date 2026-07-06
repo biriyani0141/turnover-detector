@@ -119,9 +119,13 @@ export default function PopularList({
   }, [allData, capFilter, win, sortKey, sortDir]);
 
   return (
-    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12 }}>
-      <PickupSubTabBar dark />
+    <div style={{ backgroundColor: "#17171a", minHeight: "100vh", paddingTop: 12, paddingBottom: 12, paddingLeft: 12, paddingRight: 12 }}>
       <PageHeader
+        insetX={0}
+        rowMarginBottomClosed={8}
+        rowMarginBottomOpen={4}
+        compactToggle
+        rowMinHeight={24.5}
         date={meta?.date}
         rightContent={
           <div style={{ display: "flex", gap: 6 }}>
@@ -130,10 +134,11 @@ export default function PopularList({
                 key={p.key}
                 onClick={() => handlePresetClick(p)}
                 style={{
-                  padding: "5px 10px",
+                  padding: "2px 10px",
                   borderRadius: 8,
                   fontSize: 12,
                   fontWeight: 600,
+                  lineHeight: "20px",
                   transition: "background 0.15s, color 0.15s",
                   background: activePreset === p.key ? "#fff" : "#2c2c2e",
                   color: activePreset === p.key ? "#000" : "#8e8e93",
@@ -160,6 +165,7 @@ export default function PopularList({
           "　プリセット適用後にフィルターやソートを手動で変更すると、ハイライトは解除されます。"
         }
       />
+      <PickupSubTabBar />
 
       {/* 窓切替 */}
       <div style={{ display: "flex", gap: 8, marginBottom: 12, paddingLeft: 16, paddingRight: 16 }}>
