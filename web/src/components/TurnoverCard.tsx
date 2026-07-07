@@ -39,8 +39,8 @@ export type CardStock = {
   price: number;
   change: number;
   changePct: number;
-  marketCap: string;
-  turnover: number;
+  marketCap: string | null;
+  turnover: number | null;
   isLimitUp?: boolean;
   touchedOnlyDates?: string[];
   closedLimitUpDates?: string[];
@@ -399,13 +399,13 @@ export default function TurnoverCard({
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
               <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>回転率</span>
               <span style={{ fontSize: 11, fontWeight: 700, color: "#f5a623", letterSpacing: "-0.02em", lineHeight: 1 }}>
-                {stock.turnover.toFixed(2)}%
+                {stock.turnover !== null ? `${stock.turnover.toFixed(2)}%` : "—"}
               </span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>
               <span style={{ fontSize: 9, color: "#9098A9", lineHeight: 1 }}>時価総額</span>
               <span style={{ fontSize: 11, fontWeight: 500, color: "#9098A9", letterSpacing: "-0.02em", lineHeight: 1 }}>
-                {stock.marketCap}
+                {stock.marketCap ?? "—"}
               </span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 1 }}>

@@ -42,15 +42,17 @@ export type RankingData = {
 };
 
 // ranking_cards.json / stophigh_cards.json 共通スキーマ
+// marketCap/mktcap/turnoverはnull許容: S高カードはIPO直後で株数データ未取得の銘柄を
+// shares不明のまま出力するため(ranking_cards.json側は従来通り必ず非null)。
 export type CardRow = {
   code: string;
   name: string;
   price: number;
   changePct: number;
-  marketCap: string;
+  marketCap: string | null;
   va: number;
-  mktcap: number;
-  turnover: number;
+  mktcap: number | null;
+  turnover: number | null;
   occCount: number;
   stophighCount: number;
 };
@@ -93,8 +95,9 @@ const MKT_BRACKETS: { key: MktBracket; label: string }[] = [
   { key: "gt1000", label: "1000↑" },
 ];
 
-function matchesMktBracket(mktcap: number, b: MktBracket): boolean {
+function matchesMktBracket(mktcap: number | null, b: MktBracket): boolean {
   if (b === "all") return true;
+  if (mktcap === null) return false;
   const oku = mktcap / 1e8;
   if (b === "le100")  return oku <= 100;
   if (b === "le300")  return oku <= 300;
@@ -288,8 +291,8 @@ function rowFromCard(r: CardRow): DisplayRow {
     changeColor: change.color,
     vaText: fmtOku(r.va),
     mktcapText: fmtOku(r.mktcap),
-    turnoverText: r.turnover.toFixed(1),
-    turnoverRaw: r.turnover,
+    turnoverText: r.turnover !== null ? r.turnover.toFixed(1) : "—",
+    turnoverRaw: r.turnover ?? 0,
     occurrence: (
       <>
         <span style={{ color: TEXT_BRIGHT }}>{r.occCount}:</span>
@@ -364,7 +367,7 @@ export default function RankingTabs({
     }
     if (mainTab === "turnover") {
       if (!turnoverCards) return null;
-      return filterCards(turnoverCards.filter((r) => r.turnover >= 5)).map(rowFromCard);
+      return filterCards(turnoverCards.filter((r) => r.turnover !== null && r.turnover >= 5)).map(rowFromCard);
     }
     if (!stophighCards) return null;
     return filterCards(stophighCards).map(rowFromCard);

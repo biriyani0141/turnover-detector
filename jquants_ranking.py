@@ -1493,16 +1493,17 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
         if stock is None:
             continue
         shares = get_adjusted_shares(code, date_str, stock, split_events)
-        if shares is None:
-            continue
+        # S高カードはIPO直後でshares未取得(fins/summary未提出)でも脱落させず、
+        # mktcap/turnoverをnullのまま出力する。code_to_close/code_to_vaが無い場合は
+        # S高判定の信頼性に関わるため従来通り除外する。
         c = code_to_close.get(code)
         if c is None:
             continue
-        mktcap = c * shares
+        mktcap = c * shares if shares is not None else None
         va = code_to_va.get(code)
         if va is None or mktcap == 0:
             continue
-        turnover_pct = va / mktcap * 100
+        turnover_pct = None if mktcap is None else va / mktcap * 100
 
         candles = candles_map.get(code, [])
         if len(candles) >= 2:
@@ -1530,10 +1531,10 @@ def build_stophigh_cards(split_events: dict[str, list[tuple[str, float]]]) -> No
             "price": c,
             "change": change,
             "changePct": change_pct,
-            "marketCap": _format_mktcap(mktcap),
+            "marketCap": _format_mktcap(mktcap) if mktcap is not None else None,
             "va": va,
             "mktcap": mktcap,
-            "turnover": round(turnover_pct, 2),
+            "turnover": round(turnover_pct, 2) if turnover_pct is not None else None,
             "isLimitUp": is_limit_up,
             "touchedOnlyDates": touch_dates,    # ザラ場タッチのみ（引け日は含まない）
             "closedLimitUpDates": closed_dates, # 終値ストップ引け
