@@ -1142,6 +1142,8 @@ DISCLOSURE_TITLE_EXCLUDE = [
     "支配株主等に関する事項について",
     "補足説明資料",
     "役員人事",
+    "譲渡制限付株式報酬",
+    "定時株主総会",
 ]
 DISCLOSURE_MAX_ITEMS = 10
 

@@ -500,7 +500,7 @@ function CompactNoteContent({ stock }: { stock: CardStock }) {
       mainText = stock.reason.text;
       if (stock.reason.orders) ordersText = stock.reason.orders;
     } else {
-      badge = { bg: "#8B0000", label: `連騰${stock.reason.streakDays}日目` };
+      badge = { bg: "#8B0000", label: "直近同意" };
       mainText = stock.reason.prevText;
       mainColor = "#9098A9";
     }
@@ -728,7 +728,7 @@ function NoteContent({ stock }: { stock: CardStock }) {
                   flexShrink: 0,
                 }}
               >
-                連騰{stock.reason.streakDays}日目
+                直近同意
               </span>
               <span style={{ fontSize: 12, fontWeight: 500, color: "#9098A9", lineHeight: 1.5 }}>
                 {stock.reason.prevText}
