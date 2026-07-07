@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "倉庫･運輸関連業",
   "header": {
-    "price": 204,
-    "change": 2,
-    "changePct": 1.0,
+    "price": 202,
+    "change": -2,
+    "changePct": -1.0,
     "isStopHigh": false,
-    "turnoverPct": 0.0,
-    "marketCap": 3231972000,
+    "turnoverPct": 0.1,
+    "marketCap": 3200286000,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-22",
-      "o": 224,
-      "h": 227,
-      "l": 224,
-      "c": 224,
-      "v": 6600,
-      "ma5": 226.6,
-      "ma25": 214.4,
-      "ma75": 222.2,
-      "ma200": null
-    },
     {
       "date": "2026-04-23",
       "o": 224,
@@ -614,6 +602,18 @@
       "ma25": 199.4,
       "ma75": 207.3,
       "ma200": 242.1
+    },
+    {
+      "date": "2026-07-07",
+      "o": 203,
+      "h": 205,
+      "l": 197,
+      "c": 202,
+      "v": 13600,
+      "ma5": 202.2,
+      "ma25": 199.3,
+      "ma75": 207.2,
+      "ma200": 241.3
     }
   ]
 }

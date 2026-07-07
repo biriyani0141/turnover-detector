@@ -6,27 +6,15 @@
   "sector": "輸送用機器",
   "header": {
     "price": 470,
-    "change": -1,
-    "changePct": -0.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.1,
+    "turnoverPct": 0.9,
     "marketCap": 1880000000,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-22",
-      "o": 460,
-      "h": 463,
-      "l": 454,
-      "c": 460,
-      "v": 17500,
-      "ma5": 467.2,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-04-23",
       "o": 460,
@@ -612,6 +600,18 @@
       "v": 4300,
       "ma5": 466.8,
       "ma25": 468.5,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-07",
+      "o": 471,
+      "h": 472,
+      "l": 463,
+      "c": 470,
+      "v": 34500,
+      "ma5": 467.4,
+      "ma25": 468.1,
       "ma75": null,
       "ma200": null
     }

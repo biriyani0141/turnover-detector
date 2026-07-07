@@ -6,32 +6,15 @@
   "sector": "ガラス･土石製品",
   "header": {
     "price": 182,
-    "change": 4,
-    "changePct": 2.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
     "turnoverPct": 1.1,
     "marketCap": 1356704258,
-    "appearCount": 28,
-    "stopHighCount": 1
+    "appearCount": 27,
+    "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-22",
-      "o": 375,
-      "h": 458,
-      "l": 357,
-      "c": 430,
-      "v": 6758200,
-      "ma5": 341.8,
-      "ma25": 243.7,
-      "ma75": 222.3,
-      "ma200": null,
-      "marks": [
-        "sht",
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-23",
       "o": 409,
@@ -717,6 +700,18 @@
       "ma25": 184.8,
       "ma75": 243.3,
       "ma200": 265.1
+    },
+    {
+      "date": "2026-07-07",
+      "o": 180,
+      "h": 183,
+      "l": 178,
+      "c": 182,
+      "v": 79700,
+      "ma5": 177.2,
+      "ma25": 184.0,
+      "ma75": 243.3,
+      "ma200": 264.0
     }
   ]
 }

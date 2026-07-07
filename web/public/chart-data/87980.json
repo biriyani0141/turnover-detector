@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "保険業",
   "header": {
-    "price": 131,
-    "change": 5,
-    "changePct": 4.0,
+    "price": 130,
+    "change": -1,
+    "changePct": -0.8,
     "isStopHigh": false,
-    "turnoverPct": 0.7,
-    "marketCap": 4908334200,
+    "turnoverPct": 0.1,
+    "marketCap": 4870866000,
     "appearCount": 2,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-22",
-      "o": 186,
-      "h": 188,
-      "l": 185,
-      "c": 185,
-      "v": 39800,
-      "ma5": 187.4,
-      "ma25": 191.8,
-      "ma75": 206.0,
-      "ma200": null
-    },
     {
       "date": "2026-04-23",
       "o": 184,
@@ -620,6 +608,18 @@
       "ma25": 126.8,
       "ma75": 158.4,
       "ma200": 207.1
+    },
+    {
+      "date": "2026-07-07",
+      "o": 134,
+      "h": 134,
+      "l": 128,
+      "c": 130,
+      "v": 42600,
+      "ma5": 127.4,
+      "ma25": 126.8,
+      "ma75": 157.5,
+      "ma200": 206.1
     }
   ]
 }
