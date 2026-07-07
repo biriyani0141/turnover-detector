@@ -34,6 +34,13 @@ jobs:
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python jquants_backbone.py full_fetch
+      - name: Cache meta shares
+        uses: actions/cache@v4
+        with:
+          path: data/jquants/meta.json
+          key: jquants-meta-${{ github.run_id }}
+          restore-keys: |
+            jquants-meta-
       - name: Update meta shares
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
