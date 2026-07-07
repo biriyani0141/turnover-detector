@@ -23,6 +23,13 @@ jobs:
           python-version: "3.12"
       - name: Install deps
         run: pip install -r requirements.txt
+      - name: Cache daily quotes
+        uses: actions/cache@v4
+        with:
+          path: data/jquants/daily
+          key: jquants-daily-${{ github.run_id }}
+          restore-keys: |
+            jquants-daily-
       - name: Fetch daily quotes
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
