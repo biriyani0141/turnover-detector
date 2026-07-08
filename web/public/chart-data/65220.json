@@ -5,32 +5,16 @@
   "market": "東証G",
   "sector": "電気機器",
   "header": {
-    "price": 2096,
-    "change": 400,
-    "changePct": 23.6,
-    "isStopHigh": true,
-    "turnoverPct": 0.9,
-    "marketCap": 16342092800,
+    "price": 2400,
+    "change": 304,
+    "changePct": 14.5,
+    "isStopHigh": false,
+    "turnoverPct": 139.3,
+    "marketCap": 18712320000,
     "appearCount": 41,
     "stopHighCount": 7
   },
   "rows": [
-    {
-      "date": "2026-04-23",
-      "o": 1340,
-      "h": 1371,
-      "l": 1210,
-      "c": 1235,
-      "v": 1585600,
-      "ma5": 1205.2,
-      "ma25": 1132.7,
-      "ma75": 648.0,
-      "ma200": null,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-24",
       "o": 1265,
@@ -772,6 +756,22 @@
       "ma200": 642.1,
       "marks": [
         "shc"
+      ]
+    },
+    {
+      "date": "2026-07-08",
+      "o": 2240,
+      "h": 2580,
+      "l": 2181,
+      "c": 2400,
+      "v": 10815000,
+      "ma5": 2020.4,
+      "ma25": 1149.3,
+      "ma75": 1099.4,
+      "ma200": 652.0,
+      "marks": [
+        "turn5",
+        "appear"
       ]
     }
   ]

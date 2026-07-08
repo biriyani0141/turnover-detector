@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "繊維製品",
   "header": {
-    "price": 161,
-    "change": 2,
-    "changePct": 1.3,
+    "price": 159,
+    "change": -2,
+    "changePct": -1.2,
     "isStopHigh": false,
-    "turnoverPct": 0.2,
-    "marketCap": 1062995899,
+    "turnoverPct": 0.0,
+    "marketCap": 1049790981,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-23",
-      "o": 222,
-      "h": 226,
-      "l": 222,
-      "c": 223,
-      "v": 24500,
-      "ma5": 228.2,
-      "ma25": 228.0,
-      "ma75": 241.6,
-      "ma200": null
-    },
     {
       "date": "2026-04-24",
       "o": 223,
@@ -614,6 +602,18 @@
       "ma25": 174.7,
       "ma75": 198.4,
       "ma200": 236.9
+    },
+    {
+      "date": "2026-07-08",
+      "o": 159,
+      "h": 163,
+      "l": 159,
+      "c": 159,
+      "v": 2800,
+      "ma5": 160.4,
+      "ma25": 173.7,
+      "ma75": 197.4,
+      "ma200": 236.2
     }
   ]
 }

@@ -5,12 +5,12 @@
   "market": "東証S",
   "sector": "食料品",
   "header": {
-    "price": 1054,
-    "change": 13,
-    "changePct": 1.2,
+    "price": 1041,
+    "change": -13,
+    "changePct": -1.2,
     "isStopHigh": false,
-    "turnoverPct": 0.4,
-    "marketCap": 6349211680,
+    "turnoverPct": 0.3,
+    "marketCap": 6270900720,
     "appearCount": 7,
     "stopHighCount": 2
   },
@@ -628,6 +628,18 @@
       "v": 22400,
       "ma5": 1042.4,
       "ma25": 1115.0,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-08",
+      "o": 1052,
+      "h": 1059,
+      "l": 1041,
+      "c": 1041,
+      "v": 15500,
+      "ma5": 1038.8,
+      "ma25": 1115.6,
       "ma75": null,
       "ma200": null
     }
