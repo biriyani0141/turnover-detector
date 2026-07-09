@@ -6,32 +6,15 @@
   "sector": "その他製品",
   "header": {
     "price": 780,
-    "change": -13,
-    "changePct": -1.6,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.1,
+    "turnoverPct": 0.3,
     "marketCap": 892242000,
-    "appearCount": 3,
-    "stopHighCount": 2
+    "appearCount": 2,
+    "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-04-24",
-      "o": 1395,
-      "h": 1395,
-      "l": 1106,
-      "c": 1115,
-      "v": 224700,
-      "ma5": 1118.2,
-      "ma25": 1087.4,
-      "ma75": 1088.0,
-      "ma200": null,
-      "marks": [
-        "sht",
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-27",
       "o": 1110,
@@ -628,6 +611,18 @@
       "ma25": 787.0,
       "ma75": 938.2,
       "ma200": 934.1
+    },
+    {
+      "date": "2026-07-09",
+      "o": 780,
+      "h": 782,
+      "l": 779,
+      "c": 780,
+      "v": 3000,
+      "ma5": 785.4,
+      "ma25": 785.4,
+      "ma75": 931.6,
+      "ma200": 932.5
     }
   ]
 }

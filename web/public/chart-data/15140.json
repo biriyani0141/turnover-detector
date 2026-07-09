@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "鉱業",
   "header": {
-    "price": 555,
-    "change": 0,
-    "changePct": 0.0,
+    "price": 560,
+    "change": 5,
+    "changePct": 0.9,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
-    "marketCap": 37308683415,
+    "turnoverPct": 0.4,
+    "marketCap": 37644797680,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-24",
-      "o": 810,
-      "h": 818,
-      "l": 774,
-      "c": 791,
-      "v": 796400,
-      "ma5": 828.2,
-      "ma25": 893.6,
-      "ma75": 848.3,
-      "ma200": null
-    },
     {
       "date": "2026-04-27",
       "o": 784,
@@ -614,6 +602,18 @@
       "ma25": 545.7,
       "ma75": 704.5,
       "ma200": 682.3
+    },
+    {
+      "date": "2026-07-09",
+      "o": 561,
+      "h": 566,
+      "l": 554,
+      "c": 560,
+      "v": 260000,
+      "ma5": 559.2,
+      "ma25": 546.1,
+      "ma75": 699.4,
+      "ma200": 681.9
     }
   ]
 }

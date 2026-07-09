@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "卸売業",
   "header": {
-    "price": 405,
-    "change": -3,
-    "changePct": -0.7,
+    "price": 404,
+    "change": -1,
+    "changePct": -0.2,
     "isStopHigh": false,
-    "turnoverPct": 0.5,
-    "marketCap": 2021924430,
+    "turnoverPct": 0.3,
+    "marketCap": 2016932024,
     "appearCount": 8,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-04-24",
-      "o": 493,
-      "h": 493,
-      "l": 483,
-      "c": 493,
-      "v": 5200,
-      "ma5": 492.4,
-      "ma25": 490.7,
-      "ma75": 503.1,
-      "ma200": null
-    },
     {
       "date": "2026-04-27",
       "o": 493,
@@ -646,6 +634,18 @@
       "ma25": 416.4,
       "ma75": 453.2,
       "ma200": 490.8
+    },
+    {
+      "date": "2026-07-09",
+      "o": 405,
+      "h": 409,
+      "l": 403,
+      "c": 404,
+      "v": 13200,
+      "ma5": 408.8,
+      "ma25": 415.7,
+      "ma75": 452.0,
+      "ma200": 490.0
     }
   ]
 }
