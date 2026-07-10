@@ -774,6 +774,10 @@
       "return_1y": 17.13,
       "top_movers": [
         {
+          "ticker": "SBS",
+          "pct_1d": 3.77
+        },
+        {
           "ticker": "AWK",
           "pct_1d": 0.13
         },
@@ -1258,12 +1262,12 @@
           "pct_1d": 1.93
         },
         {
-          "ticker": "HAL",
-          "pct_1d": 0.78
+          "ticker": "SLB",
+          "pct_1d": 1.12
         },
         {
-          "ticker": "BKR",
-          "pct_1d": 0.65
+          "ticker": "HAL",
+          "pct_1d": 0.78
         }
       ],
       "bucket": null
@@ -2986,16 +2990,16 @@
       "return_1y": 33.84,
       "top_movers": [
         {
+          "ticker": "SN",
+          "pct_1d": 2.58
+        },
+        {
           "ticker": "WSM",
           "pct_1d": 0.86
         },
         {
           "ticker": "W",
           "pct_1d": -1.09
-        },
-        {
-          "ticker": "SGI",
-          "pct_1d": -2.26
         }
       ],
       "bucket": null
@@ -3172,14 +3176,14 @@
       "theme": "石油精製",
       "slug": "refinary",
       "theme1": "石油",
-      "return_1d": -0.16,
-      "return_5d": 7.87,
+      "return_1d": -0.17,
+      "return_5d": 7.86,
       "return_10d": 15.91,
       "return_1m": 12.14,
-      "return_2m": 15.23,
-      "return_3m": 24.83,
+      "return_2m": 15.22,
+      "return_3m": 24.82,
       "return_6m": 63.52,
-      "return_1y": 85.2,
+      "return_1y": 85.19,
       "top_movers": [
         {
           "ticker": "DINO",
@@ -3612,18 +3616,18 @@
       "theme": "防衛：保守部品・MRO",
       "slug": "defence-maintenance",
       "theme1": "防衛・宇宙",
-      "return_1d": -0.51,
-      "return_5d": -5.79,
-      "return_10d": -2.65,
-      "return_1m": 13.4,
-      "return_2m": 15.11,
-      "return_3m": 10.96,
-      "return_6m": 8.36,
-      "return_1y": 27.42,
+      "return_1d": -0.52,
+      "return_5d": -5.8,
+      "return_10d": -2.66,
+      "return_1m": 13.38,
+      "return_2m": 15.09,
+      "return_3m": 10.95,
+      "return_6m": 8.35,
+      "return_1y": 27.41,
       "top_movers": [
         {
           "ticker": "LOAR",
-          "pct_1d": 0.05
+          "pct_1d": -0.01
         },
         {
           "ticker": "TDG",
@@ -4077,6 +4081,34 @@
       "bucket": null
     },
     {
+      "theme": "クルーズ船",
+      "slug": "cruise-lines",
+      "theme1": "レジャー・移動",
+      "return_1d": -0.84,
+      "return_5d": -2.47,
+      "return_10d": -6.85,
+      "return_1m": 7.87,
+      "return_2m": 10.52,
+      "return_3m": 6.56,
+      "return_6m": -2.47,
+      "return_1y": 6.36,
+      "top_movers": [
+        {
+          "ticker": "CCL",
+          "pct_1d": 0.39
+        },
+        {
+          "ticker": "NCLH",
+          "pct_1d": -0.76
+        },
+        {
+          "ticker": "RCL",
+          "pct_1d": -0.95
+        }
+      ],
+      "bucket": null
+    },
+    {
       "theme": "アナログ半導体：センサ",
       "slug": "analog-semi-sensor",
       "theme1": "半導体",
@@ -4098,36 +4130,8 @@
           "pct_1d": 0.37
         },
         {
-          "ticker": "ALGM",
-          "pct_1d": -4.37
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "クルーズ船",
-      "slug": "cruise-lines",
-      "theme1": "レジャー・移動",
-      "return_1d": -0.85,
-      "return_5d": -2.48,
-      "return_10d": -6.86,
-      "return_1m": 7.87,
-      "return_2m": 10.51,
-      "return_3m": 6.56,
-      "return_6m": -2.47,
-      "return_1y": 6.36,
-      "top_movers": [
-        {
-          "ticker": "CCL",
-          "pct_1d": 0.39
-        },
-        {
-          "ticker": "NCLH",
-          "pct_1d": -0.76
-        },
-        {
-          "ticker": "RCL",
-          "pct_1d": -0.95
+          "ticker": "SLAB",
+          "pct_1d": 0.04
         }
       ],
       "bucket": null
@@ -4573,34 +4577,6 @@
       "bucket": null
     },
     {
-      "theme": "生命科学：遺伝子解析",
-      "slug": "lifescience-diagnose",
-      "theme1": "創薬支援",
-      "return_1d": -1.26,
-      "return_5d": 4.74,
-      "return_10d": 11.2,
-      "return_1m": 25.08,
-      "return_2m": 50.74,
-      "return_3m": 45.01,
-      "return_6m": 37.99,
-      "return_1y": 86.16,
-      "top_movers": [
-        {
-          "ticker": "TXG",
-          "pct_1d": -0.81
-        },
-        {
-          "ticker": "QGEN",
-          "pct_1d": -1.14
-        },
-        {
-          "ticker": "ILMN",
-          "pct_1d": -1.82
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "ソフト：マーケ・販売",
       "slug": "soft-marketing",
       "theme1": "ソフトウェア",
@@ -4652,6 +4628,34 @@
         {
           "ticker": "NFLX",
           "pct_1d": -2.78
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "生命科学：遺伝子解析",
+      "slug": "lifescience-diagnose",
+      "theme1": "創薬支援",
+      "return_1d": -1.31,
+      "return_5d": 4.69,
+      "return_10d": 11.15,
+      "return_1m": 25.02,
+      "return_2m": 50.67,
+      "return_3m": 44.94,
+      "return_6m": 37.92,
+      "return_1y": 86.07,
+      "top_movers": [
+        {
+          "ticker": "TXG",
+          "pct_1d": -0.95
+        },
+        {
+          "ticker": "QGEN",
+          "pct_1d": -1.14
+        },
+        {
+          "ticker": "ILMN",
+          "pct_1d": -1.82
         }
       ],
       "bucket": null
@@ -4725,6 +4729,10 @@
       "return_6m": 110.4,
       "return_1y": 81.33,
       "top_movers": [
+        {
+          "ticker": "SMCI",
+          "pct_1d": 0.32
+        },
         {
           "ticker": "HPE",
           "pct_1d": -1.24
@@ -4966,16 +4974,16 @@
       "return_1y": -43.34,
       "top_movers": [
         {
+          "ticker": "SMR",
+          "pct_1d": -0.06
+        },
+        {
           "ticker": "OKLO",
           "pct_1d": -0.87
         },
         {
           "ticker": "NNE",
           "pct_1d": -2.13
-        },
-        {
-          "ticker": "IMSR",
-          "pct_1d": -3.99
         }
       ],
       "bucket": null
@@ -5124,6 +5132,10 @@
         {
           "ticker": "JBL",
           "pct_1d": -0.69
+        },
+        {
+          "ticker": "SANM",
+          "pct_1d": -1.95
         },
         {
           "ticker": "FLEX",
@@ -5790,8 +5802,8 @@
           "pct_1d": -1.77
         },
         {
-          "ticker": "APLD",
-          "pct_1d": -3.56
+          "ticker": "SLNH",
+          "pct_1d": -2.54
         }
       ],
       "bucket": null
@@ -5814,12 +5826,12 @@
           "pct_1d": -2.86
         },
         {
-          "ticker": "ENVX",
-          "pct_1d": -3.55
+          "ticker": "SLDP",
+          "pct_1d": -3.32
         },
         {
-          "ticker": "SES",
-          "pct_1d": -3.59
+          "ticker": "ENVX",
+          "pct_1d": -3.55
         }
       ],
       "bucket": null
@@ -5922,12 +5934,12 @@
           "pct_1d": -1.88
         },
         {
-          "ticker": "PL",
-          "pct_1d": -4.23
+          "ticker": "SATL",
+          "pct_1d": -1.95
         },
         {
-          "ticker": "SPIR",
-          "pct_1d": -8.29
+          "ticker": "PL",
+          "pct_1d": -4.23
         }
       ],
       "bucket": null
@@ -6102,6 +6114,10 @@
       "return_1y": 27.01,
       "top_movers": [
         {
+          "ticker": "S",
+          "pct_1d": -5.2
+        },
+        {
           "ticker": "CRWD",
           "pct_1d": -5.69
         }
@@ -6190,6 +6206,6 @@
     }
   ],
   "stock_date": "2026-07-10",
-  "updated_at": "2026-07-10 21:19:38",
-  "saved_at": "2026-07-10T21:38:34.414950"
+  "updated_at": "2026-07-10 21:35:55",
+  "saved_at": "2026-07-10T21:42:36.329537"
 }
