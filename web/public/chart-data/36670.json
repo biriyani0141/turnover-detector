@@ -9,24 +9,12 @@
     "change": 0,
     "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 9.0,
+    "turnoverPct": 9.6,
     "marketCap": 1332946800,
-    "appearCount": 31,
+    "appearCount": 32,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-27",
-      "o": 53,
-      "h": 54,
-      "l": 52,
-      "c": 52,
-      "v": 1043500,
-      "ma5": 54.2,
-      "ma25": 55.9,
-      "ma75": 59.0,
-      "ma200": null
-    },
     {
       "date": "2026-04-28",
       "o": 51,
@@ -727,6 +715,22 @@
       "ma25": 29.5,
       "ma75": 42.0,
       "ma200": 62.9,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-10",
+      "o": 30,
+      "h": 31,
+      "l": 29,
+      "c": 30,
+      "v": 4287400,
+      "ma5": 30.0,
+      "ma25": 29.5,
+      "ma75": 41.7,
+      "ma200": 62.5,
       "marks": [
         "turn5",
         "appear"

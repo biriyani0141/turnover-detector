@@ -5,32 +5,16 @@
   "market": "東証P",
   "sector": "医薬品",
   "header": {
-    "price": 1432,
-    "change": -18,
-    "changePct": -1.2,
+    "price": 1400,
+    "change": -32,
+    "changePct": -2.2,
     "isStopHigh": false,
-    "turnoverPct": 0.5,
-    "marketCap": 569991970605,
-    "appearCount": 4,
+    "turnoverPct": 1.1,
+    "marketCap": 557060215600,
+    "appearCount": 3,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-27",
-      "o": 2029,
-      "h": 2030,
-      "l": 1906,
-      "c": 1935,
-      "v": 25873200,
-      "ma5": 1996.9,
-      "ma25": 2059.5,
-      "ma75": 2230.9,
-      "ma200": null,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-28",
       "o": 1900,
@@ -627,6 +611,18 @@
       "ma25": 1468.8,
       "ma75": 1712.8,
       "ma200": 2003.4
+    },
+    {
+      "date": "2026-07-10",
+      "o": 1425,
+      "h": 1426,
+      "l": 1392,
+      "c": 1400,
+      "v": 4514100,
+      "ma5": 1472.1,
+      "ma25": 1467.4,
+      "ma75": 1707.9,
+      "ma200": 2002.0
     }
   ]
 }
