@@ -103,3 +103,27 @@ git push -u origin main
 - 回転率に加えて出来高急増倍率を併用 → `scraper.py` に出来高列を足す
 - 上昇組/下落組を別メッセージに分けて通知 → `notify.py` を分岐
 - 履歴を残したい → 結果をCSV追記 or Supabaseに保存(以前の図鑑アプリと同構成)
+
+## 暴落相対強度スクリーナー(crash_screener.py)
+
+指数暴落局面中に相対的に強かった銘柄を監視リスト化する機能。検証済みリポジトリ
+`crash-relative-strength-screener` の局面検出・特徴量ロジックを移植している。予測評価・
+売買判断は行わない表示専用ツール(判断は人間)。
+
+- 実行: `python crash_screener.py run`（`.github/workflows/crash-watchlist.yml` で
+  平日19:30 JSTに自動実行。個別株OHLCVは `kyoche-update` が蓄積した
+  `data/jquants/daily/` を読むだけで、J-Quantsへは問い合わせない）
+- 出力: `web/public/data/crash/crash_watchlist_{YYYYMMDD}.json` /
+  `crash_index.json` / `crash_latest.json`
+- 画面: `/crash`（Basic認証必須。環境変数 `CRASH_AUTH_USER` / `CRASH_AUTH_PASS`
+  未設定時は常に401を返す＝フェイルクローズ）
+- 状態永続化: リポジトリ直下 `crash_state.json`（IDLE/ACTIVE/COOLDOWN、局面開始時に
+  1回確定した母集団のキャッシュ）。**読込失敗(壊れたJSON等)時は例外を出さずIDLE状態から
+  再開する**(`load_state()`)。より厳密に復元したい場合は、直近の正常なコミットの
+  `crash_state.json` を `git log -- crash_state.json` で辿って手動チェックアウトすること
+  (コミット履歴自体がバックアップになるため、自動バックアップの仕組みは別途持たせていない)。
+- テスト: `pytest tests/test_crash_screener.py` で検証リポジトリの既知局面リスト40件
+  (`tests/fixtures/known_episodes.csv`)と検出結果の一致を確認する。ただし最終局面
+  (40件目)は本テスト実行時点でも進行中/right_censoredの局面であり、その終了日は
+  yfinanceから取得できる最新営業日に依存するため、この1件のみ開始日だけを検証する
+  (詳細はテストファイル内のコメント参照)。

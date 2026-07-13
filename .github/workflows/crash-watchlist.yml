@@ -1,0 +1,54 @@
+name: crash-watchlist
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 10 * * 1-5"  # JST 19:30、平日のみ
+
+concurrency:
+  group: crash-watchlist
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      # 個別株OHLCV・銘柄マスタは kyoche-update ワークフローが同日蓄積したものを
+      # 読み取り専用で復元して使う(このワークフロー自身はJ-Quantsへ問い合わせない)。
+      - name: Restore daily quotes cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/jquants/daily
+          key: jquants-daily-crash-readonly
+          restore-keys: |
+            jquants-daily-
+      - name: Restore meta cache
+        uses: actions/cache/restore@v4
+        with:
+          path: data/jquants/meta.json
+          key: jquants-meta-crash-readonly
+          restore-keys: |
+            jquants-meta-
+      - name: Run crash screener batch
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python crash_screener.py run
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/crash/ crash_state.json
+          if ! git diff --staged --quiet; then
+            git commit -m "data: crash watchlist update $(date -u +%Y-%m-%d)"
+            git pull --rebase origin master
+            git push
+          fi

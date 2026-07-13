@@ -71,6 +71,29 @@
   含めず対象外のまま（母集団の意味を「長期上昇中の押し目候補」に
   保つため、長期下落・長期中立の銘柄は混ぜない）。
 
+## 2026-07-14 暴落相対強度スクリーナーの統合方式
+
+- **決定**: 検証リポジトリ crash-relative-strength-screener の局面検出状態機械
+  (`_find_phase_end`)・特徴量計算式(`compute_features`/`compute_labels`)を
+  `crash_screener.py` にほぼ無変更で移植し、個別株OHLCVは既存の
+  `data/jquants/daily/`(J-Quants V2)を読み替えて使う(yfinance個別株取得はしない)。
+  出力は `web/public/data/crash/`(既存popular.json等と同じ配置)、内部状態は
+  リポジトリ直下 `crash_state.json`。フロントは `/crash` 1ページ＋内部タブ構成
+  (別ルートの `/crash/data` は作らない)。TabBar(下部ナビ)には追加しない。
+  Basic認証(`CRASH_AUTH_USER`/`PASS`)を `proxy.ts`(Next.js 16でmiddleware.tsから
+  改称)で `/crash` と `/data/crash/` の両方に適用し、環境変数未設定時は
+  フェイルクローズで401。
+- **理由**: ロジックのズレを避けるため計算式は移植のみで再実装しない
+  (仕様書の明示指示)。出力先をリポジトリ直下ではなくweb/public/data/にしたのは、
+  Vercelプロジェクトのルートディレクトリが`web/`でありリポジトリ直下は
+  デプロイに含まれないため。ページ構成の簡略化(1ページ＋タブ、TabBar非掲載)は
+  Discord上でのりゅの追加指示による。
+- **影響**: `crash_screener.py` / `crash_notify.py` /
+  `.github/workflows/crash-watchlist.yml` / `web/src/app/crash/` /
+  `web/src/proxy.ts` / `tests/test_crash_screener.py`。既存ページ・既存ワークフロー
+  (kyoche-update等)への変更なし(crash-watchlist.ymlはdata/jquants/daily・meta.jsonの
+  キャッシュを読み取り専用で復元するのみ)。
+
 -----
 
 ## テンプレート（コピー用）

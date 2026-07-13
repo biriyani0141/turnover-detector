@@ -4,6 +4,7 @@ __pycache__/
 .env.*
 .venv/
 *.csv
+!tests/fixtures/*.csv
 
 # 秘密情報を含む可能性があるファイル
 *.ps1
