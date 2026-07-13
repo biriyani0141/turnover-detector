@@ -6,27 +6,15 @@
   "sector": "医薬品",
   "header": {
     "price": 50,
-    "change": 1,
-    "changePct": 2.0,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
+    "turnoverPct": 0.8,
     "marketCap": 6944565000,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-28",
-      "o": 56,
-      "h": 57,
-      "l": 55,
-      "c": 56,
-      "v": 1928600,
-      "ma5": 59.6,
-      "ma25": 66.6,
-      "ma75": 66.5,
-      "ma200": null
-    },
     {
       "date": "2026-04-30",
       "o": 55,
@@ -618,6 +606,18 @@
       "ma25": 46.5,
       "ma75": 55.7,
       "ma200": 59.7
+    },
+    {
+      "date": "2026-07-13",
+      "o": 50,
+      "h": 52,
+      "l": 49,
+      "c": 50,
+      "v": 1050000,
+      "ma5": 49.2,
+      "ma25": 46.5,
+      "ma75": 55.3,
+      "ma200": 59.5
     }
   ]
 }

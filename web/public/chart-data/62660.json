@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "機械",
   "header": {
-    "price": 5210,
-    "change": 500,
-    "changePct": 10.6,
-    "isStopHigh": true,
-    "turnoverPct": 4.5,
-    "marketCap": 77328664340,
-    "appearCount": 5,
+    "price": 5090,
+    "change": -120,
+    "changePct": -2.3,
+    "isStopHigh": false,
+    "turnoverPct": 4.3,
+    "marketCap": 75547581860,
+    "appearCount": 6,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-04-28",
-      "o": 2786,
-      "h": 2793,
-      "l": 2741,
-      "c": 2762,
-      "v": 138900,
-      "ma5": 2746.4,
-      "ma25": 2511.3,
-      "ma75": 2508.1,
-      "ma200": null
-    },
     {
       "date": "2026-04-30",
       "o": 2812,
@@ -629,6 +617,21 @@
       "ma200": 2786.9,
       "marks": [
         "sht",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-13",
+      "o": 5160,
+      "h": 5490,
+      "l": 5080,
+      "c": 5090,
+      "v": 613500,
+      "ma5": 4808.0,
+      "ma25": 4499.8,
+      "ma75": 3537.2,
+      "ma200": 2801.7,
+      "marks": [
         "appear"
       ]
     }

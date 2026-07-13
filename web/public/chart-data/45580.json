@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "医薬品",
   "header": {
-    "price": 200,
-    "change": 1,
-    "changePct": 0.5,
+    "price": 199,
+    "change": -1,
+    "changePct": -0.5,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
-    "marketCap": 2332146800,
+    "turnoverPct": 0.1,
+    "marketCap": 2320486066,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-28",
-      "o": 200,
-      "h": 200,
-      "l": 199,
-      "c": 200,
-      "v": 1800,
-      "ma5": 199.8,
-      "ma25": 200.8,
-      "ma75": 203.5,
-      "ma200": null
-    },
     {
       "date": "2026-04-30",
       "o": 199,
@@ -614,6 +602,18 @@
       "ma25": 198.3,
       "ma75": 200.1,
       "ma200": 203.2
+    },
+    {
+      "date": "2026-07-13",
+      "o": 199,
+      "h": 200,
+      "l": 198,
+      "c": 199,
+      "v": 11400,
+      "ma5": 199.2,
+      "ma25": 198.4,
+      "ma75": 200.0,
+      "ma200": 203.1
     }
   ]
 }

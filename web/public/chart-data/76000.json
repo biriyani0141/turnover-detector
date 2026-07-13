@@ -6,30 +6,15 @@
   "sector": "精密機器",
   "header": {
     "price": 944,
-    "change": 70,
-    "changePct": 8.0,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 1.5,
+    "turnoverPct": 1.3,
     "marketCap": 24993230720,
-    "appearCount": 7,
+    "appearCount": 6,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-04-28",
-      "o": 561,
-      "h": 562,
-      "l": 495,
-      "c": 503,
-      "v": 1009800,
-      "ma5": 558.4,
-      "ma25": 559.7,
-      "ma75": 547.0,
-      "ma200": null,
-      "marks": [
-        "appear"
-      ]
-    },
     {
       "date": "2026-04-30",
       "o": 508,
@@ -643,6 +628,18 @@
       "ma25": 871.0,
       "ma75": 702.8,
       "ma200": 584.5
+    },
+    {
+      "date": "2026-07-13",
+      "o": 929,
+      "h": 970,
+      "l": 927,
+      "c": 944,
+      "v": 339100,
+      "ma5": 905.8,
+      "ma25": 877.6,
+      "ma75": 708.2,
+      "ma200": 586.7
     }
   ]
 }

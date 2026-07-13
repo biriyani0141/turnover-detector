@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "非鉄金属",
   "header": {
-    "price": 5150,
-    "change": 212,
-    "changePct": 4.3,
+    "price": 5007,
+    "change": -143,
+    "changePct": -2.8,
     "isStopHigh": false,
-    "turnoverPct": 2.5,
-    "marketCap": 9142179708900,
+    "turnoverPct": 2.3,
+    "marketCap": 8888328893682,
     "appearCount": 22,
     "stopHighCount": 3
   },
   "rows": [
-    {
-      "date": "2026-04-28",
-      "o": 6231,
-      "h": 6321,
-      "l": 6120,
-      "c": 6281,
-      "v": 46167300,
-      "ma5": 6108.6,
-      "ma25": 8026.6,
-      "ma75": 17498.6,
-      "ma200": null
-    },
     {
       "date": "2026-04-30",
       "o": 5981,
@@ -694,6 +682,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-13",
+      "o": 5134,
+      "h": 5380,
+      "l": 4915,
+      "c": 5007,
+      "v": 40749200,
+      "ma5": 4998.2,
+      "ma25": 5243.0,
+      "ma75": 6254.5,
+      "ma200": 14399.1
     }
   ]
 }
