@@ -93,6 +93,13 @@ function fmtPrice(v: number | null): string {
   return v.toLocaleString("ja-JP");
 }
 
+// J-QuantsのLocalCodeは5桁(4桁コード+末尾0埋め、新形式の英字混在コードも同様)。
+// 表示はRankingTabs.tsx等の既存ページに合わせ4桁化する。データ結合・/chart?codes=への
+// 引き渡しなど内部処理は5桁のまま(この関数は表示専用、呼び出し側で使い分けること)。
+function displayCode(code: string): string {
+  return code.slice(0, 4);
+}
+
 function openChart(codes: string[]) {
   if (codes.length === 0) return;
   window.open(`/chart?codes=${codes.join(",")}`, "_blank");
@@ -107,7 +114,7 @@ function toCsv(rows: CrashStock[]): string {
   const lines = [header.join(",")];
   for (const r of rows) {
     lines.push([
-      r.code, `"${r.name}"`, r.sector, r.section, r.tier ?? "",
+      displayCode(r.code), `"${r.name}"`, r.sector, r.section, r.tier ?? "",
       r.close ?? "", r.top_ret ?? "", r.cum_excess_return ?? "", r.strong_day_count,
       r.dist_to_high ?? "", r.already_recovered, r.ma25_deviation ?? "",
       r.days_from_52w_high ?? "", r.pre_crash_high ?? "",
@@ -163,7 +170,7 @@ function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
 function StockRow({ r, onTap }: { r: CrashStock; onTap: (code: string) => void }) {
   return (
     <tr onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
-      <td style={{ ...tdName }}>{r.code.slice(0, 4)}</td>
+      <td style={{ ...tdName }}>{displayCode(r.code)}</td>
       <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</td>
       <td style={{ ...tdNum, textAlign: "right" }}>{fmtPrice(r.close)}</td>
       <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high !== null ? -r.dist_to_high : null) }}>
@@ -255,6 +262,7 @@ const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] =
 function cellValue(r: CrashStock, key: SortKey): string {
   const v = r[key];
   if (v === null || v === undefined) return "—";
+  if (key === "code") return displayCode(v as string);
   if (key === "already_recovered") return v ? "○" : "";
   if (key === "close" || key === "pre_crash_high") return fmtPrice(v as number);
   if (key === "top_ret" || key === "cum_excess_return" || key === "dist_to_high" || key === "ma25_deviation") {

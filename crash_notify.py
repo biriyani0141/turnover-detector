@@ -25,7 +25,7 @@ def notify_phase_start(webhook_url: str | None, phase: dict, top_a_stocks: list[
     if top_a_stocks:
         lines.append("\n[A]セクション上位10銘柄:")
         for s in top_a_stocks[:10]:
-            lines.append(f"- {s.get('code')} {s.get('name')} (超過収益{_pct(s.get('cum_excess_return'))} / 距離{_pct(s.get('dist_to_high'))})")
+            lines.append(f"- {_display_code(s.get('code', ''))} {s.get('name')} (超過収益{_pct(s.get('cum_excess_return'))} / 距離{_pct(s.get('dist_to_high'))})")
     else:
         lines.append("\n[A]セクション該当銘柄なし")
 
@@ -49,6 +49,12 @@ def _pct(v) -> str:
     if v is None:
         return "—"
     return f"{v * 100:+.1f}%"
+
+
+def _display_code(code: str) -> str:
+    """J-QuantsのLocalCode(5桁、末尾0埋め)を表示用4桁に変換する。crash_screener.py側
+    (JSON出力)は内部結合キーとして5桁のまま保持しているため、表示直前のこの関数でのみ変換する。"""
+    return code[:4] if len(code) == 5 else code
 
 
 def _post(webhook_url: str, content: str) -> None:
