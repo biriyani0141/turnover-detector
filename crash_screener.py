@@ -596,13 +596,14 @@ def build_watchlist_rows(
         dist_to_high = (pre_crash_high / close - 1) if (close and not pd.isna(close) and pre_crash_high) else np.nan
         tier = r["tier"] if not pd.isna(r["tier"]) else None
         section = classify_section(tier, dist_to_high, bool(r["already_recovered"]))
+        cum_excess_return = None if pd.isna(r["cum_excess_return"]) else round(float(r["cum_excess_return"]), 4)
         rows.append({
             "code": r["code"],
             "name": r["name"],
             "sector": r["sector"],
             "close": None if pd.isna(close) else round(float(close), 2),
             "top_ret": None if pd.isna(r["top_ret"]) else round(float(r["top_ret"]), 4),
-            "cum_excess_return": None if pd.isna(r["cum_excess_return"]) else round(float(r["cum_excess_return"]), 4),
+            "cum_excess_return": cum_excess_return,
             "tier": tier,
             "strong_day_count": int(r["strong_day_count"]),
             "dist_to_high": None if pd.isna(dist_to_high) else round(float(dist_to_high), 4),
@@ -611,11 +612,29 @@ def build_watchlist_rows(
             "days_from_52w_high": None if pd.isna(r["days_from_52w_high"]) else int(r["days_from_52w_high"]),
             "pre_crash_high": None if pd.isna(pre_crash_high) else round(float(pre_crash_high), 2),
             "section": section,
+            # 判断ログ: tier(母集団内相対順位、上位1/3=high)とは別に、指数を絶対値でも
+            # 上回っているか(cum_excess_return>0)を示す独立フラグ。tier・sectionの
+            # 判定ロジックには一切使わない(表示専用の付加情報)。
+            "absolute_positive": (cum_excess_return is not None and cum_excess_return > 0),
         })
     # [S]→[A]→[B]→[C]→[D]、各区分内はcum_excess_return降順(強い順)
     section_order = {"S": 0, "A": 1, "B": 2, "C": 3, "D": 4}
     rows.sort(key=lambda x: (section_order[x["section"]], -(x["cum_excess_return"] or -999)))
     return rows
+
+
+def compute_population_stats(rows: list[dict]) -> dict:
+    """局面サマリー用: 母集団のcum_excess_return中央値とプラス銘柄数/母集団n。
+    tier・セクション振り分けロジックには一切影響しない、表示専用の集計値。"""
+    values = [r["cum_excess_return"] for r in rows if r["cum_excess_return"] is not None]
+    n = len(rows)
+    positive_count = sum(1 for v in values if v > 0)
+    median = float(np.median(values)) if values else None
+    return {
+        "n": n,
+        "positive_count": positive_count,
+        "median_cum_excess_return": None if median is None else round(median, 4),
+    }
 
 
 # ============================================================
@@ -702,7 +721,8 @@ def run_batch() -> dict:
             )
             snapshot["population_base_date"] = base_date.date().isoformat()
             snapshot["stocks"] = build_watchlist_rows(pop, price_data, index_df, phase, trading_days, base_date)
-            log.info("watchlist行数: %d", len(snapshot["stocks"]))
+            snapshot["population_stats"] = compute_population_stats(snapshot["stocks"])
+            log.info("watchlist行数: %d / 母集団統計: %s", len(snapshot["stocks"]), snapshot["population_stats"])
 
     # --- 通知用の局面開始/終了エッジ検出 ---
     transition = None
@@ -726,7 +746,7 @@ def run_batch() -> dict:
     if transition == "start" and snapshot["phase"] is not None:
         top_a = [s for s in snapshot["stocks"] if s["section"] == "A"][:10]
         try:
-            crash_notify.notify_phase_start(None, snapshot["phase"], top_a)
+            crash_notify.notify_phase_start(None, snapshot["phase"], top_a, snapshot.get("population_stats"))
         except Exception as e:
             log.warning("局面開始通知の送信に失敗: %s", e)
     elif transition == "end" and snapshot["phase"] is not None:

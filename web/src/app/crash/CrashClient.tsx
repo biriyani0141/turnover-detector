@@ -17,6 +17,9 @@ export type CrashStock = {
   days_from_52w_high: number | null;
   pre_crash_high: number | null;
   section: "S" | "A" | "B" | "C" | "D";
+  // tier(母集団内相対順位)とは独立の絶対強度フラグ。cum_excess_return > 0 で true。
+  // tier・sectionの判定には使わない、表示専用の付加情報。
+  absolute_positive: boolean;
 };
 
 export type CrashPhaseInfo = {
@@ -27,11 +30,18 @@ export type CrashPhaseInfo = {
   day_index: number;
 };
 
+export type CrashPopulationStats = {
+  n: number;
+  positive_count: number;
+  median_cum_excess_return: number | null;
+};
+
 export type CrashSnapshot = {
   date: string;
   status: "IDLE" | "ACTIVE" | "COOLDOWN";
   phase: CrashPhaseInfo | null;
   population_base_date?: string;
+  population_stats?: CrashPopulationStats;
   stocks: CrashStock[];
 };
 
@@ -107,14 +117,14 @@ function openChart(codes: string[]) {
 
 function toCsv(rows: CrashStock[]): string {
   const header = [
-    "code", "name", "sector", "section", "tier", "close", "top_ret",
+    "code", "name", "sector", "section", "tier", "absolute_positive", "close", "top_ret",
     "cum_excess_return", "strong_day_count", "dist_to_high", "already_recovered",
     "ma25_deviation", "days_from_52w_high", "pre_crash_high",
   ];
   const lines = [header.join(",")];
   for (const r of rows) {
     lines.push([
-      displayCode(r.code), `"${r.name}"`, r.sector, r.section, r.tier ?? "",
+      displayCode(r.code), `"${r.name}"`, r.sector, r.section, r.tier ?? "", r.absolute_positive,
       r.close ?? "", r.top_ret ?? "", r.cum_excess_return ?? "", r.strong_day_count,
       r.dist_to_high ?? "", r.already_recovered, r.ma25_deviation ?? "",
       r.days_from_52w_high ?? "", r.pre_crash_high ?? "",
@@ -135,7 +145,7 @@ function downloadCsv(rows: CrashStock[], filename: string) {
 }
 
 function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
-  const { status, phase, date } = snapshot;
+  const { status, phase, date, population_stats } = snapshot;
   const color = status === "ACTIVE" ? "#e05555" : status === "COOLDOWN" ? "#cc8800" : "#5f9e6e";
   const label = status === "ACTIVE" ? "ACTIVE" : status === "COOLDOWN" ? "COOLDOWN" : "IDLE";
   return (
@@ -162,6 +172,12 @@ function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
           {status !== "ACTIVE" && phase.end_reason && <> / 終了理由: {phase.end_reason}</>}
         </div>
       )}
+      {population_stats && (
+        <div style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, marginTop: 4 }}>
+          母集団{population_stats.n}銘柄中 指数超過プラス(★): {population_stats.positive_count}銘柄
+          （中央値{fmtPct(population_stats.median_cum_excess_return)}）
+        </div>
+      )}
       {!phase && <div style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, marginTop: 6 }}>平常時</div>}
     </div>
   );
@@ -171,7 +187,10 @@ function StockRow({ r, onTap }: { r: CrashStock; onTap: (code: string) => void }
   return (
     <tr onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
       <td style={{ ...tdName }}>{displayCode(r.code)}</td>
-      <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</td>
+      <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>
+        {r.name}
+        {r.absolute_positive && <span style={{ color: "#ffa500", marginLeft: 3 }}>★</span>}
+      </td>
       <td style={{ ...tdNum, textAlign: "right" }}>{fmtPrice(r.close)}</td>
       <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high !== null ? -r.dist_to_high : null) }}>
         {fmtPct(r.dist_to_high)}
@@ -239,7 +258,7 @@ function SummarySection({
 type SortKey = keyof Pick<CrashStock,
   "code" | "name" | "sector" | "close" | "top_ret" | "cum_excess_return" | "tier" |
   "strong_day_count" | "dist_to_high" | "already_recovered" | "ma25_deviation" |
-  "days_from_52w_high" | "pre_crash_high" | "section"
+  "days_from_52w_high" | "pre_crash_high" | "section" | "absolute_positive"
 >;
 
 const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] = [
@@ -248,6 +267,7 @@ const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] =
   { key: "sector", label: "業種", align: "left" },
   { key: "section", label: "区分", align: "left" },
   { key: "tier", label: "耐性", align: "left" },
+  { key: "absolute_positive", label: "絶対★", align: "left" },
   { key: "close", label: "終値", align: "right" },
   { key: "top_ret", label: "上昇率", align: "right" },
   { key: "cum_excess_return", label: "累積超過R", align: "right" },
@@ -264,6 +284,7 @@ function cellValue(r: CrashStock, key: SortKey): string {
   if (v === null || v === undefined) return "—";
   if (key === "code") return displayCode(v as string);
   if (key === "already_recovered") return v ? "○" : "";
+  if (key === "absolute_positive") return v ? "★" : "";
   if (key === "close" || key === "pre_crash_high") return fmtPrice(v as number);
   if (key === "top_ret" || key === "cum_excess_return" || key === "dist_to_high" || key === "ma25_deviation") {
     return fmtPct(v as number);

@@ -87,3 +87,48 @@ def test_classify_status_active_when_last_episode_open_ended(detected_episodes):
         assert status == "ACTIVE"
     else:
         assert status in ("IDLE", "COOLDOWN")
+
+
+# ============================================================
+# セクション振り分け(S/A/B/C/D)の回帰テスト
+# 「絶対強度フラグ(absolute_positive)」追加時にtier/section判定ロジックが
+# 1件も変わっていないことを確認する(2026-07-14の仕様追加の完了条件に対応)。
+# tierはあくまで母集団内の相対順位(pd.qcutによる上位1/3=high)であり、
+# cum_excess_returnの符号(絶対値としてプラスかマイナスか)には依存しない。
+# ============================================================
+@pytest.mark.parametrize("tier,dist_to_high,already_recovered,expected", [
+    ("high", 0.10, False, "A"),   # tier high かつ距離15%以内 → A
+    ("high", 0.20, False, "B"),   # tier high だが距離15%超 → B
+    ("mid", 0.10, False, "B"),    # tier mid かつ距離15%以内 → B
+    ("mid", 0.20, False, "C"),    # tier mid だが距離15%超 → C
+    ("low", 0.05, False, "D"),    # tier low は距離によらず全表示でD
+    ("low", 0.50, False, "D"),
+    (None, 0.05, False, "D"),     # tier不能(NaN)もD扱い
+    ("high", 0.30, True, "S"),    # already_recovered=Trueはtier/距離によらずS優先
+    ("low", 0.50, True, "S"),
+])
+def test_classify_section_unchanged(tier, dist_to_high, already_recovered, expected):
+    assert cs.classify_section(tier, dist_to_high, already_recovered) == expected
+
+
+def test_classify_section_ignores_cum_excess_return_sign():
+    """tier=highでcum_excess_returnがマイナスでも(=母集団内の相対順位でhighなだけ)、
+    セクション判定は絶対値の符号を一切見ない(distとalready_recoveredのみで決まる)ことを
+    明示的に確認する。実運用で観測された「[A]にcum_excess_return<0の銘柄が混在」は
+    バグではなくこの仕様通りの挙動であることの回帰テスト。"""
+    assert cs.classify_section("high", 0.05, False) == "A"
+
+
+def test_compute_population_stats_independent_of_section():
+    """absolute_positiveフラグ・population_statsはtier/sectionの判定に一切使われない
+    (別々に計算される)ことを確認する。"""
+    rows = [
+        {"cum_excess_return": 0.05, "section": "A"},
+        {"cum_excess_return": -0.02, "section": "A"},
+        {"cum_excess_return": -0.01, "section": "D"},
+        {"cum_excess_return": None, "section": "D"},
+    ]
+    stats = cs.compute_population_stats(rows)
+    assert stats["n"] == 4
+    assert stats["positive_count"] == 1
+    assert stats["median_cum_excess_return"] == pytest.approx(-0.01, abs=1e-9)
