@@ -476,6 +476,10 @@
         {
           "ticker": "NTAP",
           "pct_1d": 6.47
+        },
+        {
+          "ticker": "P",
+          "pct_1d": 2.24
         }
       ],
       "bucket": "新規点火"
@@ -493,6 +497,10 @@
       "return_6m": 64.21,
       "return_1y": 87.0,
       "top_movers": [
+        {
+          "ticker": "OUST",
+          "pct_1d": 4.87
+        },
         {
           "ticker": "ON",
           "pct_1d": 3.76
@@ -2074,16 +2082,16 @@
       "return_1y": -26.04,
       "top_movers": [
         {
+          "ticker": "OWL",
+          "pct_1d": 3.44
+        },
+        {
           "ticker": "CG",
           "pct_1d": 3.04
         },
         {
           "ticker": "BX",
           "pct_1d": 2.05
-        },
-        {
-          "ticker": "TPG",
-          "pct_1d": 1.55
         }
       ],
       "bucket": null
@@ -2132,6 +2140,10 @@
         {
           "ticker": "COMP",
           "pct_1d": 1.57
+        },
+        {
+          "ticker": "OPEN",
+          "pct_1d": 1.56
         }
       ],
       "bucket": null
@@ -2520,6 +2532,10 @@
         {
           "ticker": "LMND",
           "pct_1d": -0.67
+        },
+        {
+          "ticker": "OSCR",
+          "pct_1d": -1.71
         }
       ],
       "bucket": null
@@ -3686,8 +3702,8 @@
           "pct_1d": 0.17
         },
         {
-          "ticker": "DE",
-          "pct_1d": -0.21
+          "ticker": "OSK",
+          "pct_1d": -0.06
         }
       ],
       "bucket": null
@@ -4770,6 +4786,10 @@
       "return_1y": 22.78,
       "top_movers": [
         {
+          "ticker": "OXY",
+          "pct_1d": -0.46
+        },
+        {
           "ticker": "COP",
           "pct_1d": -0.87
         }
@@ -5174,12 +5194,12 @@
           "pct_1d": 0.5
         },
         {
-          "ticker": "BIRK",
-          "pct_1d": -0.6
+          "ticker": "ONON",
+          "pct_1d": -0.45
         },
         {
-          "ticker": "DECK",
-          "pct_1d": -1.15
+          "ticker": "BIRK",
+          "pct_1d": -0.6
         }
       ],
       "bucket": null
@@ -5368,6 +5388,10 @@
         {
           "ticker": "AZO",
           "pct_1d": -1.52
+        },
+        {
+          "ticker": "ORLY",
+          "pct_1d": -1.78
         }
       ],
       "bucket": null
@@ -6062,8 +6086,8 @@
           "pct_1d": -2.13
         },
         {
-          "ticker": "NOW",
-          "pct_1d": -5.77
+          "ticker": "ORCL",
+          "pct_1d": -2.84
         }
       ],
       "bucket": null
@@ -6183,5 +6207,5 @@
   ],
   "stock_date": "2026-07-14",
   "updated_at": "2026-07-14 21:20:08",
-  "saved_at": "2026-07-14T21:34:43.938203"
+  "saved_at": "2026-07-14T21:38:24.740327"
 }
