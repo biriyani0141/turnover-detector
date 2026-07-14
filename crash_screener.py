@@ -25,10 +25,17 @@ screener.py / backtest.py と同一の値・同一のロジックを移植して
   data/crash/crash_index.json                  … 局面一覧・日付一覧のインデックス
   data/crash/crash_latest.json                 … 最新スナップショットの複製
   crash_state.json（リポジトリ直下）            … IDLE/ACTIVE/COOLDOWN状態の永続化
+
+スナップショットの鮮度メタデータ(2026-07-14追加): generated_at(このバッチ実行の
+UTC時刻)/ data_date(stocksが実際に計算された日付) / stocks_stale(True の場合、
+当日の特徴量計算が異常(除外率90%超、日足キャッシュ欠損等)だったため stocks は
+前回の正常な出力を再利用したものであることを示す。局面メタデータ(status/phase)は
+index側データのみに依存するため常に当日分。詳細は resolve_watchlist_output() 参照。
 """
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
 import logging
 import sys
@@ -68,6 +75,14 @@ INCLUDE_MARKETS = {"プライム", "スタンダード", "グロース"}
 
 # フロント[A]セクション判定用の閾値（仕様書: 「tier high × dist 15%以内」）
 DIST_TO_HIGH_A_THRESHOLD = 0.15
+
+# 判断ログ(2026-07-14, りゅ承認済み): 母集団が1件以上あるのに特徴量計算の除外率が
+# 異常(採用0件、または除外率がこの閾値超)の場合、日足キャッシュの欠損
+# (kyoche-updateとのタイミング競合等、データ起因)を疑い、watchlistの上書きを
+# スキップして前回の正常な出力を保持する(fail-safeは「古いデータを出す」方向に倒す)。
+# 局面メタデータ(status/phase等)はindex側データのみに依存し今回のような欠損の
+# 影響を受けないため、通常通り更新する。
+ABNORMAL_EXCLUSION_RATE = 0.9
 
 REPO_ROOT = Path(__file__).parent
 DATA_DIR = REPO_ROOT / "data"
@@ -684,6 +699,54 @@ def compute_population_stats(rows: list[dict]) -> dict:
     }
 
 
+def load_previous_snapshot() -> dict | None:
+    """既存のcrash_latest.jsonを読む(fail-safeのフォールバック用)。
+    存在しない/壊れている場合はNone(=フォールバックできない)。"""
+    path = CRASH_DIR / "crash_latest.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
+def resolve_watchlist_output(
+    pop_n: int, stocks: list[dict], previous_snapshot: dict | None, today_str: str,
+) -> tuple[list[dict], dict, bool, str | None]:
+    """特徴量計算の除外率が異常な場合、前回の正常な出力にフォールバックする。
+    戻り値: (stocks, population_stats, stale, data_date)
+    - stale=True の場合、stocksは前回スナップショットからの再利用(=当日の
+      新規計算ではない)。data_dateはそのstocksが実際に計算された日付。
+    - 母集団自体が0件(pop_n==0)の場合は異常判定の対象外(正常に「該当なしの日」)。
+    - 前回スナップショットが無い/前回も空の場合は、フォールバックしようがないため
+      stale=Trueのまま空リストを返す(それでもwatchlist行数0件・除外率異常という
+      事実はログに残る)。
+    """
+    if pop_n == 0:
+        return stocks, compute_population_stats(stocks), False, today_str
+
+    exclusion_rate = 1 - (len(stocks) / pop_n)
+    abnormal = (len(stocks) == 0) or (exclusion_rate > ABNORMAL_EXCLUSION_RATE)
+    if not abnormal:
+        return stocks, compute_population_stats(stocks), False, today_str
+
+    log.warning(
+        "特徴量計算の除外率が異常(母集団%d件中%d件のみ採用、除外率%.1f%%)。"
+        "日足キャッシュの欠損(kyoche-updateとのタイミング競合等)が疑われるため、"
+        "watchlist出力の上書きをスキップし前回の正常な出力を保持する。",
+        pop_n, len(stocks), exclusion_rate * 100,
+    )
+    if previous_snapshot and previous_snapshot.get("stocks"):
+        prev_stocks = previous_snapshot["stocks"]
+        prev_stats = previous_snapshot.get("population_stats") or compute_population_stats(prev_stocks)
+        prev_data_date = previous_snapshot.get("data_date") or previous_snapshot.get("date")
+        return prev_stocks, prev_stats, True, prev_data_date
+
+    log.warning("フォールバック先の前回正常出力も存在しない。空のwatchlistを出力する。")
+    return [], compute_population_stats([]), True, None
+
+
 # ============================================================
 # 10. メインバッチ
 # ============================================================
@@ -709,9 +772,12 @@ def run_batch() -> dict:
 
     snapshot: dict = {
         "date": today_str,
+        "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "status": status,
         "phase": None,
         "stocks": [],
+        "data_date": today_str,
+        "stocks_stale": False,
     }
 
     if phase is not None:
@@ -767,9 +833,17 @@ def run_batch() -> dict:
                 set(pop["code"]), _price_window_start(base_date), today_str
             )
             snapshot["population_base_date"] = base_date.date().isoformat()
-            snapshot["stocks"] = build_watchlist_rows(pop, price_data, index_df, phase, trading_days, base_date)
-            snapshot["population_stats"] = compute_population_stats(snapshot["stocks"])
-            log.info("watchlist行数: %d / 母集団統計: %s", len(snapshot["stocks"]), snapshot["population_stats"])
+            raw_stocks = build_watchlist_rows(pop, price_data, index_df, phase, trading_days, base_date)
+            previous_snapshot = load_previous_snapshot()
+            stocks, pop_stats, stale, data_date = resolve_watchlist_output(
+                len(pop), raw_stocks, previous_snapshot, today_str
+            )
+            snapshot["stocks"] = stocks
+            snapshot["population_stats"] = pop_stats
+            snapshot["stocks_stale"] = stale
+            snapshot["data_date"] = data_date
+            log.info("watchlist行数: %d(新規計算%d件, stale=%s) / 母集団統計: %s",
+                      len(stocks), len(raw_stocks), stale, pop_stats)
 
     # --- 通知用の局面開始/終了エッジ検出 ---
     transition = None

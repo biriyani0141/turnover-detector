@@ -146,3 +146,81 @@ def test_compute_population_stats_independent_of_section():
     assert stats["n"] == 4
     assert stats["positive_count"] == 1
     assert stats["median_cum_excess_return"] == pytest.approx(-0.01, abs=1e-9)
+
+
+# ============================================================
+# 除外率異常時のwatchlist fail-safe(2026-07-14、りゅ承認済み)
+# 7/14朝に発生した「kyoche-updateとのタイミング競合で日足キャッシュに当日分が
+# 無く、母集団はあるのに特徴量計算が全銘柄除外される」状態を再現し、
+# watchlistが空で上書きされず前回の正常な出力が保持されることを確認する。
+# ============================================================
+def _make_stock_row(code: str, cum_excess: float) -> dict:
+    return {
+        "code": code, "name": f"銘柄{code}", "sector": "電気機器", "close": 1000.0,
+        "top_ret": 0.6, "cum_excess_return": cum_excess, "tier": "high",
+        "strong_day_count": 3, "dist_to_high": 0.05, "already_recovered": False,
+        "ma25_deviation": 0.02, "days_from_52w_high": 5, "pre_crash_high": 1100.0,
+        "section": "A", "absolute_positive": cum_excess > 0,
+    }
+
+
+def test_resolve_watchlist_output_normal_case_passthrough():
+    """除外率が正常(閾値以下)なら、新規計算結果をそのまま採用する(stale=False)。"""
+    raw_stocks = [_make_stock_row("72030", 0.1), _make_stock_row("67580", 0.05)]
+    stocks, stats, stale, data_date = cs.resolve_watchlist_output(2, raw_stocks, None, "2026-07-14")
+    assert stocks == raw_stocks
+    assert stale is False
+    assert data_date == "2026-07-14"
+    assert stats["n"] == 2
+
+
+def test_resolve_watchlist_output_abnormal_exclusion_falls_back_to_previous():
+    """7/14朝の再現: 母集団320件あるのに特徴量計算が0件採用(除外率100%)の場合、
+    watchlistを空で上書きせず、前回の正常なcrash_latest.jsonのstocksを再利用する
+    (stale=Trueで前回のdata_dateを保持)。"""
+    previous_stocks = [_make_stock_row("72030", 0.12), _make_stock_row("67580", 0.08)]
+    previous_snapshot = {
+        "date": "2026-07-13", "data_date": "2026-07-13", "stocks": previous_stocks,
+        "population_stats": {"n": 2, "positive_count": 2, "median_cum_excess_return": 0.1},
+    }
+    stocks, stats, stale, data_date = cs.resolve_watchlist_output(
+        pop_n=320, stocks=[], previous_snapshot=previous_snapshot, today_str="2026-07-14"
+    )
+    assert stocks == previous_stocks
+    assert stale is True
+    assert data_date == "2026-07-13"
+    assert stats["n"] == 2
+
+
+def test_resolve_watchlist_output_abnormal_but_no_previous_snapshot():
+    """フォールバック先の前回出力も存在しない場合、空リストをstale=Trueで返す
+    (エラーで落とさない、かつ「新規計算扱い」にもしない)。"""
+    stocks, stats, stale, data_date = cs.resolve_watchlist_output(
+        pop_n=320, stocks=[], previous_snapshot=None, today_str="2026-07-14"
+    )
+    assert stocks == []
+    assert stale is True
+    assert data_date is None
+
+
+def test_resolve_watchlist_output_high_but_not_total_exclusion_falls_back():
+    """除外率が100%未満でも閾値(90%)を超えていれば異常扱いでフォールバックする。"""
+    raw_stocks = [_make_stock_row("72030", 0.1)]  # 320件中1件だけ採用 = 除外率99.7%
+    previous_stocks = [_make_stock_row("99840", 0.2)]
+    previous_snapshot = {"date": "2026-07-13", "stocks": previous_stocks}
+    stocks, stats, stale, data_date = cs.resolve_watchlist_output(
+        pop_n=320, stocks=raw_stocks, previous_snapshot=previous_snapshot, today_str="2026-07-14"
+    )
+    assert stocks == previous_stocks
+    assert stale is True
+
+
+def test_resolve_watchlist_output_zero_population_is_not_abnormal():
+    """母集団自体が0件の日は「正常な該当なし」であり、異常判定・フォールバックの
+    対象外(staleにしない)。"""
+    stocks, stats, stale, data_date = cs.resolve_watchlist_output(
+        pop_n=0, stocks=[], previous_snapshot=None, today_str="2026-07-14"
+    )
+    assert stocks == []
+    assert stale is False
+    assert data_date == "2026-07-14"
