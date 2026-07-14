@@ -1,12 +1,18 @@
 {
   "date": "2026-07-14",
-  "status": "COOLDOWN",
+  "status": "ACTIVE",
   "phase": {
-    "start": "2026-06-26",
-    "end_reason": "(ii)新規トリガーなし3日",
-    "crash_day_count": 4,
-    "index_max_dd": -0.0738,
-    "day_index": 13
+    "start": "2026-06-23",
+    "end_reason": "データ末尾到達",
+    "crash_day_count": 5,
+    "index_max_dd": -0.0874,
+    "day_index": 16
   },
-  "stocks": []
+  "stocks": [],
+  "population_base_date": "2026-06-22",
+  "population_stats": {
+    "n": 0,
+    "positive_count": 0,
+    "median_cum_excess_return": null
+  }
 }
