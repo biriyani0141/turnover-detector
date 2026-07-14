@@ -1,13 +1,22 @@
 # -*- coding: utf-8 -*-
 """
 crash_screener.py の局面検出が、検証リポジトリ(crash-relative-strength-screener)の
-backtest.py で検出済みの既知局面リスト40件(fixtures/known_episodes.csv)と一致することを
-確認するテスト。
+既知局面リスト(fixtures/known_episodes.csv)と一致することを確認するテスト。
 
 仕様書「移植後、検証リポジトリの既知局面リスト40件と検出結果が一致することをテストで
-確認する」に対応する。known_episodes.csv は2026-07-13時点の^N225データで生成されたもの
-(crash-relative-strength-screener/episodes.csv からの複製)のため、本テストも
-2026-07-14 00:00(exclusive)までのデータに固定してyfinance取得することで再現性を持たせる。
+確認する」に対応する。
+
+判断ログ(2026-07-14更新): fixtureは当初 backtest.py の episodes.csv(40局面)の複製
+だったが、局面統合条件の変更(「全戻し達成後は延長統合しない」ガードの追加、りゅ指示)に
+伴い、検証リポジトリの backtest_recovery_split.py が出力した
+recovery_split_episodes.csv(41局面)の複製に更新した。2026-06-08局面が
+2026-06-23の全戻しで分裂した1件を除く39局面(COVID含む)は変更前の検出結果と
+完全一致することを確認済み(検証リポジトリ側での突合レポートで確認、
+crash-relative-strength-screener/recovery_split_diff_report.md参照)。
+
+known_episodes.csv は2026-07-13時点の^N225データで生成されたもの
+のため、本テストも2026-07-14 00:00(exclusive)までのデータに固定してyfinance取得
+することで再現性を持たせる。
 """
 from __future__ import annotations
 
@@ -43,14 +52,15 @@ def test_episode_count_matches(detected_episodes):
 
 def test_each_episode_matches(detected_episodes):
     """既知局面リストとの突合。
-    判断ログ: 最終局面(40件目)は known_episodes.csv 生成時点(2026-07-13実行)でも
-    right_censored=True(進行中)の局面であり、その終了日はyfinanceから当時何営業日分の
-    データが取得できたかに依存する「常に動く」値である。本テスト実行時点でyfinance
-    (Yahoo Finance)側のEOD反映が生成時点より遅れている/進んでいる場合、最終局面の
+    判断ログ: 最終局面(fixtureの最終行、2026-07-14時点で41件目)は
+    known_episodes.csv 生成時点でも「データ末尾到達」(進行中)の局面であり、
+    その終了日はyfinanceから当時何営業日分のデータが取得できたかに依存する
+    「常に動く」値である。本テスト実行時点でyfinance(Yahoo Finance)側の
+    EOD反映が生成時点より遅れている/進んでいる場合、最終局面の
     end/end_reason/crash_day_count/index_max_dd が既知値と一致しないことがあるが、
     これはロジックの不一致ではなくデータ鮮度の違いによるもの(仕様書が想定する
     「バッチ実行時に取得できた最新営業日をデータ基準日とする」動作そのもの)。
-    そのため最終局面のみ start の一致だけを厳密にチェックし、それ以外(1〜39件目、
+    そのため最終局面のみ start の一致だけを厳密にチェックし、それ以外(それより前の
     全て確定済みの過去局面)は全フィールドを厳密に一致させる。
     """
     known = _load_known_episodes()

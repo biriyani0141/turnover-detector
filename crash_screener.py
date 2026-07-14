@@ -194,6 +194,18 @@ def _find_phase_end(start_idx, close, high, any_trigger, last_idx):
     end_reason=="データ末尾到達" は「まだ自然な終了条件に到達していない
     (=最新取引日時点で局面が進行中)」を意味し、当日ステータスをACTIVEと
     判定する材料に使う（classify_status参照）。
+
+    判断ログ(2026-07-14, りゅ指示による局面統合条件変更): 延長統合の条件に
+    「局面開始以降、指数終値がref_high(局面開始直前20営業日の指数高値)を
+    一度も上回っていない」を追加した。全戻し(close>ref_high)が一度でも
+    成立した後に新規トリガーが来た場合は延長統合せず、その時点のtentative
+    end/reasonで局面をCLOSEし、次のトリガーから新局面として検出させる
+    （全戻し前の断続下落=COVID型は従来通り1局面に統合、全戻し後の再下落は
+    新局面として分離）。検証リポジトリのcrash-relative-strength-screener/
+    backtest_recovery_split.py の_find_phase_end_v2と同一ロジックを移植した
+    （2018-01-01〜現在の全期間で検証済み: 39局面(COVID含む)は完全不変、
+    2026-06-08局面のみ2026-06-23全戻しで分裂することを確認済み）。
+    ref_highの定義・(i)(ii)(iii)の各終了条件自体・MERGE_GAPは変更していない。
     """
     ref_high = high.iloc[max(0, start_idx - RECENT_HIGH_WINDOW):start_idx].max()
     i = start_idx
@@ -218,9 +230,10 @@ def _find_phase_end(start_idx, close, high, any_trigger, last_idx):
                 tentative, reason = i, "(iii)20営業日経過"
 
         if tentative is not None:
+            ever_recovered = bool((close.iloc[start_idx + 1:tentative + 1] > ref_high).any())
             lookahead_hi = min(tentative + MERGE_GAP, last_idx)
             merged = False
-            if tentative + 1 <= lookahead_hi:
+            if (not ever_recovered) and tentative + 1 <= lookahead_hi:
                 window = any_trigger.iloc[tentative + 1:lookahead_hi + 1]
                 if window.any():
                     merged = True
