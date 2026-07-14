@@ -1,6 +1,7 @@
 {
   "dates": [
-    "2026-07-10"
+    "2026-07-10",
+    "2026-07-14"
   ],
   "phases": [
     {
@@ -278,10 +279,17 @@
     },
     {
       "start": "2026-06-08",
-      "end": "2026-07-10",
-      "end_reason": "データ末尾到達",
-      "crash_day_count": 6,
-      "index_max_dd": -0.0826
+      "end": "2026-06-23",
+      "end_reason": "(i)高値回復",
+      "crash_day_count": 2,
+      "index_max_dd": -0.0572
+    },
+    {
+      "start": "2026-06-26",
+      "end": "2026-07-13",
+      "end_reason": "(ii)新規トリガーなし3日",
+      "crash_day_count": 4,
+      "index_max_dd": -0.0738
     }
   ]
 }
