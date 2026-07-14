@@ -48,9 +48,17 @@ DRAWDOWN_THRESHOLD = -0.08       # 型B: 累積DD
 DRAWDOWN_LOOKBACK = 15           # 型B: DD到達猶予（営業日）
 RECENT_HIGH_WINDOW = 20          # 直近高値の参照期間（営業日）
 WINDOW_MAX_DAYS = 20             # 局面の最大長（営業日）
-WINDOW_QUIET_DAYS = 3            # 終了条件: 新規トリガーなし連続日数
 MERGE_GAP = 10                   # 局面統合: 終了判定後この営業日数以内の新規トリガーで延長統合
 MIN_TOP_RET = 0.50               # 母集団の最低上昇率
+
+# 判断ログ(2026-07-14, りゅ承認済み): 終了条件(ii)を「新規トリガーなしN営業日」単独から
+# 「新規トリガーなしN営業日 AND 局面安値をM営業日更新していない」のAND条件に変更した。
+# 検証リポジトリ(crash-relative-strength-screener/backtest_report.md「局面終了条件(ii)の
+# 再設計」2026-07-14追記)でN×M計6パターンをスイープし、既知局面35件との一致・
+# COVID局面の実用上の同一性(終了日完全一致、開始日のみ祝日配置起因で1月末局面を
+# 吸収する軽微な差分を許容)を確認した上でN=3,M=5に確定・承認された値をそのまま移植する。
+QUIET_TRIGGER_DAYS = 3           # 終了条件: 新規トリガーなし連続営業日数
+QUIET_LOW_DAYS = 5               # 終了条件: 局面安値(終値の累積最小値)未更新の連続営業日数
 
 INDEX_TICKER = "^N225"
 PHASE_SEARCH_START = "2018-01-01"   # backtest.py の BACKTEST_SEARCH_START と同一
@@ -187,6 +195,22 @@ def compute_triggers(index_df: pd.DataFrame):
     return type_a, type_b, any_trigger
 
 
+def _last_low_update_index(close: pd.Series, start_idx: int, last_idx: int) -> pd.Series:
+    """各日 i(start_idx<=i<=last_idx)について「直近で局面安値(終値の累積最小値)が
+    更新された日のインデックス」を返す。局面開始日自体を初期の安値基準とする。
+    running_min.diff()<0の日を前方補完(ffill)することで、延長統合による日の
+    スキップに関係なく正しく「最後の更新日」を追跡できる(固定幅の窓切りだと
+    窓の直前についた安値を取りこぼす欠陥があったため、この方式を採用。
+    検証リポジトリのbacktest.py `_last_low_update_index`と同一実装)。"""
+    seg = close.iloc[start_idx:last_idx + 1]
+    running_min = seg.cummin()
+    is_new_low = running_min.diff() < 0
+    is_new_low.iloc[0] = True
+    positions = pd.Series(np.where(is_new_low.to_numpy(), np.arange(len(seg)), np.nan), index=seg.index)
+    last_update_pos = positions.ffill()
+    return (last_update_pos + start_idx).astype(int)
+
+
 def _find_phase_end(start_idx, close, high, any_trigger, last_idx):
     """1局面の終了indexを状態機械で決定する。終了候補が出るたびに、
     候補+1〜+MERGE_GAP営業日以内に新規トリガーがあれば延長統合して走査を続ける。
@@ -195,19 +219,24 @@ def _find_phase_end(start_idx, close, high, any_trigger, last_idx):
     (=最新取引日時点で局面が進行中)」を意味し、当日ステータスをACTIVEと
     判定する材料に使う（classify_status参照）。
 
-    判断ログ(2026-07-14, りゅ指示による局面統合条件変更): 延長統合の条件に
-    「局面開始以降、指数終値がref_high(局面開始直前20営業日の指数高値)を
-    一度も上回っていない」を追加した。全戻し(close>ref_high)が一度でも
-    成立した後に新規トリガーが来た場合は延長統合せず、その時点のtentative
-    end/reasonで局面をCLOSEし、次のトリガーから新局面として検出させる
-    （全戻し前の断続下落=COVID型は従来通り1局面に統合、全戻し後の再下落は
-    新局面として分離）。検証リポジトリのcrash-relative-strength-screener/
-    backtest_recovery_split.py の_find_phase_end_v2と同一ロジックを移植した
-    （2018-01-01〜現在の全期間で検証済み: 39局面(COVID含む)は完全不変、
-    2026-06-08局面のみ2026-06-23全戻しで分裂することを確認済み）。
-    ref_highの定義・(i)(ii)(iii)の各終了条件自体・MERGE_GAPは変更していない。
+    判断ログ(2026-07-14, りゅ承認済み、検証リポジトリbacktest.py「局面終了条件(ii)の
+    再設計」と同一ロジックを移植):
+    1. 延長統合の条件に「局面開始以降、指数終値がref_highを一度も上回っていない
+       (ever_recovered)」を追加。全戻し済みなら新規トリガーが来ても延長統合せず、
+       新局面として分離する(全戻し前の断続下落=COVID型は従来通り1局面に統合)。
+    2. 終了条件(ii)を「新規トリガーなしQUIET_TRIGGER_DAYS日」単独から
+       「新規トリガーなしQUIET_TRIGGER_DAYS日 AND 局面安値をQUIET_LOW_DAYS日
+       更新していない」のAND条件に変更。下落中の持ち合い(トリガーは疎だが
+       安値切り下げ継続)で誤って局面が閉じる問題への対処。各条件は最終発生日
+       からの経過営業日で独立カウントする(固定幅の窓切りにしない)。
+    既知の許容差分: COVID局面(2020年)の開始日が2020-02-25→2020-01-27に前倒し
+    される(終了日2020-05-11は不変)。祝日配置(建国記念の日+天皇誕生日振替休日)
+    起因のカレンダー上の偶然で、りゅ承認済み(詳細は検証リポジトリのbacktest_report.md)。
+    ref_highの定義・(i)(iii)の各終了条件自体・MERGE_GAPは変更していない。
     """
     ref_high = high.iloc[max(0, start_idx - RECENT_HIGH_WINDOW):start_idx].max()
+    last_low_update_idx_series = _last_low_update_index(close, start_idx, last_idx)
+
     i = start_idx
     quiet_count = 0
     extended = False
@@ -216,16 +245,21 @@ def _find_phase_end(start_idx, close, high, any_trigger, last_idx):
         if i > last_idx:
             return last_idx, "データ末尾到達", extended
 
+        last_low_update_idx = int(last_low_update_idx_series.iloc[i - start_idx])
+
         tentative = None
         reason = None
         if i > start_idx and close.iloc[i] >= ref_high:
             tentative, reason = i, "(i)高値回復"
-        elif any_trigger.iloc[i]:
-            quiet_count = 0
         else:
-            quiet_count += 1
-            if quiet_count >= WINDOW_QUIET_DAYS:
-                tentative, reason = i, "(ii)新規トリガーなし3日"
+            if any_trigger.iloc[i]:
+                quiet_count = 0
+            else:
+                quiet_count += 1
+            quiet_ok = quiet_count >= QUIET_TRIGGER_DAYS
+            low_stop_ok = (i - last_low_update_idx) >= QUIET_LOW_DAYS
+            if quiet_ok and low_stop_ok:
+                tentative, reason = i, f"(ii)静穏{QUIET_TRIGGER_DAYS}日AND安値未更新{QUIET_LOW_DAYS}日"
             elif (not extended) and i >= hard_cap_idx:
                 tentative, reason = i, "(iii)20営業日経過"
 

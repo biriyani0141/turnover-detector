@@ -4,18 +4,22 @@ crash_screener.py の局面検出が、検証リポジトリ(crash-relative-stre
 既知局面リスト(fixtures/known_episodes.csv)と一致することを確認するテスト。
 
 仕様書「移植後、検証リポジトリの既知局面リスト40件と検出結果が一致することをテストで
-確認する」に対応する。
+確認する」に対応する(局面数はロジック改善に伴い後述の通り変動している)。
 
-判断ログ(2026-07-14更新): fixtureは当初 backtest.py の episodes.csv(40局面)の複製
-だったが、局面統合条件の変更(「全戻し達成後は延長統合しない」ガードの追加、りゅ指示)に
-伴い、検証リポジトリの backtest_recovery_split.py が出力した
-recovery_split_episodes.csv(41局面)の複製に更新した。2026-06-08局面が
-2026-06-23の全戻しで分裂した1件を除く39局面(COVID含む)は変更前の検出結果と
-完全一致することを確認済み(検証リポジトリ側での突合レポートで確認、
-crash-relative-strength-screener/recovery_split_diff_report.md参照)。
+判断ログ(2026-07-14更新、局面終了条件(ii)のAND条件化に伴う最終更新):
+fixtureは当初 backtest.py の episodes.csv(40局面)の複製だったが、以下2段階の
+局面統合ロジック変更(りゅ承認済み、検証リポジトリ側で段階的に検証)を経て
+最終的に35局面の複製に更新した:
+  1. 延長統合に「全戻し(close>ref_high)達成後は統合しない」ガードを追加
+  2. 終了条件(ii)を「新規トリガーなし3日」単独から「新規トリガーなし3日 AND
+     局面安値を5日更新していない」のAND条件に変更(QUIET_TRIGGER_DAYS/QUIET_LOW_DAYS)
+検証の詳細・スイープ結果は検証リポジトリの crash-relative-strength-screener/
+backtest_report.md「局面終了条件(ii)の再設計」(2026-07-14追記)を参照。
+既知の許容差分: COVID局面(2020年)の開始日が2020-01-27に前倒しされる
+(終了日2020-05-11は不変、祝日配置起因のカレンダー上の偶然としてりゅ承認済み)。
 
-known_episodes.csv は2026-07-13時点の^N225データで生成されたもの
-のため、本テストも2026-07-14 00:00(exclusive)までのデータに固定してyfinance取得
+known_episodes.csv は2026-07-14時点の^N225データで生成されたもの
+のため、本テストも2026-07-15 00:00(exclusive)までのデータに固定してyfinance取得
 することで再現性を持たせる。
 """
 from __future__ import annotations
@@ -29,7 +33,7 @@ import pytest
 import crash_screener as cs
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "known_episodes.csv"
-FETCH_END = "2026-07-14"  # known_episodes.csv 生成時点(2026-07-13実行)に合わせて固定
+FETCH_END = "2026-07-15"  # known_episodes.csv 生成時点(2026-07-14実行)に合わせて固定
 
 
 def _load_known_episodes() -> list[dict]:
