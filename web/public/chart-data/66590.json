@@ -6,27 +6,15 @@
   "sector": "電気機器",
   "header": {
     "price": 55,
-    "change": -3,
-    "changePct": -5.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 6.6,
+    "turnoverPct": 7.1,
     "marketCap": 4152241500,
-    "appearCount": 40,
+    "appearCount": 41,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-04-30",
-      "o": 36,
-      "h": 37,
-      "l": 36,
-      "c": 36,
-      "v": 1083300,
-      "ma5": 36.6,
-      "ma25": 37.6,
-      "ma75": 43.1,
-      "ma200": null
-    },
     {
       "date": "2026-05-01",
       "o": 36,
@@ -765,6 +753,22 @@
       "ma5": 56.0,
       "ma25": 59.3,
       "ma75": 51.8,
+      "ma200": 50.8,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-14",
+      "o": 54,
+      "h": 57,
+      "l": 54,
+      "c": 55,
+      "v": 5431900,
+      "ma5": 55.8,
+      "ma25": 58.7,
+      "ma75": 52.0,
       "ma200": 50.8,
       "marks": [
         "turn5",

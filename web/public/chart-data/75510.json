@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "輸送用機器",
   "header": {
-    "price": 693,
-    "change": 2,
-    "changePct": 0.3,
+    "price": 692,
+    "change": -1,
+    "changePct": -0.1,
     "isStopHigh": false,
-    "turnoverPct": 0.0,
-    "marketCap": 11169889038,
+    "turnoverPct": 0.1,
+    "marketCap": 11153770872,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-04-30",
-      "o": 708,
-      "h": 717,
-      "l": 702,
-      "c": 711,
-      "v": 6700,
-      "ma5": 705.6,
-      "ma25": 716.0,
-      "ma75": 698.0,
-      "ma200": null
-    },
     {
       "date": "2026-05-01",
       "o": 714,
@@ -614,6 +602,18 @@
       "ma25": 682.8,
       "ma75": 687.2,
       "ma200": 668.1
+    },
+    {
+      "date": "2026-07-14",
+      "o": 695,
+      "h": 695,
+      "l": 689,
+      "c": 692,
+      "v": 16700,
+      "ma5": 691.4,
+      "ma25": 684.2,
+      "ma75": 687.1,
+      "ma200": 668.4
     }
   ]
 }

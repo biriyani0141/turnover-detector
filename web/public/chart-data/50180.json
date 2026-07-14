@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "石油･石炭製品",
   "header": {
-    "price": 2128,
-    "change": -192,
-    "changePct": -8.3,
+    "price": 2170,
+    "change": 42,
+    "changePct": 2.0,
     "isStopHigh": false,
-    "turnoverPct": 3.6,
-    "marketCap": 20634152000,
+    "turnoverPct": 0.7,
+    "marketCap": 21041405000,
     "appearCount": 1,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-04-30",
-      "o": 1706,
-      "h": 1717,
-      "l": 1682,
-      "c": 1717,
-      "v": 17900,
-      "ma5": 1703.4,
-      "ma25": 1778.2,
-      "ma75": 1894.8,
-      "ma200": null
-    },
     {
       "date": "2026-05-01",
       "o": 1717,
@@ -620,6 +608,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-14",
+      "o": 2122,
+      "h": 2200,
+      "l": 2100,
+      "c": 2170,
+      "v": 64000,
+      "ma5": 2080.8,
+      "ma25": 1915.6,
+      "ma75": 1827.5,
+      "ma200": 1696.9
     }
   ]
 }

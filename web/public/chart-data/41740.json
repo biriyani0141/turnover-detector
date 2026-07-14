@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "情報･通信業",
   "header": {
-    "price": 775,
-    "change": 40,
-    "changePct": 5.4,
-    "isStopHigh": false,
-    "turnoverPct": 3.5,
-    "marketCap": 3252335550,
-    "appearCount": 7,
-    "stopHighCount": 3
+    "price": 925,
+    "change": 150,
+    "changePct": 19.4,
+    "isStopHigh": true,
+    "turnoverPct": 16.8,
+    "marketCap": 3881819850,
+    "appearCount": 9,
+    "stopHighCount": 4
   },
   "rows": [
-    {
-      "date": "2026-04-30",
-      "o": 628,
-      "h": 628,
-      "l": 622,
-      "c": 622,
-      "v": 700,
-      "ma5": 624.4,
-      "ma25": 619.4,
-      "ma75": 644.9,
-      "ma200": null
-    },
     {
       "date": "2026-05-01",
       "o": 623,
@@ -371,7 +359,10 @@
       "ma5": 714.8,
       "ma25": 641.3,
       "ma75": 634.2,
-      "ma200": 671.7
+      "ma200": 671.7,
+      "marks": [
+        "appear"
+      ]
     },
     {
       "date": "2026-06-15",
@@ -643,6 +634,23 @@
       "ma75": 644.1,
       "ma200": 662.2,
       "marks": [
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-14",
+      "o": 760,
+      "h": 925,
+      "l": 760,
+      "c": 925,
+      "v": 725700,
+      "ma5": 759.8,
+      "ma25": 698.4,
+      "ma75": 648.2,
+      "ma200": 663.3,
+      "marks": [
+        "shc",
+        "turn5",
         "appear"
       ]
     }
