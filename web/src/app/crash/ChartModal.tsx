@@ -118,17 +118,23 @@ export default function ChartModal({
         aria-label="閉じる"
         style={{
           position: "fixed",
-          top: 12,
-          right: 12,
+          // 判断ログ(タスク7): apple-mobile-web-app-capable + status-bar-style
+          // black-translucent(layout.tsx)構成のPWAでは、ホーム画面起動時に
+          // ステータスバー/ノッチ領域がWebコンテンツに重なり、top:12px固定の
+          // ボタンがその下に隠れてタップ不能になる既知の問題がある。
+          // env(safe-area-inset-top)で安全領域分オフセットする(非対応環境では
+          // envが0扱いになりmax()で12pxにフォールバックするため無害)。
+          top: "max(12px, env(safe-area-inset-top, 12px))",
+          right: "max(12px, env(safe-area-inset-right, 12px))",
           zIndex: 501,
-          width: 36,
-          height: 36,
+          width: 44,
+          height: 44,
           borderRadius: "50%",
           border: "none",
           background: "#2c2c2e",
           color: "#e8eaed",
-          fontSize: 18,
-          lineHeight: "36px",
+          fontSize: 20,
+          lineHeight: "44px",
           textAlign: "center",
           cursor: "pointer",
           boxShadow: "0 2px 8px rgba(0,0,0,0.3)",

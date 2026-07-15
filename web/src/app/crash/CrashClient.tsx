@@ -94,12 +94,12 @@ const SECTION_COLOR: Record<CrashStock["section"], string> = {
   D: "#6b6b70",
 };
 
-// 判断ログ(Phase5): tierの左端ボーダー用配色。既存sectionバッジ(彩度高め)と
-// 喧嘩しないよう、あえて彩度を落とした色にしている(引き算の美学、行の主張は
-// section側のバッジ色に譲り、tierは控えめな下地情報として添える)。
+// 判断ログ(UI改修タスク3): Phase5時点の配色(#c9784f/#8a8a5a)は実機の暗い画面で
+// 判別困難との指摘があったため、彩度・明度を上げた(high/midとも仕様書指定の
+// 目安値をそのまま採用)。lowは既存のグレーを維持。ボーダー幅も3px→4pxに拡大。
 const TIER_COLOR: Record<"high" | "mid" | "low", string> = {
-  high: "#c9784f",
-  mid: "#8a8a5a",
+  high: "#e8834a",
+  mid: "#b0a94f",
   low: "#4a4d52",
 };
 
@@ -112,14 +112,62 @@ function tierColor(tier: CrashStock["tier"]): string {
   return TIER_COLOR.low; // "low" またはnull(NaN=D扱い)はlowと同じ扱い
 }
 
+// 業種(sector33)の短縮表示。長い業種名でも列幅を一定に保つため先頭3文字に切り詰める。
+function shortSector(sector: string): string {
+  return sector.length > 3 ? sector.slice(0, 3) : sector;
+}
+
+function toHalfWidth(s: string): string {
+  return s.replace(/[０-９Ａ-Ｚａ-ｚ]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0));
+}
+
+// 判断ログ(UI改修タスク8): 「コーポレーション」は「コープ」だと生協(生活協同組合)と
+// 紛らわしいため、「株式会社」等と同様に除去する方針に統一した(表示のみ、データは不変)。
+function shortenName(name: string): string {
+  let s = toHalfWidth(name);
+  s = s.replace(/株式会社/g, "").replace(/\(株\)/g, "");
+  s = s.replace(/ホールディングス/g, "HD");
+  s = s.replace(/グループ/g, "G");
+  s = s.replace(/コーポレーション/g, "");
+  return s.trim();
+}
+
+// 短縮後に同名衝突する場合、当該銘柄だけ非短縮(元の名前)に戻す。
+// 衝突判定はcode単位で行う(同一銘柄が複数回現れることはない前提)。
+function buildDisplayNames(stocks: CrashStock[]): Map<string, string> {
+  const shortened = stocks.map((s) => ({ code: s.code, short: shortenName(s.name), original: s.name }));
+  const counts = new Map<string, number>();
+  for (const s of shortened) counts.set(s.short, (counts.get(s.short) ?? 0) + 1);
+  const result = new Map<string, string>();
+  for (const s of shortened) {
+    result.set(s.code, (counts.get(s.short) ?? 0) > 1 ? s.original : s.short);
+  }
+  return result;
+}
+
+// 判断ログ(UI改修タスク6): strong_day_countがその局面の最大値(crash_day_count)に
+// 一致する銘柄を最強調(赤太字)、最大値-1を中強調にする。crashDayCountが0/未取得の
+// 場合は判定不能なので通常表示にフォールバックする。
+function strongDayStyle(strong: number, crashDayCount: number | null | undefined): React.CSSProperties {
+  if (!crashDayCount) return {};
+  if (strong === crashDayCount) return { color: UP, fontWeight: 700 };
+  if (strong === crashDayCount - 1) return { color: "#d98a4a", fontWeight: 600 };
+  return {};
+}
+
 function fmtPct(v: number | null): string {
   if (v === null || v === undefined) return "—";
   const sign = v >= 0 ? "+" : "";
   return `${sign}${(v * 100).toFixed(1)}%`;
 }
 
+// 判断ログ(UI改修タスク2): 日本株慣習(プラス=赤系/マイナス=緑系)に統一し、
+// 全ての符号付き数値列でこの関数をそのまま使う(列ごとの符号反転はしない)。
+// 表示は小数第1位までの%(fmtPct)なので、四捨五入後に0.0%になる近傍
+// (|v|<0.0005)はニュートラル色にする(色と表示テキストの符号が食い違うのを防ぐ)。
 function pctColor(v: number | null): string {
   if (v === null || v === undefined) return TEXT_DEFAULT;
+  if (Math.abs(v) < 0.0005) return TEXT_DEFAULT;
   return v >= 0 ? UP : DOWN;
 }
 
@@ -163,12 +211,17 @@ const MEGA_CAP_MIN = 300_000_000_000; // 3000億 = Phase1の時価総額フィ�
 const STRONG_RATIO_MIN = 0.6; // strong_day_count/crash_day_count比率の閾値。局面の長さ(crash_day_count)に依存しない基準にするため比率で判定
 
 function MegaCapPickBlock({
-  stocks, crashDayCount, onTap,
-}: { stocks: CrashStock[]; crashDayCount: number; onTap: (code: string) => void }) {
+  stocks, crashDayCount, onTap, highlightSectors,
+}: {
+  stocks: CrashStock[]; crashDayCount: number; onTap: (code: string) => void;
+  highlightSectors: Set<string>;
+}) {
   const picks = useMemo(() => {
+    // 判断ログ(UI改修タスク1): already_recovered===false条件を撤廃。
+    // 局面終盤は奪回済み銘柄が主になる想定のため、sectionバッジ(S含む)で
+    // 奪回状況を示しつつ枠自体には含める。
     const filtered = stocks.filter((s) =>
       s.market_cap !== null && s.market_cap >= MEGA_CAP_MIN &&
-      !s.already_recovered &&
       s.strong_day_count / crashDayCount >= STRONG_RATIO_MIN
     );
     filtered.sort((a, b) => {
@@ -178,13 +231,15 @@ function MegaCapPickBlock({
     return filtered;
   }, [stocks, crashDayCount]);
 
+  const nameMap = useMemo(() => buildDisplayNames(picks), [picks]);
+
   return (
     <div style={{ marginBottom: 16 }}>
       <div style={{ fontFamily: monoFont, fontSize: 12, fontWeight: 700, color: TEXT_BRIGHT, marginBottom: 2, paddingLeft: 2 }}>
         大型耐性ピック（{picks.length}）
       </div>
       <div style={{ fontFamily: monoFont, fontSize: 10, color: TEXT_DEFAULT, marginBottom: 6, paddingLeft: 2 }}>
-        時価総額3000億以上・暴落日の6割以上で指数超え・未奪回
+        時価総額3000億以上・暴落日の6割以上で指数超え
       </div>
       {picks.length === 0 ? (
         <div style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, paddingLeft: 2 }}>該当なし</div>
@@ -203,11 +258,20 @@ function MegaCapPickBlock({
             </thead>
             <tbody>
               {picks.map((r) => (
-                <tr key={r.code} onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
+                <tr
+                  key={r.code}
+                  onClick={() => onTap(r.code)}
+                  style={{
+                    cursor: "pointer",
+                    background: highlightSectors.size > 0 && highlightSectors.has(r.sector) ? SECTOR_HIGHLIGHT_BG : undefined,
+                  }}
+                >
                   <td style={tdName}>{displayCode(r.code)}</td>
-                  <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</td>
+                  <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>{nameMap.get(r.code) ?? r.name}</td>
                   <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
-                  <td style={{ ...tdNum, textAlign: "right" }}>{r.strong_day_count}/{crashDayCount}</td>
+                  <td style={{ ...tdNum, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
+                    {r.strong_day_count}/{crashDayCount}
+                  </td>
                   <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.cum_excess_return) }}>{fmtPct(r.cum_excess_return)}</td>
                   <td style={{ ...tdBase, color: SECTION_COLOR[r.section] }}>{r.section}</td>
                 </tr>
@@ -216,6 +280,41 @@ function MegaCapPickBlock({
           </table>
         </div>
       )}
+    </div>
+  );
+}
+
+// 判断ログ(UI改修タスク9): ハイライトは「行背景をうっすら」方式を選んだ。
+// テキスト色(業種名・銘柄名を赤系に)にすると、既存の損益色(赤=プラス)や
+// tierボーダー(high=暖色)と同じ色相域を奪い合って紛らわしくなるため、
+// 未使用の青系を背景に薄く敷く方式にして完全に別レイヤーとして共存させた。
+const SECTOR_HIGHLIGHT_BG = "rgba(70,140,255,0.16)";
+const SECTOR_HIGHLIGHT_BORDER = "#5b8cff";
+
+function SectorHighlightControl({
+  sectors, selected, onToggle,
+}: { sectors: string[]; selected: Set<string>; onToggle: (sector: string) => void }) {
+  if (sectors.length === 0) return null;
+  return (
+    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+      {sectors.map((sec) => {
+        const active = selected.has(sec);
+        return (
+          <button
+            key={sec}
+            type="button"
+            onClick={() => onToggle(sec)}
+            style={{
+              padding: "4px 8px", borderRadius: 9999, fontSize: 10, fontFamily: monoFont,
+              border: active ? `1px solid ${SECTOR_HIGHLIGHT_BORDER}` : "1px solid #3a3d42",
+              background: active ? "rgba(70,140,255,0.22)" : "transparent",
+              color: active ? TEXT_BRIGHT : TEXT_DEFAULT, cursor: "pointer",
+            }}
+          >
+            {sec}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -327,43 +426,71 @@ function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
   );
 }
 
-function StockRow({ r, onTap }: { r: CrashStock; onTap: (code: string) => void }) {
+function StockRow({
+  r, onTap, crashDayCount, displayName, highlighted,
+}: {
+  r: CrashStock; onTap: (code: string) => void; crashDayCount: number | null | undefined;
+  displayName: string; highlighted: boolean;
+}) {
   return (
-    <tr onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
-      <td style={{ ...tdName, borderLeft: `3px solid ${tierColor(r.tier)}` }}>{displayCode(r.code)}</td>
-      <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>
-        {r.name}
+    <tr
+      onClick={() => onTap(r.code)}
+      style={{ cursor: "pointer", background: highlighted ? SECTOR_HIGHLIGHT_BG : undefined }}
+    >
+      <td style={{ ...tdName, ...tdCode, borderLeft: `4px solid ${tierColor(r.tier)}` }}>{displayCode(r.code)}</td>
+      <td style={{ ...tdName, ...tdNameCol }}>
+        {displayName}
         {r.absolute_positive && <span style={{ color: "#ffa500", marginLeft: 3 }}>★</span>}
       </td>
-      <td style={{ ...tdNum, textAlign: "right" }}>{fmtPrice(r.close)}</td>
-      <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
-      <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high !== null ? -r.dist_to_high : null) }}>
-        {fmtPct(r.dist_to_high)}
-      </td>
-      <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
+      <td style={{ ...tdBase, ...tdSectorCol }}>{shortSector(r.sector)}</td>
+      <td style={{ ...tdNum, ...tdExcessCol, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
         {fmtPct(r.cum_excess_return)}
       </td>
-      <td style={{ ...tdNum, textAlign: "right" }}>{r.strong_day_count}</td>
-      <td style={{ ...tdNum, textAlign: "right" }}>{fmtPct(r.top_ret)}</td>
+      <td style={{ ...tdNum, ...tdStrongCol, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
+        {r.strong_day_count}
+      </td>
+      <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high) }}>
+        {fmtPct(r.dist_to_high)}
+      </td>
+      <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
+      <td style={{ ...tdNum, textAlign: "right" }}>{fmtPrice(r.close)}</td>
+      <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.top_ret) }}>{fmtPct(r.top_ret)}</td>
     </tr>
   );
 }
 
+// 判断ログ(UI改修タスク4): 行が詰まりすぎとの指摘のため、上下paddingを
+// 4px→6px(1.5倍)に拡大。左右は列幅がタイトなタスク5の要件があるため据え置き。
 const th: React.CSSProperties = {
   position: "sticky", top: 0, background: BASE_BG, color: "#8e8e93",
-  fontSize: 10, fontWeight: 600, fontFamily: monoFont, padding: "4px 2px",
+  fontSize: 10, fontWeight: 600, fontFamily: monoFont, padding: "6px 2px",
   whiteSpace: "nowrap", borderBottom: "1px solid #2a2d34", textAlign: "right",
 };
 const tdBase: React.CSSProperties = {
-  fontSize: 11, fontFamily: monoFont, color: TEXT_DEFAULT, padding: "4px 2px",
+  fontSize: 11, fontFamily: monoFont, color: TEXT_DEFAULT, padding: "6px 2px",
   whiteSpace: "nowrap", borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
 const tdName: React.CSSProperties = { ...tdBase, color: TEXT_NAME };
 const tdNum: React.CSSProperties = { ...tdBase, fontVariantNumeric: "tabular-nums" };
 
+// 判断ログ(UI改修タスク5): まとめタブの新列順で「コード〜強日数」がモバイル
+// 縦持ち1画面幅(390px)に収まることが必須要件のため、この5列だけ明示的に
+// 幅を絞る。調整優先順(指示通り): 銘柄名の最大幅を詰める→業種を略称化→
+// コード列を細くする、の順で効かせている(コード列の圧縮は最後の手段として
+// 8pxのみに留めた)。
+const tdCode: React.CSSProperties = { maxWidth: 34, overflow: "hidden", textOverflow: "ellipsis" };
+const tdNameCol: React.CSSProperties = { maxWidth: 64, overflow: "hidden", textOverflow: "ellipsis" };
+const tdSectorCol: React.CSSProperties = { maxWidth: 34, overflow: "hidden", textOverflow: "ellipsis" };
+const tdExcessCol: React.CSSProperties = { maxWidth: 52 };
+const tdStrongCol: React.CSSProperties = { maxWidth: 30 };
+
 function SummarySection({
-  section, rows, onTap,
-}: { section: CrashStock["section"]; rows: CrashStock[]; onTap: (code: string) => void }) {
+  section, rows, onTap, crashDayCount, nameMap, highlightSectors,
+}: {
+  section: CrashStock["section"]; rows: CrashStock[]; onTap: (code: string) => void;
+  crashDayCount: number | null | undefined;
+  nameMap: Map<string, string>; highlightSectors: Set<string>;
+}) {
   if (rows.length === 0) return null;
   return (
     <div style={{ marginBottom: 14 }}>
@@ -375,22 +502,36 @@ function SummarySection({
       >
         {SECTION_LABEL[section]}（{rows.length}）
       </div>
+      {/* 判断ログ(タスク5): tableにminWidthを固定せず、コード〜強日数の5列は
+          明示的なmaxWidthで詰め、距離以降の4列は自然幅に任せる。これにより
+          「コード〜強日数」が390px以内に収まれば横スクロール無しで見え、
+          収まらない分(距離〜top_ret)だけ横スクロール対象になる。 */}
       <div style={{ overflowX: "auto" }}>
-        <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 480 }}>
+        <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ ...th, textAlign: "left" }}>コード</th>
-              <th style={{ ...th, textAlign: "left" }}>銘柄</th>
-              <th style={th}>終値</th>
-              <th style={th}>時価総額</th>
+              <th style={{ ...th, ...tdCode, textAlign: "left" }}>コード</th>
+              <th style={{ ...th, ...tdNameCol, textAlign: "left" }}>銘柄</th>
+              <th style={{ ...th, ...tdSectorCol, textAlign: "left" }}>業種</th>
+              <th style={{ ...th, ...tdExcessCol }}>超過収益</th>
+              <th style={{ ...th, ...tdStrongCol }}>強日数</th>
               <th style={th}>距離</th>
-              <th style={th}>超過収益</th>
-              <th style={th}>強日数</th>
+              <th style={th}>時価総額</th>
+              <th style={th}>終値</th>
               <th style={th}>top_ret</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((r) => <StockRow key={r.code} r={r} onTap={onTap} />)}
+            {rows.map((r) => (
+              <StockRow
+                key={r.code}
+                r={r}
+                onTap={onTap}
+                crashDayCount={crashDayCount}
+                displayName={nameMap.get(r.code) ?? r.name}
+                highlighted={highlightSectors.size > 0 && highlightSectors.has(r.sector)}
+              />
+            ))}
           </tbody>
         </table>
       </div>
@@ -423,6 +564,20 @@ const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] =
   { key: "days_from_52w_high", label: "52w高値日数", align: "right" },
   { key: "pre_crash_high", label: "pre_crash_high", align: "right" },
 ];
+
+// 判断ログ(UI改修タスク2): データタブは元々符号付き列に色を付けていなかった。
+// 「全数値列で一貫」の対象としてデータタブにも同じ色付けを適用する。
+function dataCellExtraStyle(
+  r: CrashStock, key: SortKey, crashDayCount: number | null | undefined
+): React.CSSProperties {
+  if (key === "top_ret" || key === "cum_excess_return" || key === "dist_to_high" || key === "ma25_deviation") {
+    return { color: pctColor(r[key] as number | null) };
+  }
+  if (key === "strong_day_count") {
+    return strongDayStyle(r.strong_day_count, crashDayCount);
+  }
+  return {};
+}
 
 function cellValue(r: CrashStock, key: SortKey): string {
   const v = r[key];
@@ -598,6 +753,8 @@ function DataTab({
 
   const dates = index?.dates ?? [];
 
+  const nameMap = useMemo(() => buildDisplayNames(sortedRows), [sortedRows]);
+
   return (
     <div>
       <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
@@ -670,10 +827,11 @@ function DataTab({
                       ...tdBase,
                       textAlign: c.align,
                       color: c.key === "name" || c.key === "code" ? TEXT_NAME : TEXT_DEFAULT,
-                      ...(c.key === "code" ? { borderLeft: `3px solid ${tierColor(r.tier)}` } : {}),
+                      ...(c.key === "code" ? { borderLeft: `4px solid ${tierColor(r.tier)}` } : {}),
+                      ...dataCellExtraStyle(r, c.key, currentPhase?.crash_day_count),
                     }}
                   >
-                    {cellValue(r, c.key)}
+                    {c.key === "name" ? (nameMap.get(r.code) ?? r.name) : cellValue(r, c.key)}
                   </td>
                 ))}
               </tr>
@@ -707,6 +865,8 @@ export default function CrashClient({
   const [marketCapFilter, setMarketCapFilter] = useState<MarketCapFilterKey>("all");
   const [modalTarget, setModalTarget] = useState<{ code: string; phase: CrashPhaseInfo | null } | null>(null);
   const [glossaryOpen, setGlossaryOpen] = useState(false);
+  // UI改修タスク9: タブ切替では維持、リロードで消えてよいのでReact stateのみで保持する。
+  const [highlightSectors, setHighlightSectors] = useState<Set<string>>(new Set());
   const setHeader = useHeader();
 
   useEffect(() => {
@@ -723,6 +883,20 @@ export default function CrashClient({
     [initialSnapshot?.stocks, marketCapFilter]
   );
   const bySection = useMemoSections(filteredStocks);
+  const nameMap = useMemo(() => buildDisplayNames(filteredStocks), [filteredStocks]);
+  // UI改修タスク9: 選択肢は現スナップショットの全銘柄(市場総額フィルタ前)から集める。
+  const sectorOptions = useMemo(() => {
+    const set = new Set((initialSnapshot?.stocks ?? []).map((s) => s.sector).filter(Boolean));
+    return Array.from(set).sort();
+  }, [initialSnapshot?.stocks]);
+  const toggleHighlightSector = (sector: string) => {
+    setHighlightSectors((prev) => {
+      const next = new Set(prev);
+      if (next.has(sector)) next.delete(sector);
+      else next.add(sector);
+      return next;
+    });
+  };
 
   if (!initialSnapshot) {
     return (
@@ -765,6 +939,14 @@ export default function CrashClient({
 
       {tab !== "history" && <MarketCapFilterControl value={marketCapFilter} onChange={setMarketCapFilter} />}
 
+      {tab === "summary" && (
+        <SectorHighlightControl
+          sectors={sectorOptions}
+          selected={highlightSectors}
+          onToggle={toggleHighlightSector}
+        />
+      )}
+
       {tab === "summary" ? (
         initialSnapshot.status === "ACTIVE" ? (
           <>
@@ -790,6 +972,7 @@ export default function CrashClient({
                 stocks={initialSnapshot.stocks}
                 crashDayCount={initialSnapshot.phase!.crash_day_count}
                 onTap={(code) => setModalTarget({ code, phase: initialSnapshot.phase })}
+                highlightSectors={highlightSectors}
               />
             )}
             {(["S", "A", "B", "C", "D"] as const).map((s) => (
@@ -798,6 +981,9 @@ export default function CrashClient({
                 section={s}
                 rows={bySection[s]}
                 onTap={(code) => setModalTarget({ code, phase: initialSnapshot.phase })}
+                crashDayCount={initialSnapshot.phase?.crash_day_count}
+                nameMap={nameMap}
+                highlightSectors={highlightSectors}
               />
             ))}
             {initialSnapshot.stocks.length === 0 && (

@@ -31,7 +31,7 @@ const GLOSSARY: { term: string; body: string }[] = [
   },
   {
     term: "大型耐性ピック",
-    body: "時価総額3000億円以上・暴落トリガー日の6割以上で指数超え・未奪回の銘柄。累積超過ソートでは浮かない「ジワ耐えしている大型」の先回り抽出枠。",
+    body: "時価総額3000億円以上かつ暴落トリガー日の6割以上で指数超えした銘柄。累積超過ソートでは浮かない『ジワ耐えする大型』を抽出。局面序盤は未奪回(先回り候補)、終盤は奪回済み(継続候補)が主になる。",
   },
   {
     term: "上昇率(top_ret)",
@@ -99,17 +99,18 @@ export default function GlossaryModal({ onClose }: { onClose: () => void }) {
         aria-label="閉じる"
         style={{
           position: "fixed",
-          top: 12,
-          right: 12,
+          // 判断ログ: ChartModal.tsxと同じセーフエリア対策(タスク7参照)
+          top: "max(12px, env(safe-area-inset-top, 12px))",
+          right: "max(12px, env(safe-area-inset-right, 12px))",
           zIndex: 501,
-          width: 36,
-          height: 36,
+          width: 44,
+          height: 44,
           borderRadius: "50%",
           border: "none",
           background: "#2c2c2e",
           color: "#e8eaed",
-          fontSize: 18,
-          lineHeight: "36px",
+          fontSize: 20,
+          lineHeight: "44px",
           textAlign: "center",
           cursor: "pointer",
           boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
