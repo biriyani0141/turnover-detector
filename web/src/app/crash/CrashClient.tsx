@@ -229,6 +229,16 @@ function matchesMarketCapFilter(mc: number | null, key: MarketCapFilterKey): boo
 const MEGA_CAP_MIN = 300_000_000_000; // 3000億 = Phase1の時価総額フィルタ「大型」プリセットと整合
 const STRONG_RATIO_MIN = 0.6; // strong_day_count/crash_day_count比率の閾値。局面の長さ(crash_day_count)に依存しない基準にするため比率で判定
 
+// 判断ログ(UI微調整タスク2): 大型耐性ピックは横スクロール無し・1画面完結の
+// 方針を維持するテーブルのため、コード/時価総額/超過収益/強日数は固定の
+// コンパクト幅、銘柄名だけはmaxWidthを指定せずtable自動レイアウトに
+// 余った幅を渡す(=時価総額列に接触する手前まで自然に伸びる)。
+const tdPickCode: React.CSSProperties = { width: 34 };
+const tdPickName: React.CSSProperties = { overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" };
+const tdPickMktCap: React.CSSProperties = { width: 56 };
+const tdPickExcess: React.CSSProperties = { width: 52 };
+const tdPickStrong: React.CSSProperties = { width: 38 };
+
 function MegaCapPickBlock({
   stocks, crashDayCount, onTap, highlightSectors,
 }: {
@@ -268,14 +278,14 @@ function MegaCapPickBlock({
         // (旧実装はminWidth:480を指定していたため、390px画面では強制的に
         // 横スクロールになり、結果としてコード・銘柄名側が見切れて見えていた)。
         <div style={{ overflowX: "auto" }}>
-          <table style={{ borderCollapse: "collapse", width: "100%" }}>
+          <table style={{ borderCollapse: "collapse", width: "100%", tableLayout: "fixed" }}>
             <thead>
               <tr>
-                <th style={{ ...th, ...tdCode, textAlign: "left" }}>コード</th>
-                <th style={{ ...th, ...tdNameCol, textAlign: "left" }}>銘柄</th>
-                <th style={{ ...th, ...tdMktCapCol }}>時価総額</th>
-                <th style={{ ...th, ...tdExcessCol }}>超過収益</th>
-                <th style={{ ...th, ...tdStrongCol }}>強日数</th>
+                <th style={{ ...th, ...tdPickCode, textAlign: "left" }}>コード</th>
+                <th style={{ ...th, ...tdPickName, textAlign: "left" }}>銘柄</th>
+                <th style={{ ...th, ...tdPickMktCap }}>時価総額</th>
+                <th style={{ ...th, ...tdPickExcess }}>超過収益</th>
+                <th style={{ ...th, ...tdPickStrong }}>強日数</th>
               </tr>
             </thead>
             <tbody>
@@ -283,15 +293,15 @@ function MegaCapPickBlock({
                 const hlColor = isHighlighted(r.sector, highlightSectors) ? SECTOR_HIGHLIGHT_COLOR : undefined;
                 return (
                   <tr key={r.code} onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
-                    <td style={{ ...tdName, ...tdCode }}>{displayCode(r.code)}</td>
-                    <td style={{ ...tdName, ...tdNameCol, color: hlColor ?? tdName.color }}>
-                      {displayNameFor(nameMap, r)}
+                    <td style={{ ...tdName, ...tdPickCode }}>{displayCode(r.code)}</td>
+                    <td style={{ ...tdName, ...tdPickName, color: hlColor ?? tdName.color }}>
+                      {nameMap.get(r.code) ?? r.name}
                     </td>
-                    <td style={{ ...tdNum, ...tdMktCapCol, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
-                    <td style={{ ...tdNum, ...tdExcessCol, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
+                    <td style={{ ...tdNum, ...tdPickMktCap, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
+                    <td style={{ ...tdNum, ...tdPickExcess, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
                       {fmtPct(r.cum_excess_return)}
                     </td>
-                    <td style={{ ...tdNum, ...tdStrongCol, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
+                    <td style={{ ...tdNum, ...tdPickStrong, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
                       {r.strong_day_count}/{crashDayCount}
                     </td>
                   </tr>
@@ -479,17 +489,17 @@ function StockRow({
   const hlColor = highlighted ? SECTOR_HIGHLIGHT_COLOR : undefined;
   return (
     <tr onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
-      <td style={{ ...tdName, ...tdCode, borderLeft: `4px solid ${tierColor(r.tier)}` }}>{displayCode(r.code)}</td>
+      <td style={{ ...tdName, whiteSpace: "nowrap", borderLeft: `4px solid ${tierColor(r.tier)}` }}>{displayCode(r.code)}</td>
       <td style={{ ...tdName, ...tdNameCol, color: hlColor ?? tdName.color }}>
         {displayName}
         {r.absolute_positive && <span style={{ color: "#ffa500", marginLeft: 3 }}>★</span>}
       </td>
       <td style={{ ...tdBase, ...tdSectorCol, color: hlColor ?? tdBase.color }}>{shortSector(r.sector)}</td>
       <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
-      <td style={{ ...tdNum, ...tdExcessCol, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
+      <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
         {fmtPct(r.cum_excess_return)}
       </td>
-      <td style={{ ...tdNum, ...tdStrongCol, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
+      <td style={{ ...tdNum, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
         {r.strong_day_count}
       </td>
       <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high) }}>
@@ -517,19 +527,16 @@ const tdBase: React.CSSProperties = {
 const tdName: React.CSSProperties = { ...tdBase, color: TEXT_NAME };
 const tdNum: React.CSSProperties = { ...tdBase, fontVariantNumeric: "tabular-nums" };
 
-// 判断ログ(UI微調整タスク4): まとめタブの新列順で「コード〜強日数」(6列)が
-// モバイル縦持ち1画面幅(390px)に収まることが必須要件。銘柄名・業種は
-// displayNameFor/shortSectorで文字数ベースの上限(10文字/5文字+省略記号)を
-// 既に掛けているため、CSSのmaxWidthは「理論上の最大文字数がすべて収まる幅」
-// ではなく「実際によく出る長さがきれいに収まる幅」に絞った(最悪ケースの
-// 10文字名は稀で、その場合のみCSS側でも追加省略される二重省略を許容する。
-// 1画面収納を優先する指示のため)。
-const tdCode: React.CSSProperties = { maxWidth: 30, overflow: "hidden", textOverflow: "ellipsis" };
-const tdNameCol: React.CSSProperties = { maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis" };
-const tdSectorCol: React.CSSProperties = { maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis" };
-const tdMktCapCol: React.CSSProperties = { maxWidth: 50 };
-const tdExcessCol: React.CSSProperties = { maxWidth: 50 };
-const tdStrongCol: React.CSSProperties = { maxWidth: 34 };
+// 判断ログ(UI微調整): まとめタブのS〜Dテーブルは横スクロール前提(既存の
+// overflowX:auto)のため、コード等の実データ列は幅を切り詰めない方針に変更した。
+// 省略するのは「銘柄名(10文字)」「業種(5文字)」の2列のみ。コード列が
+// 「65…」等に潰れていた問題は、この2列以外にもmaxWidth+ellipsisを
+// かけていたことが原因だったため、それらを撤廃した。
+// 銘柄名/業種のmaxWidthは、displayNameFor/shortSectorの文字数上限
+// (10文字+省略記号/5文字+省略記号)を余裕を持って収められる幅にしている
+// (きつすぎるとCSS側で二重に省略されてしまうため)。
+const tdNameCol: React.CSSProperties = { maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis" };
+const tdSectorCol: React.CSSProperties = { maxWidth: 70, overflow: "hidden", textOverflow: "ellipsis" };
 
 function SummarySection({
   section, rows, onTap, crashDayCount, nameMap, highlightSectors,
@@ -549,22 +556,20 @@ function SummarySection({
       >
         {SECTION_LABEL[section]}（{rows.length}）
       </div>
-      {/* 判断ログ(UI微調整タスク4): tableにminWidthを固定せず、コード〜強日数の
-          6列は明示的なmaxWidthで詰め、距離以降の3列は自然幅に任せる。これにより
-          「コード〜強日数」が390px以内に収まれば横スクロール無しで見え、
-          収まらない分(距離〜top_ret)だけ横スクロール対象になる。最重要指標
-          (超過収益・強日数)を時価総額の右・銘柄名寄りに配置する指示のため
-          列順を変更した。 */}
+      {/* 判断ログ(UI微調整): このテーブルは横スクロール前提。省略するのは
+          「銘柄名(10文字)」「業種(5文字)」の2列だけで、コード等の実データ列は
+          幅を切り詰めない(=実際の内容がそのまま表示される)方針にした。
+          最重要指標(超過収益・強日数)は時価総額の右・銘柄名寄りに配置。 */}
       <div style={{ overflowX: "auto" }}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
             <tr>
-              <th style={{ ...th, ...tdCode, textAlign: "left" }}>コード</th>
+              <th style={{ ...th, textAlign: "left", whiteSpace: "nowrap" }}>コード</th>
               <th style={{ ...th, ...tdNameCol, textAlign: "left" }}>銘柄</th>
               <th style={{ ...th, ...tdSectorCol, textAlign: "left" }}>業種</th>
-              <th style={{ ...th, ...tdMktCapCol }}>時価総額</th>
-              <th style={{ ...th, ...tdExcessCol }}>超過収益</th>
-              <th style={{ ...th, ...tdStrongCol }}>強日数</th>
+              <th style={th}>時価総額</th>
+              <th style={th}>超過収益</th>
+              <th style={th}>強日数</th>
               <th style={th}>距離</th>
               <th style={th}>終値</th>
               <th style={th}>top_ret</th>
