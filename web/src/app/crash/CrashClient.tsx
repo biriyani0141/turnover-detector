@@ -112,9 +112,16 @@ function tierColor(tier: CrashStock["tier"]): string {
   return TIER_COLOR.low; // "low" またはnull(NaN=D扱い)はlowと同じ扱い
 }
 
-// 業種(sector33)の短縮表示。長い業種名でも列幅を一定に保つため先頭3文字に切り詰める。
+// 判断ログ(UI微調整): 文字数ベースの省略はCSSのellipsis(ピクセル幅依存)ではなく
+// 文字数で厳密に切る。全角/半角混在の短縮名(例:「あいちFG」)でも
+// 「何文字まで」という指示を正確に守れるため。
+function truncateChars(s: string, maxChars: number): string {
+  return s.length > maxChars ? s.slice(0, maxChars) + "…" : s;
+}
+
+// 業種(sector33)の短縮表示。最大5文字+省略記号(「電気機器」等4文字はそのまま)。
 function shortSector(sector: string): string {
-  return sector.length > 3 ? sector.slice(0, 3) : sector;
+  return truncateChars(sector, 5);
 }
 
 function toHalfWidth(s: string): string {
@@ -127,6 +134,11 @@ function shortenName(name: string): string {
   let s = toHalfWidth(name);
   s = s.replace(/株式会社/g, "").replace(/\(株\)/g, "");
   s = s.replace(/ホールディングス/g, "HD");
+  // 判断ログ(UI微調整タスク1): 「フィナンシャルグループ」→「G」だけの置換だと
+  // 「グループ」→「G」の方が先にマッチして「フィナンシャルG」になってしまう。
+  // 「フィナンシャルグループ」→「FG」を先に適用してから残りの「グループ」→「G」を
+  // 適用する順序にする(長い方を先にマッチさせる)。
+  s = s.replace(/フィナンシャルグループ/g, "FG");
   s = s.replace(/グループ/g, "G");
   s = s.replace(/コーポレーション/g, "");
   return s.trim();
@@ -143,6 +155,13 @@ function buildDisplayNames(stocks: CrashStock[]): Map<string, string> {
     result.set(s.code, (counts.get(s.short) ?? 0) > 1 ? s.original : s.short);
   }
   return result;
+}
+
+// 判断ログ(UI微調整タスク4/5): 10文字の上限はレイアウト保全のための絶対制約なので、
+// 同名衝突回避(非短縮フォールバック)の結果に関わらず最後に必ず適用する
+// (衝突回避は表示文字列レベルの重複を減らすベストエフォート、文字数上限は常に優先)。
+function displayNameFor(nameMap: Map<string, string>, r: CrashStock): string {
+  return truncateChars(nameMap.get(r.code) ?? r.name, 10);
 }
 
 // 判断ログ(UI改修タスク6): strong_day_countがその局面の最大値(crash_day_count)に
@@ -244,38 +263,40 @@ function MegaCapPickBlock({
       {picks.length === 0 ? (
         <div style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, paddingLeft: 2 }}>該当なし</div>
       ) : (
+        // 判断ログ(UI微調整タスク3): 列を5列(コード/銘柄名/時価総額/超過収益/強日数)に
+        // 絞り、minWidth固定をやめて全列が390px内に自然に収まるようにした
+        // (旧実装はminWidth:480を指定していたため、390px画面では強制的に
+        // 横スクロールになり、結果としてコード・銘柄名側が見切れて見えていた)。
         <div style={{ overflowX: "auto" }}>
-          <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 480 }}>
+          <table style={{ borderCollapse: "collapse", width: "100%" }}>
             <thead>
               <tr>
-                <th style={{ ...th, textAlign: "left" }}>コード</th>
-                <th style={{ ...th, textAlign: "left" }}>銘柄</th>
-                <th style={th}>時価総額</th>
-                <th style={th}>強日数</th>
-                <th style={th}>超過収益</th>
-                <th style={{ ...th, textAlign: "left" }}>区分</th>
+                <th style={{ ...th, ...tdCode, textAlign: "left" }}>コード</th>
+                <th style={{ ...th, ...tdNameCol, textAlign: "left" }}>銘柄</th>
+                <th style={{ ...th, ...tdMktCapCol }}>時価総額</th>
+                <th style={{ ...th, ...tdExcessCol }}>超過収益</th>
+                <th style={{ ...th, ...tdStrongCol }}>強日数</th>
               </tr>
             </thead>
             <tbody>
-              {picks.map((r) => (
-                <tr
-                  key={r.code}
-                  onClick={() => onTap(r.code)}
-                  style={{
-                    cursor: "pointer",
-                    background: highlightSectors.size > 0 && highlightSectors.has(r.sector) ? SECTOR_HIGHLIGHT_BG : undefined,
-                  }}
-                >
-                  <td style={tdName}>{displayCode(r.code)}</td>
-                  <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>{nameMap.get(r.code) ?? r.name}</td>
-                  <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
-                  <td style={{ ...tdNum, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
-                    {r.strong_day_count}/{crashDayCount}
-                  </td>
-                  <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.cum_excess_return) }}>{fmtPct(r.cum_excess_return)}</td>
-                  <td style={{ ...tdBase, color: SECTION_COLOR[r.section] }}>{r.section}</td>
-                </tr>
-              ))}
+              {picks.map((r) => {
+                const hlColor = isHighlighted(r.sector, highlightSectors) ? SECTOR_HIGHLIGHT_COLOR : undefined;
+                return (
+                  <tr key={r.code} onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
+                    <td style={{ ...tdName, ...tdCode }}>{displayCode(r.code)}</td>
+                    <td style={{ ...tdName, ...tdNameCol, color: hlColor ?? tdName.color }}>
+                      {displayNameFor(nameMap, r)}
+                    </td>
+                    <td style={{ ...tdNum, ...tdMktCapCol, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
+                    <td style={{ ...tdNum, ...tdExcessCol, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
+                      {fmtPct(r.cum_excess_return)}
+                    </td>
+                    <td style={{ ...tdNum, ...tdStrongCol, textAlign: "right", ...strongDayStyle(r.strong_day_count, crashDayCount) }}>
+                      {r.strong_day_count}/{crashDayCount}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -284,39 +305,60 @@ function MegaCapPickBlock({
   );
 }
 
-// 判断ログ(UI改修タスク9): ハイライトは「行背景をうっすら」方式を選んだ。
-// テキスト色(業種名・銘柄名を赤系に)にすると、既存の損益色(赤=プラス)や
-// tierボーダー(high=暖色)と同じ色相域を奪い合って紛らわしくなるため、
-// 未使用の青系を背景に薄く敷く方式にして完全に別レイヤーとして共存させた。
-const SECTOR_HIGHLIGHT_BG = "rgba(70,140,255,0.16)";
-const SECTOR_HIGHLIGHT_BORDER = "#5b8cff";
+// 判断ログ(UI微調整タスク2): 色を赤/オレンジ系に変更する指示のため、
+// 行背景方式から「業種セル+銘柄名セルのテキスト色を着色」方式に変更した
+// (行背景のままオレンジにすると、strong_day_count最大値の赤太字や
+// tier=highの暖色ボーダーと画面内で同系色が増えすぎるため、着色範囲を
+// セル単位に絞って影響を局所化した)。
+const SECTOR_HIGHLIGHT_COLOR = "#ff7a45";
 
 function SectorHighlightControl({
   sectors, selected, onToggle,
 }: { sectors: string[]; selected: Set<string>; onToggle: (sector: string) => void }) {
+  const [open, setOpen] = useState(false);
   if (sectors.length === 0) return null;
   return (
-    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
-      {sectors.map((sec) => {
-        const active = selected.has(sec);
-        return (
-          <button
-            key={sec}
-            type="button"
-            onClick={() => onToggle(sec)}
-            style={{
-              padding: "4px 8px", borderRadius: 9999, fontSize: 10, fontFamily: monoFont,
-              border: active ? `1px solid ${SECTOR_HIGHLIGHT_BORDER}` : "1px solid #3a3d42",
-              background: active ? "rgba(70,140,255,0.22)" : "transparent",
-              color: active ? TEXT_BRIGHT : TEXT_DEFAULT, cursor: "pointer",
-            }}
-          >
-            {sec}
-          </button>
-        );
-      })}
+    <div style={{ marginBottom: 10 }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          padding: "5px 10px", borderRadius: 9999, fontSize: 11, fontFamily: monoFont,
+          border: selected.size > 0 ? `1px solid ${SECTOR_HIGHLIGHT_COLOR}` : "1px solid #3a3d42",
+          background: selected.size > 0 ? "rgba(255,122,69,0.14)" : "transparent",
+          color: selected.size > 0 ? SECTOR_HIGHLIGHT_COLOR : TEXT_DEFAULT, cursor: "pointer",
+        }}
+      >
+        業種で色付け{selected.size > 0 ? `(${selected.size})` : ""} {open ? "▲" : "▼"}
+      </button>
+      {open && (
+        <div style={{ display: "flex", gap: 6, marginTop: 6, flexWrap: "wrap" }}>
+          {sectors.map((sec) => {
+            const active = selected.has(sec);
+            return (
+              <button
+                key={sec}
+                type="button"
+                onClick={() => onToggle(sec)}
+                style={{
+                  padding: "4px 8px", borderRadius: 9999, fontSize: 10, fontFamily: monoFont,
+                  border: active ? `1px solid ${SECTOR_HIGHLIGHT_COLOR}` : "1px solid #3a3d42",
+                  background: active ? "rgba(255,122,69,0.18)" : "transparent",
+                  color: active ? TEXT_BRIGHT : TEXT_DEFAULT, cursor: "pointer",
+                }}
+              >
+                {sec}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
+}
+
+function isHighlighted(sector: string, highlightSectors: Set<string>): boolean {
+  return highlightSectors.size > 0 && highlightSectors.has(sector);
 }
 
 function MarketCapFilterControl({
@@ -432,17 +474,18 @@ function StockRow({
   r: CrashStock; onTap: (code: string) => void; crashDayCount: number | null | undefined;
   displayName: string; highlighted: boolean;
 }) {
+  // 判断ログ(UI微調整タスク2): ハイライトは行背景ではなく業種セル+銘柄名セルの
+  // 文字色を赤/オレンジに変える方式に変更(理由はSECTOR_HIGHLIGHT_COLOR定義部参照)。
+  const hlColor = highlighted ? SECTOR_HIGHLIGHT_COLOR : undefined;
   return (
-    <tr
-      onClick={() => onTap(r.code)}
-      style={{ cursor: "pointer", background: highlighted ? SECTOR_HIGHLIGHT_BG : undefined }}
-    >
+    <tr onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
       <td style={{ ...tdName, ...tdCode, borderLeft: `4px solid ${tierColor(r.tier)}` }}>{displayCode(r.code)}</td>
-      <td style={{ ...tdName, ...tdNameCol }}>
+      <td style={{ ...tdName, ...tdNameCol, color: hlColor ?? tdName.color }}>
         {displayName}
         {r.absolute_positive && <span style={{ color: "#ffa500", marginLeft: 3 }}>★</span>}
       </td>
-      <td style={{ ...tdBase, ...tdSectorCol }}>{shortSector(r.sector)}</td>
+      <td style={{ ...tdBase, ...tdSectorCol, color: hlColor ?? tdBase.color }}>{shortSector(r.sector)}</td>
+      <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
       <td style={{ ...tdNum, ...tdExcessCol, textAlign: "right", color: pctColor(r.cum_excess_return) }}>
         {fmtPct(r.cum_excess_return)}
       </td>
@@ -452,7 +495,6 @@ function StockRow({
       <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high) }}>
         {fmtPct(r.dist_to_high)}
       </td>
-      <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
       <td style={{ ...tdNum, textAlign: "right" }}>{fmtPrice(r.close)}</td>
       <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.top_ret) }}>{fmtPct(r.top_ret)}</td>
     </tr>
@@ -461,28 +503,33 @@ function StockRow({
 
 // 判断ログ(UI改修タスク4): 行が詰まりすぎとの指摘のため、上下paddingを
 // 4px→6px(1.5倍)に拡大。左右は列幅がタイトなタスク5の要件があるため据え置き。
+// 判断ログ(UI微調整タスク4): 「詰まり過ぎ解消」のため列の左右paddingも2px→3px
+// に広げた(1画面収納の優先度が高いため、大幅拡大はせず最小限に留めた)。
 const th: React.CSSProperties = {
   position: "sticky", top: 0, background: BASE_BG, color: "#8e8e93",
-  fontSize: 10, fontWeight: 600, fontFamily: monoFont, padding: "6px 2px",
+  fontSize: 10, fontWeight: 600, fontFamily: monoFont, padding: "6px 3px",
   whiteSpace: "nowrap", borderBottom: "1px solid #2a2d34", textAlign: "right",
 };
 const tdBase: React.CSSProperties = {
-  fontSize: 11, fontFamily: monoFont, color: TEXT_DEFAULT, padding: "6px 2px",
+  fontSize: 11, fontFamily: monoFont, color: TEXT_DEFAULT, padding: "6px 3px",
   whiteSpace: "nowrap", borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
 const tdName: React.CSSProperties = { ...tdBase, color: TEXT_NAME };
 const tdNum: React.CSSProperties = { ...tdBase, fontVariantNumeric: "tabular-nums" };
 
-// 判断ログ(UI改修タスク5): まとめタブの新列順で「コード〜強日数」がモバイル
-// 縦持ち1画面幅(390px)に収まることが必須要件のため、この5列だけ明示的に
-// 幅を絞る。調整優先順(指示通り): 銘柄名の最大幅を詰める→業種を略称化→
-// コード列を細くする、の順で効かせている(コード列の圧縮は最後の手段として
-// 8pxのみに留めた)。
-const tdCode: React.CSSProperties = { maxWidth: 34, overflow: "hidden", textOverflow: "ellipsis" };
-const tdNameCol: React.CSSProperties = { maxWidth: 64, overflow: "hidden", textOverflow: "ellipsis" };
-const tdSectorCol: React.CSSProperties = { maxWidth: 34, overflow: "hidden", textOverflow: "ellipsis" };
-const tdExcessCol: React.CSSProperties = { maxWidth: 52 };
-const tdStrongCol: React.CSSProperties = { maxWidth: 30 };
+// 判断ログ(UI微調整タスク4): まとめタブの新列順で「コード〜強日数」(6列)が
+// モバイル縦持ち1画面幅(390px)に収まることが必須要件。銘柄名・業種は
+// displayNameFor/shortSectorで文字数ベースの上限(10文字/5文字+省略記号)を
+// 既に掛けているため、CSSのmaxWidthは「理論上の最大文字数がすべて収まる幅」
+// ではなく「実際によく出る長さがきれいに収まる幅」に絞った(最悪ケースの
+// 10文字名は稀で、その場合のみCSS側でも追加省略される二重省略を許容する。
+// 1画面収納を優先する指示のため)。
+const tdCode: React.CSSProperties = { maxWidth: 30, overflow: "hidden", textOverflow: "ellipsis" };
+const tdNameCol: React.CSSProperties = { maxWidth: 80, overflow: "hidden", textOverflow: "ellipsis" };
+const tdSectorCol: React.CSSProperties = { maxWidth: 50, overflow: "hidden", textOverflow: "ellipsis" };
+const tdMktCapCol: React.CSSProperties = { maxWidth: 50 };
+const tdExcessCol: React.CSSProperties = { maxWidth: 50 };
+const tdStrongCol: React.CSSProperties = { maxWidth: 34 };
 
 function SummarySection({
   section, rows, onTap, crashDayCount, nameMap, highlightSectors,
@@ -502,10 +549,12 @@ function SummarySection({
       >
         {SECTION_LABEL[section]}（{rows.length}）
       </div>
-      {/* 判断ログ(タスク5): tableにminWidthを固定せず、コード〜強日数の5列は
-          明示的なmaxWidthで詰め、距離以降の4列は自然幅に任せる。これにより
+      {/* 判断ログ(UI微調整タスク4): tableにminWidthを固定せず、コード〜強日数の
+          6列は明示的なmaxWidthで詰め、距離以降の3列は自然幅に任せる。これにより
           「コード〜強日数」が390px以内に収まれば横スクロール無しで見え、
-          収まらない分(距離〜top_ret)だけ横スクロール対象になる。 */}
+          収まらない分(距離〜top_ret)だけ横スクロール対象になる。最重要指標
+          (超過収益・強日数)を時価総額の右・銘柄名寄りに配置する指示のため
+          列順を変更した。 */}
       <div style={{ overflowX: "auto" }}>
         <table style={{ borderCollapse: "collapse", width: "100%" }}>
           <thead>
@@ -513,10 +562,10 @@ function SummarySection({
               <th style={{ ...th, ...tdCode, textAlign: "left" }}>コード</th>
               <th style={{ ...th, ...tdNameCol, textAlign: "left" }}>銘柄</th>
               <th style={{ ...th, ...tdSectorCol, textAlign: "left" }}>業種</th>
+              <th style={{ ...th, ...tdMktCapCol }}>時価総額</th>
               <th style={{ ...th, ...tdExcessCol }}>超過収益</th>
               <th style={{ ...th, ...tdStrongCol }}>強日数</th>
               <th style={th}>距離</th>
-              <th style={th}>時価総額</th>
               <th style={th}>終値</th>
               <th style={th}>top_ret</th>
             </tr>
@@ -528,7 +577,7 @@ function SummarySection({
                 r={r}
                 onTap={onTap}
                 crashDayCount={crashDayCount}
-                displayName={nameMap.get(r.code) ?? r.name}
+                displayName={displayNameFor(nameMap, r)}
                 highlighted={highlightSectors.size > 0 && highlightSectors.has(r.sector)}
               />
             ))}
@@ -568,13 +617,17 @@ const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] =
 // 判断ログ(UI改修タスク2): データタブは元々符号付き列に色を付けていなかった。
 // 「全数値列で一貫」の対象としてデータタブにも同じ色付けを適用する。
 function dataCellExtraStyle(
-  r: CrashStock, key: SortKey, crashDayCount: number | null | undefined
+  r: CrashStock, key: SortKey, crashDayCount: number | null | undefined, highlightSectors: Set<string>
 ): React.CSSProperties {
   if (key === "top_ret" || key === "cum_excess_return" || key === "dist_to_high" || key === "ma25_deviation") {
     return { color: pctColor(r[key] as number | null) };
   }
   if (key === "strong_day_count") {
     return strongDayStyle(r.strong_day_count, crashDayCount);
+  }
+  // 判断ログ(UI微調整タスク2): データタブも業種セル+銘柄名セルの文字色でハイライトする。
+  if ((key === "sector" || key === "name") && isHighlighted(r.sector, highlightSectors)) {
+    return { color: SECTOR_HIGHLIGHT_COLOR };
   }
   return {};
 }
@@ -584,6 +637,7 @@ function cellValue(r: CrashStock, key: SortKey): string {
   if (key === "market_cap") return fmtMarketCap(v as number | null);
   if (v === null || v === undefined) return "—";
   if (key === "code") return displayCode(v as string);
+  if (key === "sector") return shortSector(v as string);
   if (key === "already_recovered") return v ? "○" : "";
   if (key === "absolute_positive") return v ? "★" : "";
   if (key === "close" || key === "pre_crash_high") return fmtPrice(v as number);
@@ -676,6 +730,7 @@ function PhaseHistoryTab({
 
 function DataTab({
   snapshot, index, marketCapFilter, onRowTap, onOpenGlossary, selectedDate, onSelectedDateChange,
+  sectorOptions, highlightSectors, onToggleHighlightSector,
 }: {
   snapshot: CrashSnapshot; index: CrashIndex | null; marketCapFilter: MarketCapFilterKey;
   onRowTap: (code: string, phase: CrashPhaseInfo | null) => void;
@@ -683,6 +738,10 @@ function DataTab({
   // Phase6: 局面履歴タブからの日付ジャンプに対応するため、selectedDateはCrashClient側で制御する。
   selectedDate: string | null;
   onSelectedDateChange: (date: string | null) => void;
+  // 判断ログ(UI微調整タスク2): 業種ハイライトの選択状態はまとめ/データタブで
+  // 共有する(元々CrashClientに状態を持ち上げてあり、タブごとに分離する方が
+  // むしろ実装コストが高くUXも一貫しないため、共有が自然と判断した)。
+  sectorOptions: string[]; highlightSectors: Set<string>; onToggleHighlightSector: (sector: string) => void;
 }) {
   // 判断ログ: react-hooks/set-state-in-effect(effect本体で同期的にsetStateを呼ぶことを
   // 禁止する新しいlintルール)対策として、setState呼び出しは全てfetchの.then/.catch内に
@@ -757,6 +816,11 @@ function DataTab({
 
   return (
     <div>
+      <SectorHighlightControl
+        sectors={sectorOptions}
+        selected={highlightSectors}
+        onToggle={onToggleHighlightSector}
+      />
       <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
         {dates.length > 1 && (
           <select
@@ -828,10 +892,10 @@ function DataTab({
                       textAlign: c.align,
                       color: c.key === "name" || c.key === "code" ? TEXT_NAME : TEXT_DEFAULT,
                       ...(c.key === "code" ? { borderLeft: `4px solid ${tierColor(r.tier)}` } : {}),
-                      ...dataCellExtraStyle(r, c.key, currentPhase?.crash_day_count),
+                      ...dataCellExtraStyle(r, c.key, currentPhase?.crash_day_count, highlightSectors),
                     }}
                   >
-                    {c.key === "name" ? (nameMap.get(r.code) ?? r.name) : cellValue(r, c.key)}
+                    {c.key === "name" ? displayNameFor(nameMap, r) : cellValue(r, c.key)}
                   </td>
                 ))}
               </tr>
@@ -1011,6 +1075,9 @@ export default function CrashClient({
           onOpenGlossary={() => setGlossaryOpen(true)}
           selectedDate={dataTabDate}
           onSelectedDateChange={setDataTabDate}
+          sectorOptions={sectorOptions}
+          highlightSectors={highlightSectors}
+          onToggleHighlightSector={toggleHighlightSector}
         />
       ) : (
         <PhaseHistoryTab
