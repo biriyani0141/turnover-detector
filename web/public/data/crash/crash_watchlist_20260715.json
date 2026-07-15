@@ -1,11 +1,18 @@
 {
   "date": "2026-07-15",
-  "generated_at": "2026-07-15T08:12:09.617730+00:00",
+  "generated_at": "2026-07-15T11:55:26.956725+00:00",
   "status": "ACTIVE",
   "phase": {
     "start": "2026-06-23",
     "end_reason": "データ末尾到達",
     "crash_day_count": 5,
+    "crash_days": [
+      "2026-06-23",
+      "2026-06-26",
+      "2026-07-02",
+      "2026-07-07",
+      "2026-07-08"
+    ],
     "index_max_dd": -0.0821,
     "day_index": 16
   },
@@ -15,7 +22,7 @@
       "name": "アスタリスク",
       "sector": "電気機器",
       "close": 1899.0,
-      "market_cap": 14806123200,
+      "market_cap": 15280873200,
       "top_ret": 2.2797,
       "cum_excess_return": 0.6854,
       "tier": "high",
@@ -2571,7 +2578,7 @@
       "name": "東京衡機",
       "sector": "精密機器",
       "close": 523.0,
-      "market_cap": 3744570693,
+      "market_cap": 3748754693,
       "top_ret": 0.8271,
       "cum_excess_return": 0.1259,
       "tier": "high",
@@ -4911,7 +4918,7 @@
       "name": "ＴＭＨ",
       "sector": "卸売業",
       "close": 1803.0,
-      "market_cap": 6667674300,
+      "market_cap": 6771346800,
       "top_ret": 1.413,
       "cum_excess_return": -0.1424,
       "tier": "low",
