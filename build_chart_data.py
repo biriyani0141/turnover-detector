@@ -263,6 +263,23 @@ def build_all_chart_data() -> None:
     else:
         print("  popular.json なし（スキップ）")
 
+    # 判断ログ: /crashのチャートモーダル(Phase4)がchart-data JSONを参照するが、
+    # crash母集団(top_ret>=0.50基準)はturnover_200/popularの母集団と選定基準が
+    # 独立しているため、ここで拾わないと欠損する(地銀株等で32%が欠損していた
+    # ことを実測確認済み)。crash_latest.json(現行スナップショットのみ、過去局面の
+    # 再構築分は対象外。理由: 対象銘柄数がさらに+416件と大きく増え、かつ
+    # chart-dataは常に「最新50本」であり局面当時の値を再現するものではないため
+    # 費用対効果が低いと判断)のstocks[]を和集合で追加する。
+    crash_file = Path(__file__).parent / "web" / "public" / "data" / "crash" / "crash_latest.json"
+    if crash_file.exists():
+        crash_data = json.loads(crash_file.read_text(encoding="utf-8"))
+        crash_codes = {s["code"] for s in crash_data.get("stocks", [])}
+        added = crash_codes - target_codes_set
+        target_codes_set |= crash_codes
+        print(f"  crash_latest.json から追加: {len(added)}件")
+    else:
+        print("  crash_latest.json なし（スキップ）")
+
     target_codes = list(target_codes_set)
     print(f"  対象銘柄数={len(target_codes)}")
 

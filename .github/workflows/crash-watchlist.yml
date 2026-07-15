@@ -42,11 +42,18 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python crash_screener.py run
+      # crash_latest.json確定後に実行する(build_chart_data.pyがこのファイルの
+      # stocks[]をchart-data生成対象に和集合で追加するため、crash_screener.py実行後の
+      # 順序が必須)。data/jquants/daily・meta.jsonは上のRestoreステップで既に
+      # 読み取り専用復元済みのものをそのまま使う(このワークフロー自身はJ-Quantsへ
+      # 問い合わせない)。
+      - name: Build chart data (crash対象銘柄を含む)
+        run: python build_chart_data.py --bulk
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add web/public/data/crash/ crash_state.json
+          git add web/public/data/crash/ web/public/chart-data/ crash_state.json
           if ! git diff --staged --quiet; then
             git commit -m "data: crash watchlist update $(date -u +%Y-%m-%d)"
             git pull --rebase origin master
