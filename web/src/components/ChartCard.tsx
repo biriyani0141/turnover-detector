@@ -48,6 +48,17 @@ export type ChartData = {
   rows: ChartDataRow[];
 };
 
+// 判断ログ(crash Phase4): 他画面(/chart等)のChartCard利用箇所に影響を出さないため、
+// extraMarkersはopt-inの追加propとして実装する(未指定なら従来の描画と完全に同一)。
+export type ChartExtraMarker = {
+  date: string; // 'YYYY-MM-DD'。data.rows に無い日付は自動的に無視される
+  color: string;
+  shape: "arrowDown" | "arrowUp" | "circle" | "square";
+  size?: number;
+  text?: string;
+  position?: "aboveBar" | "belowBar" | "inBar";
+};
+
 const UP = "#E03A2F";
 const DOWN = "#1B8C7D";
 
@@ -69,7 +80,9 @@ function fmtMktcap(n: number): string {
   }
 }
 
-export default function ChartCard({ data, badge }: { data: ChartData; badge?: { text: string; bgClass: string } }) {
+export default function ChartCard({
+  data, badge, extraMarkers,
+}: { data: ChartData; badge?: { text: string; bgClass: string }; extraMarkers?: ChartExtraMarker[] }) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   const { header, code, name, market, sector } = data;
@@ -135,6 +148,16 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
     const candleDateSet = new Set(rs.map(r => r.date));
     const closedD = rs.filter(r => r.marks?.includes("shc")).map(r => r.date);
     const touchedD = rs.filter(r => r.marks?.includes("sht")).map(r => r.date);
+    // extraMarkersは既存のS高マーカー(shc/sht)を消さず、同一マーカー配列上で共存させる。
+    // 同一日に両方存在する場合もどちらも表示する(重複除去はしない)。
+    const extra = (extraMarkers ?? []).filter(m => candleDateSet.has(m.date)).map(m => ({
+      time: m.date as `${number}-${number}-${number}`,
+      position: m.position ?? "aboveBar" as const,
+      color: m.color,
+      shape: m.shape,
+      size: m.size ?? 1,
+      text: m.text ?? "",
+    }));
     const markers = [
       ...closedD.filter(d => candleDateSet.has(d)).map(d => ({
         time: d as `${number}-${number}-${number}`,
@@ -152,6 +175,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
         size: 0,
         text: "●",
       })),
+      ...extra,
     ].sort((a, b) => (a.time < b.time ? -1 : 1));
     if (markers.length > 0) createSeriesMarkers(candleSeries, markers);
 
@@ -232,7 +256,7 @@ export default function ChartCard({ data, badge }: { data: ChartData; badge?: { 
       ro.disconnect();
       chart.remove();
     };
-  }, [data]);
+  }, [data, extraMarkers]);
 
   return (
     <div

@@ -808,6 +808,11 @@ def run_batch() -> dict:
             "start": phase.start.date().isoformat(),
             "end_reason": phase.end_reason,
             "crash_day_count": len(phase.crash_days),
+            # 判断ログ(Phase4): crash_day_count(件数)は既存出力だったが、日付リスト自体は
+            # 未出力だったため追加。phase.crash_daysは型A(単日騰落率)トリガー日のみ
+            # (detect_all_crash_phasesのtype_a.iloc[j]判定、型Bは含まない)、
+            # 発生順(=日付昇順)のリストのため、そのままisoformat化するだけでよい。
+            "crash_days": [d.date().isoformat() for d in phase.crash_days],
             "index_max_dd": None if phase.index_max_dd is None or pd.isna(phase.index_max_dd) else round(float(phase.index_max_dd), 4),
             "day_index": int(day_index),
         }

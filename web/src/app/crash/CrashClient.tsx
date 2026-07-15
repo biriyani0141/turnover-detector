@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { useHeader } from "../_components/HeaderContext";
+import ChartModal from "./ChartModal";
+import GlossaryModal from "./GlossaryModal";
 
 export type CrashStock = {
   code: string;
@@ -27,6 +29,10 @@ export type CrashPhaseInfo = {
   start: string;
   end_reason: string | null;
   crash_day_count: number;
+  // 判断ログ(Phase4): crash_daysはPhase4のバックエンド追加分。移行期間中は
+  // crash_screener.pyの旧出力(このフィールドが無いcrash_watchlist_*.json)が
+  // 残り得るため、オプショナルにして未定義を許容する(消費側は`?? []`で対処)。
+  crash_days?: string[];
   index_max_dd: number | null;
   day_index: number;
 };
@@ -88,6 +94,24 @@ const SECTION_COLOR: Record<CrashStock["section"], string> = {
   D: "#6b6b70",
 };
 
+// 判断ログ(Phase5): tierの左端ボーダー用配色。既存sectionバッジ(彩度高め)と
+// 喧嘩しないよう、あえて彩度を落とした色にしている(引き算の美学、行の主張は
+// section側のバッジ色に譲り、tierは控えめな下地情報として添える)。
+const TIER_COLOR: Record<"high" | "mid" | "low", string> = {
+  high: "#c9784f",
+  mid: "#8a8a5a",
+  low: "#4a4d52",
+};
+
+// データタブのsection列ソート用カスタム順序(S→A→B→C→D)。まとめタブの表示順と揃える。
+const SECTION_ORDER: Record<CrashStock["section"], number> = { S: 0, A: 1, B: 2, C: 3, D: 4 };
+
+function tierColor(tier: CrashStock["tier"]): string {
+  if (tier === "high") return TIER_COLOR.high;
+  if (tier === "mid") return TIER_COLOR.mid;
+  return TIER_COLOR.low; // "low" またはnull(NaN=D扱い)はlowと同じ扱い
+}
+
 function fmtPct(v: number | null): string {
   if (v === null || v === undefined) return "—";
   const sign = v >= 0 ? "+" : "";
@@ -132,6 +156,68 @@ function matchesMarketCapFilter(mc: number | null, key: MarketCapFilterKey): boo
   if (key === "large") return mc >= MARKET_CAP_LARGE_MIN;
   if (key === "mid") return mc >= MARKET_CAP_MID_MIN && mc < MARKET_CAP_LARGE_MIN;
   return mc < MARKET_CAP_MID_MIN; // small
+}
+
+// 大型耐性ピック抽出条件の定数(値の根拠を1行ずつ明記)
+const MEGA_CAP_MIN = 300_000_000_000; // 3000億 = Phase1の時価総額フィルタ「大型」プリセットと整合
+const STRONG_RATIO_MIN = 0.6; // strong_day_count/crash_day_count比率の閾値。局面の長さ(crash_day_count)に依存しない基準にするため比率で判定
+
+function MegaCapPickBlock({
+  stocks, crashDayCount, onTap,
+}: { stocks: CrashStock[]; crashDayCount: number; onTap: (code: string) => void }) {
+  const picks = useMemo(() => {
+    const filtered = stocks.filter((s) =>
+      s.market_cap !== null && s.market_cap >= MEGA_CAP_MIN &&
+      !s.already_recovered &&
+      s.strong_day_count / crashDayCount >= STRONG_RATIO_MIN
+    );
+    filtered.sort((a, b) => {
+      if (b.strong_day_count !== a.strong_day_count) return b.strong_day_count - a.strong_day_count;
+      return (b.market_cap ?? 0) - (a.market_cap ?? 0);
+    });
+    return filtered;
+  }, [stocks, crashDayCount]);
+
+  return (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ fontFamily: monoFont, fontSize: 12, fontWeight: 700, color: TEXT_BRIGHT, marginBottom: 2, paddingLeft: 2 }}>
+        大型耐性ピック（{picks.length}）
+      </div>
+      <div style={{ fontFamily: monoFont, fontSize: 10, color: TEXT_DEFAULT, marginBottom: 6, paddingLeft: 2 }}>
+        時価総額3000億以上・暴落日の6割以上で指数超え・未奪回
+      </div>
+      {picks.length === 0 ? (
+        <div style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, paddingLeft: 2 }}>該当なし</div>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 480 }}>
+            <thead>
+              <tr>
+                <th style={{ ...th, textAlign: "left" }}>コード</th>
+                <th style={{ ...th, textAlign: "left" }}>銘柄</th>
+                <th style={th}>時価総額</th>
+                <th style={th}>強日数</th>
+                <th style={th}>超過収益</th>
+                <th style={{ ...th, textAlign: "left" }}>区分</th>
+              </tr>
+            </thead>
+            <tbody>
+              {picks.map((r) => (
+                <tr key={r.code} onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
+                  <td style={tdName}>{displayCode(r.code)}</td>
+                  <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>{r.name}</td>
+                  <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
+                  <td style={{ ...tdNum, textAlign: "right" }}>{r.strong_day_count}/{crashDayCount}</td>
+                  <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.cum_excess_return) }}>{fmtPct(r.cum_excess_return)}</td>
+                  <td style={{ ...tdBase, color: SECTION_COLOR[r.section] }}>{r.section}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function MarketCapFilterControl({
@@ -244,7 +330,7 @@ function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
 function StockRow({ r, onTap }: { r: CrashStock; onTap: (code: string) => void }) {
   return (
     <tr onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
-      <td style={{ ...tdName }}>{displayCode(r.code)}</td>
+      <td style={{ ...tdName, borderLeft: `3px solid ${tierColor(r.tier)}` }}>{displayCode(r.code)}</td>
       <td style={{ ...tdName, overflow: "hidden", textOverflow: "ellipsis" }}>
         {r.name}
         {r.absolute_positive && <span style={{ color: "#ffa500", marginLeft: 3 }}>★</span>}
@@ -259,7 +345,6 @@ function StockRow({ r, onTap }: { r: CrashStock; onTap: (code: string) => void }
       </td>
       <td style={{ ...tdNum, textAlign: "right" }}>{r.strong_day_count}</td>
       <td style={{ ...tdNum, textAlign: "right" }}>{fmtPct(r.top_ret)}</td>
-      <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.ma25_deviation) }}>{fmtPct(r.ma25_deviation)}</td>
     </tr>
   );
 }
@@ -302,7 +387,6 @@ function SummarySection({
               <th style={th}>超過収益</th>
               <th style={th}>強日数</th>
               <th style={th}>top_ret</th>
-              <th style={th}>ma25乖離</th>
             </tr>
           </thead>
           <tbody>
@@ -355,8 +439,12 @@ function cellValue(r: CrashStock, key: SortKey): string {
 }
 
 function DataTab({
-  snapshot, index, marketCapFilter,
-}: { snapshot: CrashSnapshot; index: CrashIndex | null; marketCapFilter: MarketCapFilterKey }) {
+  snapshot, index, marketCapFilter, onRowTap, onOpenGlossary,
+}: {
+  snapshot: CrashSnapshot; index: CrashIndex | null; marketCapFilter: MarketCapFilterKey;
+  onRowTap: (code: string, phase: CrashPhaseInfo | null) => void;
+  onOpenGlossary: () => void;
+}) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   // 判断ログ: react-hooks/set-state-in-effect(effect本体で同期的にsetStateを呼ぶことを
   // 禁止する新しいlintルール)対策として、setState呼び出しは全てfetchの.then/.catch内に
@@ -364,6 +452,8 @@ function DataTab({
   // (専用のloading stateを持たない)。
   const [fetchedDate, setFetchedDate] = useState<string | null>(null);
   const [fetchedRows, setFetchedRows] = useState<CrashStock[] | null>(null);
+  // Phase4: モーダルのマーカー注入用。表示中の日付に対応するphase(start/crash_days)を保持する。
+  const [fetchedPhase, setFetchedPhase] = useState<CrashPhaseInfo | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("section");
   const [sortAsc, setSortAsc] = useState(true);
 
@@ -376,15 +466,20 @@ function DataTab({
       .then((d: CrashSnapshot) => {
         if (cancelled) return;
         setFetchedRows(d.stocks ?? []);
+        setFetchedPhase(d.phase ?? null);
         setFetchedDate(selectedDate);
       })
       .catch(() => {
         if (cancelled) return;
         setFetchedRows([]);
+        setFetchedPhase(null);
         setFetchedDate(selectedDate);
       });
     return () => { cancelled = true; };
   }, [selectedDate]);
+
+  // 表示中スナップショットのphase。過去日付セレクタで選択中ならそのスナップショットのphaseを使う。
+  const currentPhase = !selectedDate ? snapshot.phase : (fetchedDate === selectedDate ? fetchedPhase : null);
 
   const loading = !!selectedDate && fetchedDate !== selectedDate;
 
@@ -392,6 +487,21 @@ function DataTab({
     const rows = !selectedDate ? snapshot.stocks : (fetchedDate === selectedDate ? (fetchedRows ?? []) : []);
     const copy = rows.filter((r) => matchesMarketCapFilter(r.market_cap, marketCapFilter));
     copy.sort((a, b) => {
+      // 判断ログ(Phase5): section列は文字列アルファベット順(A<B<C<D<S)だと
+      // まとめタブの表示順(S→A→B→C→D)と食い違うため、専用のカスタム順序を使う。
+      // 同section内はソート方向(昇順/降順)によらず常にcum_excess_return降順に揃える
+      // (まとめタブのbuild_watchlist_rowsソート仕様「各区分内はcum_excess_return降順」と一致させる)。
+      if (sortKey === "section") {
+        const ao = SECTION_ORDER[a.section];
+        const bo = SECTION_ORDER[b.section];
+        if (ao !== bo) {
+          const cmp = ao - bo;
+          return sortAsc ? cmp : -cmp;
+        }
+        const ace = a.cum_excess_return ?? -Infinity;
+        const bce = b.cum_excess_return ?? -Infinity;
+        return bce - ace;
+      }
       const av = a[sortKey];
       const bv = b[sortKey];
       if (av === null || av === undefined) return 1;
@@ -439,6 +549,14 @@ function DataTab({
         >
           チャート生成
         </button>
+        <button
+          type="button"
+          onClick={onOpenGlossary}
+          aria-label="用語解説"
+          style={glossaryButtonStyle}
+        >
+          ?
+        </button>
         {loading && <span style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT }}>読込中...</span>}
       </div>
       <div style={{ overflowX: "auto" }}>
@@ -461,7 +579,7 @@ function DataTab({
           </thead>
           <tbody>
             {sortedRows.map((r) => (
-              <tr key={r.code} onClick={() => openChart([r.code])} style={{ cursor: "pointer" }}>
+              <tr key={r.code} onClick={() => onRowTap(r.code, currentPhase)} style={{ cursor: "pointer" }}>
                 {DATA_COLUMNS.map((c) => (
                   <td
                     key={c.key}
@@ -469,6 +587,7 @@ function DataTab({
                       ...tdBase,
                       textAlign: c.align,
                       color: c.key === "name" || c.key === "code" ? TEXT_NAME : TEXT_DEFAULT,
+                      ...(c.key === "code" ? { borderLeft: `3px solid ${tierColor(r.tier)}` } : {}),
                     }}
                   >
                     {cellValue(r, c.key)}
@@ -489,12 +608,20 @@ const chipButtonStyle: React.CSSProperties = {
   cursor: "pointer", fontFamily: monoFont,
 };
 
+const glossaryButtonStyle: React.CSSProperties = {
+  width: 26, height: 26, borderRadius: 9999, fontSize: 12, fontWeight: 700,
+  background: "transparent", border: "1px solid #5f6368", color: TEXT_DEFAULT,
+  cursor: "pointer", fontFamily: monoFont, lineHeight: "24px", padding: 0,
+};
+
 export default function CrashClient({
   initialSnapshot, index,
 }: { initialSnapshot: CrashSnapshot | null; index: CrashIndex | null }) {
   const [tab, setTab] = useState<"summary" | "data">("summary");
   const [descOpen, setDescOpen] = useState(false);
   const [marketCapFilter, setMarketCapFilter] = useState<MarketCapFilterKey>("all");
+  const [modalTarget, setModalTarget] = useState<{ code: string; phase: CrashPhaseInfo | null } | null>(null);
+  const [glossaryOpen, setGlossaryOpen] = useState(false);
   const setHeader = useHeader();
 
   useEffect(() => {
@@ -556,7 +683,15 @@ export default function CrashClient({
       {tab === "summary" ? (
         initialSnapshot.status === "ACTIVE" ? (
           <>
-            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8, marginBottom: 8 }}>
+              <button
+                type="button"
+                onClick={() => setGlossaryOpen(true)}
+                aria-label="用語解説"
+                style={glossaryButtonStyle}
+              >
+                ?
+              </button>
               <button
                 type="button"
                 onClick={() => openChart(filteredStocks.map((r) => r.code))}
@@ -565,8 +700,20 @@ export default function CrashClient({
                 チャート生成
               </button>
             </div>
+            {(initialSnapshot.phase?.crash_day_count ?? 0) > 0 && (
+              <MegaCapPickBlock
+                stocks={initialSnapshot.stocks}
+                crashDayCount={initialSnapshot.phase!.crash_day_count}
+                onTap={(code) => setModalTarget({ code, phase: initialSnapshot.phase })}
+              />
+            )}
             {(["S", "A", "B", "C", "D"] as const).map((s) => (
-              <SummarySection key={s} section={s} rows={bySection[s]} onTap={(code) => openChart([code])} />
+              <SummarySection
+                key={s}
+                section={s}
+                rows={bySection[s]}
+                onTap={(code) => setModalTarget({ code, phase: initialSnapshot.phase })}
+              />
             ))}
             {initialSnapshot.stocks.length === 0 && (
               <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT }}>
@@ -585,8 +732,24 @@ export default function CrashClient({
           </div>
         )
       ) : (
-        <DataTab snapshot={initialSnapshot} index={index} marketCapFilter={marketCapFilter} />
+        <DataTab
+          snapshot={initialSnapshot}
+          index={index}
+          marketCapFilter={marketCapFilter}
+          onRowTap={(code, phase) => setModalTarget({ code, phase })}
+          onOpenGlossary={() => setGlossaryOpen(true)}
+        />
       )}
+
+      {modalTarget && (
+        <ChartModal
+          code={modalTarget.code}
+          phase={modalTarget.phase}
+          onClose={() => setModalTarget(null)}
+        />
+      )}
+
+      {glossaryOpen && <GlossaryModal onClose={() => setGlossaryOpen(false)} />}
     </div>
   );
 }
