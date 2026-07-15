@@ -83,6 +83,9 @@
   Basic認証(`CRASH_AUTH_USER`/`PASS`)を `proxy.ts`(Next.js 16でmiddleware.tsから
   改称)で `/crash` と `/data/crash/` の両方に適用し、環境変数未設定時は
   フェイルクローズで401。
+  **(2026-07-15追記: このBasic認証はPhase1で撤廃済み。`web/src/proxy.ts`は
+  matcherが`/crash`系のみで空になるため削除した。詳細は2026-07-15の
+  「crash機能改修 Phase1+3」関連コミット参照)**
 - **理由**: ロジックのズレを避けるため計算式は移植のみで再実装しない
   (仕様書の明示指示)。出力先をリポジトリ直下ではなくweb/public/data/にしたのは、
   Vercelプロジェクトのルートディレクトリが`web/`でありリポジトリ直下は

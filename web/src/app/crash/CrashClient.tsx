@@ -438,14 +438,97 @@ function cellValue(r: CrashStock, key: SortKey): string {
   return String(v);
 }
 
+// 判断ログ(Phase6): 「進行中」局面の判定はend_reason==="データ末尾到達"で行う
+// (classify_status()の定義そのもの。crash_index.jsonの最終局面のみこの値を取り得る)。
+const ONGOING_END_REASON = "データ末尾到達";
+
+function phaseDurationDays(start: string, end: string): number {
+  const ms = new Date(`${end}T00:00:00Z`).getTime() - new Date(`${start}T00:00:00Z`).getTime();
+  return Math.round(ms / 86_400_000) + 1;
+}
+
+function PhaseHistoryTab({
+  index, onJumpToDate,
+}: {
+  index: CrashIndex | null;
+  onJumpToDate: (date: string | null) => void;
+}) {
+  const phases = index?.phases ?? [];
+  const dateSet = new Set(index?.dates ?? []);
+  const latestDate = index?.dates?.[index.dates.length - 1] ?? null;
+  // 新しい順(=配列を逆順)。進行中局面はcrash_index.json上も末尾(最新)にあるため、
+  // 逆順にすれば自然に先頭に来る。
+  const rows = [...phases].reverse();
+
+  if (rows.length === 0) {
+    return (
+      <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT, padding: "8px 2px" }}>
+        局面履歴データがありません。
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 640 }}>
+        <thead>
+          <tr>
+            <th style={{ ...th, textAlign: "left" }}>開始日</th>
+            <th style={{ ...th, textAlign: "left" }}>終了日</th>
+            <th style={th}>暴落日数</th>
+            <th style={th}>指数最大DD</th>
+            <th style={{ ...th, textAlign: "left" }}>終了理由</th>
+            <th style={th}>期間日数</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((p) => {
+            const ongoing = p.end_reason === ONGOING_END_REASON;
+            const hasSnapshot = dateSet.has(p.end);
+            const tappable = hasSnapshot;
+            return (
+              <tr
+                key={`${p.start}_${p.end}`}
+                onClick={tappable ? () => onJumpToDate(p.end === latestDate ? null : p.end) : undefined}
+                style={{
+                  cursor: tappable ? "pointer" : "default",
+                  opacity: tappable ? 1 : 0.45,
+                }}
+              >
+                <td style={tdName}>{p.start}</td>
+                <td style={tdName}>
+                  {ongoing ? <span style={{ color: "#e05555", fontWeight: 700 }}>進行中</span> : p.end}
+                </td>
+                <td style={{ ...tdNum, textAlign: "right" }}>{p.crash_day_count}</td>
+                <td style={{ ...tdNum, textAlign: "right", color: pctColor(p.index_max_dd) }}>
+                  {fmtPct(p.index_max_dd)}
+                </td>
+                <td style={tdBase}>
+                  {p.end_reason ?? "—"}
+                  {!hasSnapshot && (
+                    <span style={{ color: TEXT_DEFAULT, marginLeft: 6, fontSize: 10 }}>(詳細データなし)</span>
+                  )}
+                </td>
+                <td style={{ ...tdNum, textAlign: "right" }}>{phaseDurationDays(p.start, p.end)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function DataTab({
-  snapshot, index, marketCapFilter, onRowTap, onOpenGlossary,
+  snapshot, index, marketCapFilter, onRowTap, onOpenGlossary, selectedDate, onSelectedDateChange,
 }: {
   snapshot: CrashSnapshot; index: CrashIndex | null; marketCapFilter: MarketCapFilterKey;
   onRowTap: (code: string, phase: CrashPhaseInfo | null) => void;
   onOpenGlossary: () => void;
+  // Phase6: 局面履歴タブからの日付ジャンプに対応するため、selectedDateはCrashClient側で制御する。
+  selectedDate: string | null;
+  onSelectedDateChange: (date: string | null) => void;
 }) {
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   // 判断ログ: react-hooks/set-state-in-effect(effect本体で同期的にsetStateを呼ぶことを
   // 禁止する新しいlintルール)対策として、setState呼び出しは全てfetchの.then/.catch内に
   // 収め、loadingは「選択中の日付とfetch済みの日付が一致しているか」から導出する
@@ -523,7 +606,7 @@ function DataTab({
             value={selectedDate ?? dates[dates.length - 1]}
             onChange={(e) => {
               const v = e.target.value;
-              setSelectedDate(v === dates[dates.length - 1] ? null : v);
+              onSelectedDateChange(v === dates[dates.length - 1] ? null : v);
             }}
             style={{
               fontFamily: monoFont, fontSize: 12, background: "#2a2c2f", color: TEXT_BRIGHT,
@@ -617,7 +700,9 @@ const glossaryButtonStyle: React.CSSProperties = {
 export default function CrashClient({
   initialSnapshot, index,
 }: { initialSnapshot: CrashSnapshot | null; index: CrashIndex | null }) {
-  const [tab, setTab] = useState<"summary" | "data">("summary");
+  const [tab, setTab] = useState<"summary" | "data" | "history">("summary");
+  // Phase6: 局面履歴タブからデータタブへの日付ジャンプのため、selectedDateをここへ引き上げる。
+  const [dataTabDate, setDataTabDate] = useState<string | null>(null);
   const [descOpen, setDescOpen] = useState(false);
   const [marketCapFilter, setMarketCapFilter] = useState<MarketCapFilterKey>("all");
   const [modalTarget, setModalTarget] = useState<{ code: string; phase: CrashPhaseInfo | null } | null>(null);
@@ -649,14 +734,14 @@ export default function CrashClient({
 
   return (
     <div style={{ backgroundColor: BASE_BG, minHeight: "100vh", paddingTop: 0, paddingBottom: 24, paddingLeft: 12, paddingRight: 12 }}>
-      {/* 内部タブ(まとめ/データ) */}
+      {/* 内部タブ(まとめ/データ/局面履歴) */}
       <div
         style={{
           display: "flex", gap: 2, marginBottom: 12, padding: 3,
           borderRadius: 9999, background: "#1c1c1f", border: "1px solid #2a2d34",
         }}
       >
-        {([["summary", "まとめ"], ["data", "データ"]] as const).map(([key, label]) => {
+        {([["summary", "まとめ"], ["data", "データ"], ["history", "局面履歴"]] as const).map(([key, label]) => {
           const active = tab === key;
           return (
             <button
@@ -678,7 +763,7 @@ export default function CrashClient({
 
       <StatusBanner snapshot={initialSnapshot} />
 
-      <MarketCapFilterControl value={marketCapFilter} onChange={setMarketCapFilter} />
+      {tab !== "history" && <MarketCapFilterControl value={marketCapFilter} onChange={setMarketCapFilter} />}
 
       {tab === "summary" ? (
         initialSnapshot.status === "ACTIVE" ? (
@@ -731,13 +816,23 @@ export default function CrashClient({
             現在ACTIVEな局面はありません。過去局面の一覧・明細は「データ」タブから参照できます。
           </div>
         )
-      ) : (
+      ) : tab === "data" ? (
         <DataTab
           snapshot={initialSnapshot}
           index={index}
           marketCapFilter={marketCapFilter}
           onRowTap={(code, phase) => setModalTarget({ code, phase })}
           onOpenGlossary={() => setGlossaryOpen(true)}
+          selectedDate={dataTabDate}
+          onSelectedDateChange={setDataTabDate}
+        />
+      ) : (
+        <PhaseHistoryTab
+          index={index}
+          onJumpToDate={(date) => {
+            setDataTabDate(date);
+            setTab("data");
+          }}
         />
       )}
 

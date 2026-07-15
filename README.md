@@ -115,8 +115,8 @@ git push -u origin main
   `data/jquants/daily/` を読むだけで、J-Quantsへは問い合わせない）
 - 出力: `web/public/data/crash/crash_watchlist_{YYYYMMDD}.json` /
   `crash_index.json` / `crash_latest.json`
-- 画面: `/crash`（Basic認証必須。環境変数 `CRASH_AUTH_USER` / `CRASH_AUTH_PASS`
-  未設定時は常に401を返す＝フェイルクローズ）
+- 画面: `/crash`（強チェ本体のタブナビから遷移可能。認証なし。Basic認証は
+  Phase1で撤廃済み、`CRASH_AUTH_USER`/`CRASH_AUTH_PASS`は使用していない）
 - 状態永続化: リポジトリ直下 `crash_state.json`（IDLE/ACTIVE/COOLDOWN、局面開始時に
   1回確定した母集団のキャッシュ）。**読込失敗(壊れたJSON等)時は例外を出さずIDLE状態から
   再開する**(`load_state()`)。より厳密に復元したい場合は、直近の正常なコミットの
