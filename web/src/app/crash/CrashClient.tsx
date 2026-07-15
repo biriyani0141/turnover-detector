@@ -16,6 +16,7 @@ export type CrashStock = {
   ma25_deviation: number | null;
   days_from_52w_high: number | null;
   pre_crash_high: number | null;
+  market_cap: number | null;
   section: "S" | "A" | "B" | "C" | "D";
   // tier(母集団内相対順位)とは独立の絶対強度フラグ。cum_excess_return > 0 で true。
   // tier・sectionの判定には使わない、表示専用の付加情報。
@@ -103,6 +104,63 @@ function fmtPrice(v: number | null): string {
   return v.toLocaleString("ja-JP");
 }
 
+// 時価総額(円)を億円/兆円表示に変換。例: 1234億, 1.2兆
+function fmtMarketCap(v: number | null): string {
+  if (v === null || v === undefined) return "-";
+  const oku = v / 100_000_000;
+  if (oku >= 10000) return `${(oku / 10000).toFixed(1)}兆`;
+  return `${Math.round(oku).toLocaleString("ja-JP")}億`;
+}
+
+// 時価総額フィルタの閾値定数(円単位)。後で調整できるようここにまとめる。
+const MARKET_CAP_LARGE_MIN = 300_000_000_000; // 3000億
+const MARKET_CAP_MID_MIN = 30_000_000_000; // 300億
+
+const MARKET_CAP_FILTERS = {
+  all: { label: "全て" },
+  large: { label: "大型(3000億以上)" },
+  mid: { label: "中型(300億〜3000億)" },
+  small: { label: "小型(300億未満)" },
+} as const;
+type MarketCapFilterKey = keyof typeof MARKET_CAP_FILTERS;
+
+// 判断ログ: 「全て」はmarket_cap=nullの銘柄も含む(絞り込みなし)。大型/中型/小型は
+// nullを対象外にする(仕様書に規定なし。数値が無いものを特定区分に分類できないため)。
+function matchesMarketCapFilter(mc: number | null, key: MarketCapFilterKey): boolean {
+  if (key === "all") return true;
+  if (mc === null || mc === undefined) return false;
+  if (key === "large") return mc >= MARKET_CAP_LARGE_MIN;
+  if (key === "mid") return mc >= MARKET_CAP_MID_MIN && mc < MARKET_CAP_LARGE_MIN;
+  return mc < MARKET_CAP_MID_MIN; // small
+}
+
+function MarketCapFilterControl({
+  value, onChange,
+}: { value: MarketCapFilterKey; onChange: (v: MarketCapFilterKey) => void }) {
+  return (
+    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+      {(Object.keys(MARKET_CAP_FILTERS) as MarketCapFilterKey[]).map((key) => {
+        const active = value === key;
+        return (
+          <button
+            key={key}
+            type="button"
+            onClick={() => onChange(key)}
+            style={{
+              padding: "5px 10px", borderRadius: 9999, fontSize: 11, fontFamily: monoFont,
+              border: active ? "1px solid #8a8a8e" : "1px solid #3a3d42",
+              background: active ? "#3c4043" : "transparent",
+              color: active ? TEXT_BRIGHT : TEXT_DEFAULT, cursor: "pointer",
+            }}
+          >
+            {MARKET_CAP_FILTERS[key].label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 // J-QuantsのLocalCodeは5桁(4桁コード+末尾0埋め、新形式の英字混在コードも同様)。
 // 表示はRankingTabs.tsx等の既存ページに合わせ4桁化する。データ結合・/chart?codes=への
 // 引き渡しなど内部処理は5桁のまま(この関数は表示専用、呼び出し側で使い分けること)。
@@ -117,7 +175,7 @@ function openChart(codes: string[]) {
 
 function toCsv(rows: CrashStock[]): string {
   const header = [
-    "code", "name", "sector", "section", "tier", "absolute_positive", "close", "top_ret",
+    "code", "name", "sector", "section", "tier", "absolute_positive", "close", "market_cap", "top_ret",
     "cum_excess_return", "strong_day_count", "dist_to_high", "already_recovered",
     "ma25_deviation", "days_from_52w_high", "pre_crash_high",
   ];
@@ -125,7 +183,7 @@ function toCsv(rows: CrashStock[]): string {
   for (const r of rows) {
     lines.push([
       displayCode(r.code), `"${r.name}"`, r.sector, r.section, r.tier ?? "", r.absolute_positive,
-      r.close ?? "", r.top_ret ?? "", r.cum_excess_return ?? "", r.strong_day_count,
+      r.close ?? "", r.market_cap ?? "", r.top_ret ?? "", r.cum_excess_return ?? "", r.strong_day_count,
       r.dist_to_high ?? "", r.already_recovered, r.ma25_deviation ?? "",
       r.days_from_52w_high ?? "", r.pre_crash_high ?? "",
     ].join(","));
@@ -192,6 +250,7 @@ function StockRow({ r, onTap }: { r: CrashStock; onTap: (code: string) => void }
         {r.absolute_positive && <span style={{ color: "#ffa500", marginLeft: 3 }}>★</span>}
       </td>
       <td style={{ ...tdNum, textAlign: "right" }}>{fmtPrice(r.close)}</td>
+      <td style={{ ...tdNum, textAlign: "right" }}>{fmtMarketCap(r.market_cap)}</td>
       <td style={{ ...tdNum, textAlign: "right", color: pctColor(r.dist_to_high !== null ? -r.dist_to_high : null) }}>
         {fmtPct(r.dist_to_high)}
       </td>
@@ -238,6 +297,7 @@ function SummarySection({
               <th style={{ ...th, textAlign: "left" }}>コード</th>
               <th style={{ ...th, textAlign: "left" }}>銘柄</th>
               <th style={th}>終値</th>
+              <th style={th}>時価総額</th>
               <th style={th}>距離</th>
               <th style={th}>超過収益</th>
               <th style={th}>強日数</th>
@@ -256,7 +316,7 @@ function SummarySection({
 
 // データタブ: 仕様書「全列、ソート・フィルタ可」用の列定義
 type SortKey = keyof Pick<CrashStock,
-  "code" | "name" | "sector" | "close" | "top_ret" | "cum_excess_return" | "tier" |
+  "code" | "name" | "sector" | "close" | "market_cap" | "top_ret" | "cum_excess_return" | "tier" |
   "strong_day_count" | "dist_to_high" | "already_recovered" | "ma25_deviation" |
   "days_from_52w_high" | "pre_crash_high" | "section" | "absolute_positive"
 >;
@@ -269,6 +329,7 @@ const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] =
   { key: "tier", label: "耐性", align: "left" },
   { key: "absolute_positive", label: "絶対★", align: "left" },
   { key: "close", label: "終値", align: "right" },
+  { key: "market_cap", label: "時価総額", align: "right" },
   { key: "top_ret", label: "上昇率", align: "right" },
   { key: "cum_excess_return", label: "累積超過R", align: "right" },
   { key: "strong_day_count", label: "強日数", align: "right" },
@@ -281,6 +342,7 @@ const DATA_COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] =
 
 function cellValue(r: CrashStock, key: SortKey): string {
   const v = r[key];
+  if (key === "market_cap") return fmtMarketCap(v as number | null);
   if (v === null || v === undefined) return "—";
   if (key === "code") return displayCode(v as string);
   if (key === "already_recovered") return v ? "○" : "";
@@ -292,7 +354,9 @@ function cellValue(r: CrashStock, key: SortKey): string {
   return String(v);
 }
 
-function DataTab({ snapshot, index }: { snapshot: CrashSnapshot; index: CrashIndex | null }) {
+function DataTab({
+  snapshot, index, marketCapFilter,
+}: { snapshot: CrashSnapshot; index: CrashIndex | null; marketCapFilter: MarketCapFilterKey }) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   // 判断ログ: react-hooks/set-state-in-effect(effect本体で同期的にsetStateを呼ぶことを
   // 禁止する新しいlintルール)対策として、setState呼び出しは全てfetchの.then/.catch内に
@@ -326,7 +390,7 @@ function DataTab({ snapshot, index }: { snapshot: CrashSnapshot; index: CrashInd
 
   const sortedRows = useMemo(() => {
     const rows = !selectedDate ? snapshot.stocks : (fetchedDate === selectedDate ? (fetchedRows ?? []) : []);
-    const copy = [...rows];
+    const copy = rows.filter((r) => matchesMarketCapFilter(r.market_cap, marketCapFilter));
     copy.sort((a, b) => {
       const av = a[sortKey];
       const bv = b[sortKey];
@@ -337,7 +401,7 @@ function DataTab({ snapshot, index }: { snapshot: CrashSnapshot; index: CrashInd
       return sortAsc ? cmp : -cmp;
     });
     return copy;
-  }, [selectedDate, snapshot.stocks, fetchedDate, fetchedRows, sortKey, sortAsc]);
+  }, [selectedDate, snapshot.stocks, fetchedDate, fetchedRows, sortKey, sortAsc, marketCapFilter]);
 
   const dates = index?.dates ?? [];
 
@@ -430,6 +494,7 @@ export default function CrashClient({
 }: { initialSnapshot: CrashSnapshot | null; index: CrashIndex | null }) {
   const [tab, setTab] = useState<"summary" | "data">("summary");
   const [descOpen, setDescOpen] = useState(false);
+  const [marketCapFilter, setMarketCapFilter] = useState<MarketCapFilterKey>("all");
   const setHeader = useHeader();
 
   useEffect(() => {
@@ -441,7 +506,11 @@ export default function CrashClient({
 
   // 判断ログ: Reactのフックはアーリーリターンより前に無条件で呼ぶ必要があるため、
   // useMemoSectionsはinitialSnapshotのnullチェックより先に(空配列fallbackで)呼ぶ。
-  const bySection = useMemoSections(initialSnapshot?.stocks ?? []);
+  const filteredStocks = useMemo(
+    () => (initialSnapshot?.stocks ?? []).filter((s) => matchesMarketCapFilter(s.market_cap, marketCapFilter)),
+    [initialSnapshot?.stocks, marketCapFilter]
+  );
+  const bySection = useMemoSections(filteredStocks);
 
   if (!initialSnapshot) {
     return (
@@ -482,13 +551,15 @@ export default function CrashClient({
 
       <StatusBanner snapshot={initialSnapshot} />
 
+      <MarketCapFilterControl value={marketCapFilter} onChange={setMarketCapFilter} />
+
       {tab === "summary" ? (
         initialSnapshot.status === "ACTIVE" ? (
           <>
             <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
               <button
                 type="button"
-                onClick={() => openChart(initialSnapshot.stocks.map((r) => r.code))}
+                onClick={() => openChart(filteredStocks.map((r) => r.code))}
                 style={chipButtonStyle}
               >
                 チャート生成
@@ -502,6 +573,11 @@ export default function CrashClient({
                 母集団0件、または特徴量計算対象がありません。
               </div>
             )}
+            {initialSnapshot.stocks.length > 0 && filteredStocks.length === 0 && (
+              <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT }}>
+                時価総額フィルタに一致する銘柄がありません。
+              </div>
+            )}
           </>
         ) : (
           <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT, padding: "8px 2px" }}>
@@ -509,7 +585,7 @@ export default function CrashClient({
           </div>
         )
       ) : (
-        <DataTab snapshot={initialSnapshot} index={index} />
+        <DataTab snapshot={initialSnapshot} index={index} marketCapFilter={marketCapFilter} />
       )}
     </div>
   );

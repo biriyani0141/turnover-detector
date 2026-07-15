@@ -10,6 +10,9 @@ const tabs = [
   { href: "/stophigh", icon: "rocket_launch", matchPaths: ["/stophigh"] },
   { href: "/turnover", icon: "cycle", matchPaths: ["/turnover"] },
   { href: "/ranking", icon: "list_alt", matchPaths: ["/ranking"] },
+  // 暴落: /crashは認証撤廃済み・共通レイアウト(TabBar/CommonHeader)配下のため、
+  // 既存タブと同じLink遷移方式で統合する。特別扱い不要。
+  { href: "/crash", icon: "trending_down", matchPaths: ["/crash"] },
 ];
 
 export function TabBar() {

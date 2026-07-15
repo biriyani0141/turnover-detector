@@ -46,6 +46,7 @@ import pandas as pd
 import yfinance as yf
 
 import crash_notify
+from jquants_ranking import get_adjusted_shares, build_split_events
 
 # ============================================================
 # 定数（検証リポジトリ screener.py / backtest.py と同一の値。変更していない）
@@ -651,6 +652,17 @@ def build_watchlist_rows(
 
     detail = pop.merge(features, on="code", how="inner").merge(pre_high, on="code", how="inner")
 
+    # 判断ログ: market_cap計算はbuild_chart_data.pyのmarketCap算出ロジック
+    # (close × get_adjusted_shares、分割調整込み)と同じ選択規則にするため、
+    # jquants_ranking.get_adjusted_shares/build_split_eventsをそのままimportして
+    # 流用した(コピペではなく共通関数の再利用)。理由: 計算式のズレを防ぐため。
+    # circular import・バッチ実行環境への影響は無い(jquants_rankingは既に
+    # build_chart_data.py等から同様にimportされている実績があるモジュール)。
+    meta_stocks: dict = json.loads(META_PATH.read_text(encoding="utf-8")).get("stocks", {})
+    split_events = build_split_events(sorted(DAILY_DIR.glob("*.json")))
+    # 計算基準日: 局面終了時点(=watchlist生成日)。ACTIVE中はphase.end=当日。
+    market_cap_as_of = phase.end.date().isoformat()
+
     rows = []
     for _, r in detail.iterrows():
         close = r["close"]
@@ -659,11 +671,20 @@ def build_watchlist_rows(
         tier = r["tier"] if not pd.isna(r["tier"]) else None
         section = classify_section(tier, dist_to_high, bool(r["already_recovered"]))
         cum_excess_return = None if pd.isna(r["cum_excess_return"]) else round(float(r["cum_excess_return"]), 4)
+
+        market_cap = None
+        stock_meta = meta_stocks.get(r["code"])
+        if stock_meta is not None and close is not None and not pd.isna(close):
+            shares = get_adjusted_shares(r["code"], market_cap_as_of, stock_meta, split_events)
+            if shares:
+                market_cap = round(float(close) * shares)
+
         rows.append({
             "code": r["code"],
             "name": r["name"],
             "sector": r["sector"],
             "close": None if pd.isna(close) else round(float(close), 2),
+            "market_cap": market_cap,
             "top_ret": None if pd.isna(r["top_ret"]) else round(float(r["top_ret"]), 4),
             "cum_excess_return": cum_excess_return,
             "tier": tier,
