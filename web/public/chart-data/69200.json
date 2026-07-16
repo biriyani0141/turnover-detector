@@ -5,32 +5,16 @@
   "market": "東証P",
   "sector": "電気機器",
   "header": {
-    "price": 49690,
-    "change": 4590,
-    "changePct": 10.2,
+    "price": 46370,
+    "change": -3320,
+    "changePct": -6.7,
     "isStopHigh": false,
-    "turnoverPct": 7.5,
-    "marketCap": 4685091216000,
+    "turnoverPct": 4.5,
+    "marketCap": 4372060368000,
     "appearCount": 29,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-07",
-      "o": 46190,
-      "h": 46720,
-      "l": 44380,
-      "c": 44920,
-      "v": 5720200,
-      "ma5": 44128.0,
-      "ma25": 40681.6,
-      "ma75": 36164.7,
-      "ma200": 27551.3,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-05-08",
       "o": 44220,
@@ -705,6 +689,21 @@
       "ma200": 34467.9,
       "marks": [
         "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-16",
+      "o": 47150,
+      "h": 47860,
+      "l": 45330,
+      "c": 46370,
+      "v": 4197100,
+      "ma5": 46062.0,
+      "ma25": 48716.0,
+      "ma75": 43267.9,
+      "ma200": 34614.5,
+      "marks": [
         "appear"
       ]
     }
