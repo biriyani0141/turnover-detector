@@ -259,26 +259,34 @@ const tdPickMktCap: React.CSSProperties = { width: 56 };
 const tdPickExcess: React.CSSProperties = { width: 52 };
 const tdPickStrong: React.CSSProperties = { width: 38 };
 
+// 判断ログ(UI改修タスク1): already_recovered===falseの絞り込みは撤廃済み(局面終盤は
+// 奪回済み銘柄が主になる想定のため、sectionバッジ(S含む)で奪回状況を示しつつ枠自体には含める)。
+// まとめタブ(当日)・まとめタブ(過去日、翌日脱落判定用)の両方から使う純粋関数として切り出す。
+function computeMegaCapPicks(stocks: CrashStock[], crashDayCount: number): CrashStock[] {
+  const filtered = stocks.filter((s) =>
+    s.market_cap !== null && s.market_cap >= MEGA_CAP_MIN &&
+    s.strong_day_count / crashDayCount >= STRONG_RATIO_MIN
+  );
+  filtered.sort((a, b) => {
+    if (b.strong_day_count !== a.strong_day_count) return b.strong_day_count - a.strong_day_count;
+    return (b.market_cap ?? 0) - (a.market_cap ?? 0);
+  });
+  return filtered;
+}
+
+const DROPPED_BG = "rgba(224,85,85,0.10)";
+
 function MegaCapPickBlock({
-  stocks, crashDayCount, onTap, highlightSectors,
+  stocks, crashDayCount, onTap, highlightSectors, droppedCodes,
 }: {
   stocks: CrashStock[]; crashDayCount: number; onTap: (code: string) => void;
   highlightSectors: Set<string>;
+  // Phase7(まとめタブ日付遡り): 過去日表示中のみ渡す。翌スナップショット日に
+  // ピックから脱落した銘柄のcodeの集合。未指定(undefined)なら最新日と同じ表示
+  // (ハイライト・凡例なし)のまま変わらない。
+  droppedCodes?: Set<string>;
 }) {
-  const picks = useMemo(() => {
-    // 判断ログ(UI改修タスク1): already_recovered===false条件を撤廃。
-    // 局面終盤は奪回済み銘柄が主になる想定のため、sectionバッジ(S含む)で
-    // 奪回状況を示しつつ枠自体には含める。
-    const filtered = stocks.filter((s) =>
-      s.market_cap !== null && s.market_cap >= MEGA_CAP_MIN &&
-      s.strong_day_count / crashDayCount >= STRONG_RATIO_MIN
-    );
-    filtered.sort((a, b) => {
-      if (b.strong_day_count !== a.strong_day_count) return b.strong_day_count - a.strong_day_count;
-      return (b.market_cap ?? 0) - (a.market_cap ?? 0);
-    });
-    return filtered;
-  }, [stocks, crashDayCount]);
+  const picks = useMemo(() => computeMegaCapPicks(stocks, crashDayCount), [stocks, crashDayCount]);
 
   const nameMap = useMemo(() => buildDisplayNames(picks), [picks]);
 
@@ -289,6 +297,7 @@ function MegaCapPickBlock({
       </div>
       <div style={{ fontFamily: monoFont, fontSize: 10, color: TEXT_DEFAULT, marginBottom: 6, paddingLeft: 2 }}>
         時価総額3000億以上・暴落日の6割以上で指数超え
+        {droppedCodes && <span style={{ marginLeft: 8, color: "#e05555" }}>■ 翌日脱落</span>}
       </div>
       {picks.length === 0 ? (
         <div style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, paddingLeft: 2 }}>該当なし</div>
@@ -311,8 +320,13 @@ function MegaCapPickBlock({
             <tbody>
               {picks.map((r) => {
                 const hlColor = isHighlighted(r.sector, highlightSectors) ? SECTOR_HIGHLIGHT_COLOR : undefined;
+                const dropped = droppedCodes?.has(r.code) ?? false;
                 return (
-                  <tr key={r.code} onClick={() => onTap(r.code)} style={{ cursor: "pointer" }}>
+                  <tr
+                    key={r.code}
+                    onClick={() => onTap(r.code)}
+                    style={{ cursor: "pointer", background: dropped ? DROPPED_BG : undefined }}
+                  >
                     <td style={{ ...tdName, ...tdPickCode }}>{displayCode(r.code)}</td>
                     <td style={{ ...tdName, ...tdPickName, color: hlColor ?? tdName.color }}>
                       {nameMap.get(r.code) ?? r.name}
@@ -459,7 +473,9 @@ function downloadCsv(rows: CrashStock[], filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
+// Phase7(まとめタブ日付遡り): pastBadgeはまとめタブで過去日選択中のみtrueで渡す
+// (データタブのPastDataBadgeと同じ位置づけ)。未指定時は従来通り表示しない。
+function StatusBanner({ snapshot, pastBadge }: { snapshot: CrashSnapshot; pastBadge?: boolean }) {
   const { status, phase, date, population_stats } = snapshot;
   const color = status === "ACTIVE" ? "#e05555" : status === "COOLDOWN" ? "#cc8800" : "#5f9e6e";
   const label = status === "ACTIVE" ? "ACTIVE" : status === "COOLDOWN" ? "COOLDOWN" : "IDLE";
@@ -476,6 +492,7 @@ function StatusBanner({ snapshot }: { snapshot: CrashSnapshot }) {
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <span style={{ width: 8, height: 8, borderRadius: 9999, background: color }} />
         <span style={{ fontFamily: monoFont, fontSize: 13, fontWeight: 700, color: TEXT_BRIGHT }}>{label}</span>
+        {pastBadge && <PastDataBadge />}
         <span style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT, marginLeft: "auto" }}>
           基準日 {date}
         </span>
@@ -793,6 +810,80 @@ function DeltaSpan({ value }: { value: number }) {
   return <span style={{ color: value > 0 ? UP : DOWN }}> ({sign}{value})</span>;
 }
 
+// Phase7(まとめタブ日付遡り): crash_watchlist_{date}.jsonを日付指定で取得する共通hook。
+// データタブ・まとめタブの両方で使う(重複実装しない)。
+// 判断ログ: react-hooks/set-state-in-effect(effect本体で同期的にsetStateを呼ぶことを
+// 禁止するlintルール)対策として、setState呼び出しは全てfetchの.then/.catch内に収め、
+// loadingは「要求中の日付とfetch済みの日付が一致しているか」から導出する
+// (専用のloading stateを持たない)。
+function useCrashSnapshotAt(date: string | null): { snapshot: CrashSnapshot | null; loading: boolean } {
+  const [fetchedDate, setFetchedDate] = useState<string | null>(null);
+  const [snapshot, setSnapshot] = useState<CrashSnapshot | null>(null);
+
+  useEffect(() => {
+    if (!date) return;
+    let cancelled = false;
+    const compact = date.replace(/-/g, "");
+    fetch(`/data/crash/crash_watchlist_${compact}.json`)
+      .then((r) => r.json())
+      .then((d: CrashSnapshot) => {
+        if (cancelled) return;
+        setSnapshot(d);
+        setFetchedDate(date);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setSnapshot(null);
+        setFetchedDate(date);
+      });
+    return () => { cancelled = true; };
+  }, [date]);
+
+  const loading = !!date && fetchedDate !== date;
+  const current = date && fetchedDate === date ? snapshot : null;
+  return { snapshot: current, loading };
+}
+
+// 日付セレクタ本体。データタブ・まとめタブで共有する(スナップショット存在日のみ選択可、
+// 最新日を選ぶとonChange(null)で「現在」表示に戻す)。
+function DateSelector({
+  dates, selectedDate, onChange,
+}: { dates: string[]; selectedDate: string | null; onChange: (date: string | null) => void }) {
+  if (dates.length <= 1) return null;
+  const latest = dates[dates.length - 1];
+  return (
+    <select
+      value={selectedDate ?? latest}
+      onChange={(e) => {
+        const v = e.target.value;
+        onChange(v === latest ? null : v);
+      }}
+      style={{
+        fontFamily: monoFont, fontSize: 12, background: "#2a2c2f", color: TEXT_BRIGHT,
+        border: "1px solid #4a4d52", borderRadius: 6, padding: "4px 6px",
+      }}
+    >
+      {dates.slice().reverse().map((d) => (
+        <option key={d} value={d}>{d}</option>
+      ))}
+    </select>
+  );
+}
+
+// 過去日表示中バッジ。データタブ・まとめタブで共有する。
+function PastDataBadge() {
+  return (
+    <span
+      style={{
+        fontSize: 10, fontWeight: 700, color: "#cc8800",
+        border: "1px solid rgba(204,136,0,0.4)", borderRadius: 4, padding: "2px 6px",
+      }}
+    >
+      過去データ
+    </span>
+  );
+}
+
 function DataTab({
   snapshot, index, marketCapFilter, onRowTap, onOpenGlossary, selectedDate, onSelectedDateChange,
   sectorOptions, highlightSectors, onToggleHighlightSector,
@@ -808,45 +899,15 @@ function DataTab({
   // むしろ実装コストが高くUXも一貫しないため、共有が自然と判断した)。
   sectorOptions: string[]; highlightSectors: Set<string>; onToggleHighlightSector: (sector: string) => void;
 }) {
-  // 判断ログ: react-hooks/set-state-in-effect(effect本体で同期的にsetStateを呼ぶことを
-  // 禁止する新しいlintルール)対策として、setState呼び出しは全てfetchの.then/.catch内に
-  // 収め、loadingは「選択中の日付とfetch済みの日付が一致しているか」から導出する
-  // (専用のloading stateを持たない)。
-  const [fetchedDate, setFetchedDate] = useState<string | null>(null);
-  const [fetchedRows, setFetchedRows] = useState<CrashStock[] | null>(null);
-  // Phase4: モーダルのマーカー注入用。表示中の日付に対応するphase(start/crash_days)を保持する。
-  const [fetchedPhase, setFetchedPhase] = useState<CrashPhaseInfo | null>(null);
+  const { snapshot: fetchedSnapshot, loading } = useCrashSnapshotAt(selectedDate);
   const [sortKey, setSortKey] = useState<SortKey>("section");
   const [sortAsc, setSortAsc] = useState(true);
 
-  useEffect(() => {
-    if (!selectedDate) return;
-    let cancelled = false;
-    const compact = selectedDate.replace(/-/g, "");
-    fetch(`/data/crash/crash_watchlist_${compact}.json`)
-      .then((r) => r.json())
-      .then((d: CrashSnapshot) => {
-        if (cancelled) return;
-        setFetchedRows(d.stocks ?? []);
-        setFetchedPhase(d.phase ?? null);
-        setFetchedDate(selectedDate);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setFetchedRows([]);
-        setFetchedPhase(null);
-        setFetchedDate(selectedDate);
-      });
-    return () => { cancelled = true; };
-  }, [selectedDate]);
-
   // 表示中スナップショットのphase。過去日付セレクタで選択中ならそのスナップショットのphaseを使う。
-  const currentPhase = !selectedDate ? snapshot.phase : (fetchedDate === selectedDate ? fetchedPhase : null);
-
-  const loading = !!selectedDate && fetchedDate !== selectedDate;
+  const currentPhase = !selectedDate ? snapshot.phase : (fetchedSnapshot?.phase ?? null);
 
   const sortedRows = useMemo(() => {
-    const rows = !selectedDate ? snapshot.stocks : (fetchedDate === selectedDate ? (fetchedRows ?? []) : []);
+    const rows = !selectedDate ? snapshot.stocks : (fetchedSnapshot?.stocks ?? []);
     const copy = rows.filter((r) => matchesMarketCapFilter(r.market_cap, marketCapFilter));
     copy.sort((a, b) => {
       // 判断ログ(Phase5): section列は文字列アルファベット順(A<B<C<D<S)だと
@@ -873,7 +934,7 @@ function DataTab({
       return sortAsc ? cmp : -cmp;
     });
     return copy;
-  }, [selectedDate, snapshot.stocks, fetchedDate, fetchedRows, sortKey, sortAsc, marketCapFilter]);
+  }, [selectedDate, snapshot.stocks, fetchedSnapshot, sortKey, sortAsc, marketCapFilter]);
 
   const dates = index?.dates ?? [];
 
@@ -903,16 +964,7 @@ function DataTab({
             display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center",
           }}
         >
-          {selectedDate && (
-            <span
-              style={{
-                fontSize: 10, fontWeight: 700, color: "#cc8800",
-                border: "1px solid rgba(204,136,0,0.4)", borderRadius: 4, padding: "2px 6px",
-              }}
-            >
-              過去データ
-            </span>
-          )}
+          {selectedDate && <PastDataBadge />}
           <span>
             {historyEntry.date} 指数DD{" "}
             <span style={{ color: pctColor(historyEntry.index_dd) }}>{fmtPct(historyEntry.index_dd)}</span>
@@ -924,23 +976,7 @@ function DataTab({
         </div>
       )}
       <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
-        {dates.length > 1 && (
-          <select
-            value={selectedDate ?? dates[dates.length - 1]}
-            onChange={(e) => {
-              const v = e.target.value;
-              onSelectedDateChange(v === dates[dates.length - 1] ? null : v);
-            }}
-            style={{
-              fontFamily: monoFont, fontSize: 12, background: "#2a2c2f", color: TEXT_BRIGHT,
-              border: "1px solid #4a4d52", borderRadius: 6, padding: "4px 6px",
-            }}
-          >
-            {dates.slice().reverse().map((d) => (
-              <option key={d} value={d}>{d}</option>
-            ))}
-          </select>
-        )}
+        <DateSelector dates={dates} selectedDate={selectedDate} onChange={onSelectedDateChange} />
         <button
           type="button"
           onClick={() => downloadCsv(sortedRows, `crash_watchlist_${selectedDate ?? snapshot.date}.csv`)}
@@ -1021,12 +1057,131 @@ const glossaryButtonStyle: React.CSSProperties = {
   cursor: "pointer", fontFamily: monoFont, lineHeight: "24px", padding: 0,
 };
 
+// Phase7(まとめタブ日付遡り): 選択日Dの大型耐性ピックのうち、翌スナップショット日D+1の
+// ピックに存在しない(=脱落した)銘柄のcode集合を返す。ローディング中はundefined
+// (ちらつき防止、ハイライト無しのまま待つ)。
+function useDroppedPickCodes(
+  selectedDate: string | null, nextDate: string | null,
+  displaySnapshot: CrashSnapshot | null, nextSnapshot: CrashSnapshot | null, nextLoading: boolean,
+): Set<string> | undefined {
+  return useMemo(() => {
+    if (!selectedDate || !nextDate || nextLoading) return undefined;
+    const phase = displaySnapshot?.phase;
+    if (!phase || (phase.crash_day_count ?? 0) === 0) return undefined;
+    const currentPicks = computeMegaCapPicks(displaySnapshot!.stocks, phase.crash_day_count);
+    const nextPhase = nextSnapshot?.phase;
+    const nextCodes = nextPhase && (nextPhase.crash_day_count ?? 0) > 0
+      ? new Set(computeMegaCapPicks(nextSnapshot!.stocks, nextPhase.crash_day_count).map((s) => s.code))
+      : new Set<string>(); // 翌日にACTIVEなピック自体が無ければ全銘柄脱落扱い
+    return new Set(currentPicks.filter((s) => !nextCodes.has(s.code)).map((s) => s.code));
+  }, [selectedDate, nextDate, nextLoading, displaySnapshot, nextSnapshot]);
+}
+
+function SummaryTab({
+  displaySnapshot, loading, index, marketCapFilter, selectedDate, onSelectedDateChange,
+  sectorOptions, highlightSectors, onToggleHighlightSector, onRowTap, onOpenGlossary,
+}: {
+  // 判断ログ: selectedDate時点のスナップショットはStatusBanner(CrashClient側)とも
+  // 共有するため、fetchはCrashClientで一度だけ行いpropsで受け取る(二重fetch防止)。
+  displaySnapshot: CrashSnapshot | null; loading: boolean;
+  index: CrashIndex | null; marketCapFilter: MarketCapFilterKey;
+  selectedDate: string | null; onSelectedDateChange: (date: string | null) => void;
+  sectorOptions: string[]; highlightSectors: Set<string>; onToggleHighlightSector: (sector: string) => void;
+  onRowTap: (code: string, phase: CrashPhaseInfo | null) => void;
+  onOpenGlossary: () => void;
+}) {
+  const dates = useMemo(() => index?.dates ?? [], [index]);
+  const nextDate = useMemo(() => {
+    if (!selectedDate) return null;
+    const i = dates.indexOf(selectedDate);
+    return i >= 0 && i < dates.length - 1 ? dates[i + 1] : null;
+  }, [dates, selectedDate]);
+  const { snapshot: nextSnapshot, loading: nextLoading } = useCrashSnapshotAt(nextDate);
+  const droppedCodes = useDroppedPickCodes(selectedDate, nextDate, displaySnapshot, nextSnapshot, nextLoading);
+
+  const filteredStocks = useMemo(
+    () => (displaySnapshot?.stocks ?? []).filter((s) => matchesMarketCapFilter(s.market_cap, marketCapFilter)),
+    [displaySnapshot, marketCapFilter]
+  );
+  const bySection = useMemoSections(filteredStocks);
+  const nameMap = useMemo(() => buildDisplayNames(filteredStocks), [filteredStocks]);
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
+        <DateSelector dates={dates} selectedDate={selectedDate} onChange={onSelectedDateChange} />
+        {selectedDate && <PastDataBadge />}
+        {loading && <span style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT }}>読込中...</span>}
+      </div>
+      <SectorHighlightControl sectors={sectorOptions} selected={highlightSectors} onToggle={onToggleHighlightSector} />
+      {!displaySnapshot ? (
+        loading ? null : (
+          <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT, padding: "8px 2px" }}>
+            この日のデータを取得できませんでした。
+          </div>
+        )
+      ) : displaySnapshot.status === "ACTIVE" || (!!selectedDate && displaySnapshot.stocks.length > 0) ? (
+        <>
+          <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8, marginBottom: 8 }}>
+            <button type="button" onClick={onOpenGlossary} aria-label="用語解説" style={glossaryButtonStyle}>
+              ?
+            </button>
+            <button
+              type="button"
+              onClick={() => openChart(filteredStocks.map((r) => r.code))}
+              style={chipButtonStyle}
+            >
+              チャート生成
+            </button>
+          </div>
+          {(displaySnapshot.phase?.crash_day_count ?? 0) > 0 && (
+            <MegaCapPickBlock
+              stocks={displaySnapshot.stocks}
+              crashDayCount={displaySnapshot.phase!.crash_day_count}
+              onTap={(code) => onRowTap(code, displaySnapshot.phase)}
+              highlightSectors={highlightSectors}
+              droppedCodes={droppedCodes}
+            />
+          )}
+          {(["S", "A", "B", "C", "D"] as const).map((s) => (
+            <SummarySection
+              key={s}
+              section={s}
+              rows={bySection[s]}
+              onTap={(code) => onRowTap(code, displaySnapshot.phase)}
+              crashDayCount={displaySnapshot.phase?.crash_day_count}
+              nameMap={nameMap}
+              highlightSectors={highlightSectors}
+            />
+          ))}
+          {displaySnapshot.stocks.length === 0 && (
+            <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT }}>
+              母集団0件、または特徴量計算対象がありません。
+            </div>
+          )}
+          {displaySnapshot.stocks.length > 0 && filteredStocks.length === 0 && (
+            <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT }}>
+              時価総額フィルタに一致する銘柄がありません。
+            </div>
+          )}
+        </>
+      ) : (
+        <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT, padding: "8px 2px" }}>
+          現在ACTIVEな局面はありません。過去局面の一覧・明細は「データ」タブから参照できます。
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function CrashClient({
   initialSnapshot, index,
 }: { initialSnapshot: CrashSnapshot | null; index: CrashIndex | null }) {
   const [tab, setTab] = useState<"summary" | "data" | "history">("summary");
   // Phase6: 局面履歴タブからデータタブへの日付ジャンプのため、selectedDateをここへ引き上げる。
   const [dataTabDate, setDataTabDate] = useState<string | null>(null);
+  // Phase7: まとめタブの日付遡り用。データタブとは独立(タブ切替で互いをリセットしない)。
+  const [summaryTabDate, setSummaryTabDate] = useState<string | null>(null);
   const [descOpen, setDescOpen] = useState(false);
   const [marketCapFilter, setMarketCapFilter] = useState<MarketCapFilterKey>("all");
   const [modalTarget, setModalTarget] = useState<{ code: string; phase: CrashPhaseInfo | null } | null>(null);
@@ -1042,14 +1197,11 @@ export default function CrashClient({
     });
   }, [initialSnapshot?.date, descOpen, setHeader]);
 
-  // 判断ログ: Reactのフックはアーリーリターンより前に無条件で呼ぶ必要があるため、
-  // useMemoSectionsはinitialSnapshotのnullチェックより先に(空配列fallbackで)呼ぶ。
-  const filteredStocks = useMemo(
-    () => (initialSnapshot?.stocks ?? []).filter((s) => matchesMarketCapFilter(s.market_cap, marketCapFilter)),
-    [initialSnapshot?.stocks, marketCapFilter]
-  );
-  const bySection = useMemoSections(filteredStocks);
-  const nameMap = useMemo(() => buildDisplayNames(filteredStocks), [filteredStocks]);
+  // Phase7: まとめタブの日付選択に応じたスナップショット。StatusBanner・SummaryTab
+  // 双方で使うためCrashClient側で一度だけfetchする(二重fetch防止)。
+  const { snapshot: summaryFetchedSnapshot, loading: summaryLoading } = useCrashSnapshotAt(summaryTabDate);
+  const summaryDisplaySnapshot = !summaryTabDate ? initialSnapshot : summaryFetchedSnapshot;
+
   // UI改修タスク9: 選択肢は現スナップショットの全銘柄(市場総額フィルタ前)から集める。
   const sectorOptions = useMemo(() => {
     const set = new Set((initialSnapshot?.stocks ?? []).map((s) => s.sector).filter(Boolean));
@@ -1101,73 +1253,27 @@ export default function CrashClient({
         })}
       </div>
 
-      <StatusBanner snapshot={initialSnapshot} />
+      <StatusBanner
+        snapshot={tab === "summary" ? (summaryDisplaySnapshot ?? initialSnapshot) : initialSnapshot}
+        pastBadge={tab === "summary" && !!summaryTabDate}
+      />
 
       {tab !== "history" && <MarketCapFilterControl value={marketCapFilter} onChange={setMarketCapFilter} />}
 
-      {tab === "summary" && (
-        <SectorHighlightControl
-          sectors={sectorOptions}
-          selected={highlightSectors}
-          onToggle={toggleHighlightSector}
-        />
-      )}
-
       {tab === "summary" ? (
-        initialSnapshot.status === "ACTIVE" ? (
-          <>
-            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <button
-                type="button"
-                onClick={() => setGlossaryOpen(true)}
-                aria-label="用語解説"
-                style={glossaryButtonStyle}
-              >
-                ?
-              </button>
-              <button
-                type="button"
-                onClick={() => openChart(filteredStocks.map((r) => r.code))}
-                style={chipButtonStyle}
-              >
-                チャート生成
-              </button>
-            </div>
-            {(initialSnapshot.phase?.crash_day_count ?? 0) > 0 && (
-              <MegaCapPickBlock
-                stocks={initialSnapshot.stocks}
-                crashDayCount={initialSnapshot.phase!.crash_day_count}
-                onTap={(code) => setModalTarget({ code, phase: initialSnapshot.phase })}
-                highlightSectors={highlightSectors}
-              />
-            )}
-            {(["S", "A", "B", "C", "D"] as const).map((s) => (
-              <SummarySection
-                key={s}
-                section={s}
-                rows={bySection[s]}
-                onTap={(code) => setModalTarget({ code, phase: initialSnapshot.phase })}
-                crashDayCount={initialSnapshot.phase?.crash_day_count}
-                nameMap={nameMap}
-                highlightSectors={highlightSectors}
-              />
-            ))}
-            {initialSnapshot.stocks.length === 0 && (
-              <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT }}>
-                母集団0件、または特徴量計算対象がありません。
-              </div>
-            )}
-            {initialSnapshot.stocks.length > 0 && filteredStocks.length === 0 && (
-              <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT }}>
-                時価総額フィルタに一致する銘柄がありません。
-              </div>
-            )}
-          </>
-        ) : (
-          <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT, padding: "8px 2px" }}>
-            現在ACTIVEな局面はありません。過去局面の一覧・明細は「データ」タブから参照できます。
-          </div>
-        )
+        <SummaryTab
+          displaySnapshot={summaryDisplaySnapshot}
+          loading={summaryLoading}
+          index={index}
+          marketCapFilter={marketCapFilter}
+          selectedDate={summaryTabDate}
+          onSelectedDateChange={setSummaryTabDate}
+          sectorOptions={sectorOptions}
+          highlightSectors={highlightSectors}
+          onToggleHighlightSector={toggleHighlightSector}
+          onRowTap={(code, phase) => setModalTarget({ code, phase })}
+          onOpenGlossary={() => setGlossaryOpen(true)}
+        />
       ) : tab === "data" ? (
         <DataTab
           snapshot={initialSnapshot}

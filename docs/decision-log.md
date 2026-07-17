@@ -97,6 +97,28 @@
   (kyoche-update等)への変更なし(crash-watchlist.ymlはdata/jquants/daily・meta.jsonの
   キャッシュを読み取り専用で復元するのみ)。
 
+## 2026-07-17 crash_latest.json/crash_watchlist_{date}.jsonの乖離リスク(既知の設計課題)
+
+- **課題**: `resolve_watchlist_output`のstaleフォールバック(除外率異常時に前回正常出力を
+  再利用する仕組み)が発動した日は、`_write_snapshot`が`crash_latest.json`と
+  `crash_watchlist_{date}.json`に同一内容を書き出すため両者は一致するが、
+  その後どちらか一方だけを個別に再生成・上書きする操作(過去局面バックフィル等)を行うと、
+  この2ファイルの内容が乖離しうる。実例: 2026-07-17実行時にJ-Quantsの当日データが
+  未確定で除外率異常(stale)判定となり、`crash_latest.json`は7/16のstocksを複製した
+  ものになっていた。同日、局面全日バックフィル(6/23〜7/17)でデータが確定した後の
+  7/17を独立再計算して`crash_watchlist_20260717.json`のみ上書きしたところ、
+  `crash_latest.json`(7/16複製、大型耐性ピック17件)と`crash_watchlist_20260717.json`
+  (再計算済み、19件)に差分が生じた。除外率を再確認し(319/320、0.3125%で異常判定閾値
+  90%を大きく下回る=データは完全)、`crash_latest.json`を`crash_watchlist_20260717.json`
+  の内容で同期して解消した(りゅ承認済み)。
+- **理由**: 恒久対処ではなく都度の手動同期で解消した。恒久対処案としては、
+  「バックフィル/再計算スクリプトが当日分(`crash_latest.json`のdateと同じ日付)を
+  上書きする場合は`crash_latest.json`も同時に同期する」ガードを追加する、
+  または`crash_latest.json`を廃止し常に`crash_watchlist_{最新date}.json`を
+  参照する設計に寄せる、等が考えられるが未着手(今回は単発の手動同期のみ)。
+- **影響**: 将来同様のバックフィル/再計算作業を行う際は、対象日が`crash_latest.json`の
+  `date`と一致する場合、乖離が起きていないか(`stocks`の内容比較)を確認すること。
+
 -----
 
 ## テンプレート（コピー用）
