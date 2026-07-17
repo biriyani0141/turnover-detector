@@ -1,21 +1,17 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import ChartCard, { type ChartData, type ChartExtraMarker } from "@/components/ChartCard";
+import ChartCard, { type ChartData, type ChartPhaseAnnotation } from "@/components/ChartCard";
 import type { CrashPhaseInfo } from "./CrashClient";
 
 const monoFont = '"SF Mono",SFMono-Regular,ui-monospace,"Roboto Mono",Menlo,Consolas,monospace';
-const PHASE_START_COLOR = "#E03A2F"; // 局面開始日: 目立つ赤系
-const CRASH_TRIGGER_COLOR = "#F5A623"; // 暴落トリガー日(型A): オレンジ系
 
-function buildPhaseMarkers(phase: CrashPhaseInfo | null): ChartExtraMarker[] {
-  if (!phase) return [];
-  const markers: ChartExtraMarker[] = [
-    { date: phase.start, color: PHASE_START_COLOR, shape: "arrowDown", size: 1, text: "暴落開始" },
-  ];
-  for (const d of phase.crash_days ?? []) {
-    markers.push({ date: d, color: CRASH_TRIGGER_COLOR, shape: "arrowDown", size: 0.6 });
-  }
-  return markers;
+// 判断ログ(crashチャートUI変更): 従来は局面開始日に赤矢印+「暴落開始」文字、
+// 暴落日ごとにオレンジ矢印を立てていたが、矢印+文字はローソク足と重なり視認性が
+// 悪かったため、開始日は赤の縦点線、暴落日は背景の薄いグレー帯に置き換えた
+// (ChartCard.tsxのphaseAnnotation prop、実体はChartPhasePrimitive)。
+function buildPhaseAnnotation(phase: CrashPhaseInfo | null): ChartPhaseAnnotation | undefined {
+  if (!phase) return undefined;
+  return { startDate: phase.start, bandDates: phase.crash_days ?? [] };
 }
 
 // 判断ログ(Phase4): フルスクリーンオーバーレイの実装は本リポジトリの
@@ -61,7 +57,7 @@ export default function ChartModal({
 
   const loading = fetchedCode !== code;
 
-  const extraMarkers = useMemo(() => buildPhaseMarkers(phase), [phase]);
+  const phaseAnnotation = useMemo(() => buildPhaseAnnotation(phase), [phase]);
 
   return (
     <div
@@ -83,7 +79,7 @@ export default function ChartModal({
         style={{ width: "100%", maxWidth: 480 }}
       >
         {!loading && data ? (
-          <ChartCard data={data} extraMarkers={extraMarkers} />
+          <ChartCard data={data} phaseAnnotation={phaseAnnotation} />
         ) : !loading && error ? (
           <div
             style={{

@@ -12,6 +12,7 @@ import {
   type LineData,
   type WhitespaceData,
 } from "lightweight-charts";
+import { ChartPhasePrimitive, type ChartPhaseAnnotation } from "./ChartPhasePrimitive";
 
 type ChartDataRow = {
   date: string;
@@ -59,6 +60,8 @@ export type ChartExtraMarker = {
   position?: "aboveBar" | "belowBar" | "inBar";
 };
 
+export type { ChartPhaseAnnotation };
+
 const UP = "#E03A2F";
 const DOWN = "#1B8C7D";
 
@@ -81,8 +84,13 @@ function fmtMktcap(n: number): string {
 }
 
 export default function ChartCard({
-  data, badge, extraMarkers,
-}: { data: ChartData; badge?: { text: string; bgClass: string }; extraMarkers?: ChartExtraMarker[] }) {
+  data, badge, extraMarkers, phaseAnnotation,
+}: {
+  data: ChartData;
+  badge?: { text: string; bgClass: string };
+  extraMarkers?: ChartExtraMarker[];
+  phaseAnnotation?: ChartPhaseAnnotation;
+}) {
   const chartRef = useRef<HTMLDivElement>(null);
 
   const { header, code, name, market, sector } = data;
@@ -228,6 +236,12 @@ export default function ChartCard({
       panes[1].setStretchFactor(1);
     }
 
+    // 暴落局面の注釈(開始日の縦点線/暴落日の背景帯)。opt-inのためprop未指定なら何もしない
+    if (phaseAnnotation && panes.length >= 1) {
+      const allDates = rs.map(r => r.date);
+      panes[0].attachPrimitive(new ChartPhasePrimitive(allDates, phaseAnnotation));
+    }
+
     const total = rs.length;
     chart.timeScale().setVisibleLogicalRange({ from: Math.max(0, total - 50), to: total });
 
@@ -256,7 +270,7 @@ export default function ChartCard({
       ro.disconnect();
       chart.remove();
     };
-  }, [data, extraMarkers]);
+  }, [data, extraMarkers, phaseAnnotation]);
 
   return (
     <div
