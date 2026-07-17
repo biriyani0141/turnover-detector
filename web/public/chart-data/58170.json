@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "非鉄金属",
   "header": {
-    "price": 1051,
-    "change": 46,
-    "changePct": 4.6,
+    "price": 983,
+    "change": -68,
+    "changePct": -6.5,
     "isStopHigh": false,
-    "turnoverPct": 14.3,
-    "marketCap": 6086924305,
-    "appearCount": 14,
+    "turnoverPct": 6.0,
+    "marketCap": 5693098565,
+    "appearCount": 15,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-05-08",
-      "o": 1308,
-      "h": 1364,
-      "l": 1308,
-      "c": 1360,
-      "v": 151300,
-      "ma5": 1352.4,
-      "ma25": 1435.4,
-      "ma75": 1386.9,
-      "ma200": 882.3
-    },
     {
       "date": "2026-05-11",
       "o": 1380,
@@ -665,6 +653,22 @@
       "ma25": 924.4,
       "ma75": 1148.5,
       "ma200": 1012.5,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-17",
+      "o": 976,
+      "h": 1034,
+      "l": 933,
+      "c": 983,
+      "v": 349600,
+      "ma5": 948.2,
+      "ma25": 929.7,
+      "ma75": 1144.8,
+      "ma200": 1015.1,
       "marks": [
         "turn5",
         "appear"

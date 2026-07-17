@@ -6,27 +6,15 @@
   "sector": "倉庫･運輸関連業",
   "header": {
     "price": 510,
-    "change": -1,
-    "changePct": -0.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 3.7,
+    "turnoverPct": 1.0,
     "marketCap": 5257156500,
     "appearCount": 1,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-05-08",
-      "o": 415,
-      "h": 420,
-      "l": 413,
-      "c": 415,
-      "v": 15900,
-      "ma5": 414.0,
-      "ma25": 436.1,
-      "ma75": 453.1,
-      "ma200": 438.3
-    },
     {
       "date": "2026-05-11",
       "o": 416,
@@ -620,6 +608,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-17",
+      "o": 510,
+      "h": 516,
+      "l": 501,
+      "c": 510,
+      "v": 103600,
+      "ma5": 480.6,
+      "ma25": 430.4,
+      "ma75": 426.5,
+      "ma200": 447.1
     }
   ]
 }

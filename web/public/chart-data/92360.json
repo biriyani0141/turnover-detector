@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "サービス業",
   "header": {
-    "price": 1040,
-    "change": 14,
-    "changePct": 1.4,
+    "price": 1025,
+    "change": -15,
+    "changePct": -1.4,
     "isStopHigh": false,
-    "turnoverPct": 0.1,
-    "marketCap": 1580072000,
+    "turnoverPct": 0.3,
+    "marketCap": 1557282500,
     "appearCount": 1,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-05-08",
-      "o": 1200,
-      "h": 1200,
-      "l": 1190,
-      "c": 1200,
-      "v": 2300,
-      "ma5": 1192.4,
-      "ma25": 1143.9,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-05-11",
       "o": 1230,
@@ -619,6 +607,18 @@
       "ma5": 1027.8,
       "ma25": 1025.0,
       "ma75": 1097.5,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-17",
+      "o": 1020,
+      "h": 1038,
+      "l": 1010,
+      "c": 1025,
+      "v": 3900,
+      "ma5": 1027.6,
+      "ma25": 1021.9,
+      "ma75": 1097.8,
       "ma200": null
     }
   ]

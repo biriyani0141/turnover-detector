@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "電気･ガス業",
   "header": {
-    "price": 81,
-    "change": 1,
-    "changePct": 1.2,
+    "price": 79,
+    "change": -2,
+    "changePct": -2.5,
     "isStopHigh": false,
-    "turnoverPct": 0.2,
-    "marketCap": 8920627200,
+    "turnoverPct": 0.4,
+    "marketCap": 8700364800,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-08",
-      "o": 96,
-      "h": 96,
-      "l": 95,
-      "c": 96,
-      "v": 278100,
-      "ma5": 95.8,
-      "ma25": 97.2,
-      "ma75": 100.4,
-      "ma200": 106.6
-    },
     {
       "date": "2026-05-11",
       "o": 95,
@@ -617,6 +605,18 @@
       "ma25": 76.4,
       "ma75": 88.8,
       "ma200": 98.2
+    },
+    {
+      "date": "2026-07-17",
+      "o": 80,
+      "h": 80,
+      "l": 78,
+      "c": 79,
+      "v": 414200,
+      "ma5": 79.8,
+      "ma25": 76.4,
+      "ma75": 88.6,
+      "ma200": 98.0
     }
   ]
 }
