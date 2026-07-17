@@ -1079,7 +1079,7 @@
       "return_2m": -8.22,
       "return_3m": -5.37,
       "return_6m": 19.15,
-      "return_1y": 136.0,
+      "return_1y": 136.01,
       "top_movers": [
         {
           "ticker": "ASTS",
@@ -1324,14 +1324,14 @@
       "theme": "ネオクラウド：リース",
       "slug": "neo-cloud-lease",
       "theme1": "データセンター",
-      "return_1d": 0.27,
-      "return_5d": -13.67,
-      "return_10d": -11.18,
-      "return_1m": -32.12,
-      "return_2m": -20.94,
-      "return_3m": 5.51,
-      "return_6m": 21.86,
-      "return_1y": 335.8,
+      "return_1d": 0.29,
+      "return_5d": -13.65,
+      "return_10d": -11.16,
+      "return_1m": -32.11,
+      "return_2m": -20.92,
+      "return_3m": 5.54,
+      "return_6m": 21.89,
+      "return_1y": 335.9,
       "top_movers": [
         {
           "ticker": "SLNH",
@@ -1339,11 +1339,11 @@
         },
         {
           "ticker": "NUAI",
-          "pct_1d": 2.38
+          "pct_1d": 2.26
         },
         {
           "ticker": "WULF",
-          "pct_1d": 0.95
+          "pct_1d": 1.0
         }
       ],
       "bucket": null
@@ -1513,49 +1513,21 @@
       "bucket": null
     },
     {
-      "theme": "電力貯蔵",
-      "slug": "battery-storage",
-      "theme1": "データセンター",
-      "return_1d": 0.07,
-      "return_5d": -7.28,
-      "return_10d": -14.65,
-      "return_1m": -21.58,
-      "return_2m": -27.98,
-      "return_3m": -14.81,
-      "return_6m": -44.16,
-      "return_1y": 63.99,
-      "top_movers": [
-        {
-          "ticker": "EOSE",
-          "pct_1d": 4.29
-        },
-        {
-          "ticker": "NRGV",
-          "pct_1d": 0.82
-        },
-        {
-          "ticker": "ENS",
-          "pct_1d": 0.63
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "量子コンピュータ",
       "slug": "quantum-computing",
       "theme1": "半導体",
-      "return_1d": 0.04,
-      "return_5d": -15.84,
-      "return_10d": -23.41,
-      "return_1m": -29.11,
-      "return_2m": -24.15,
-      "return_3m": -27.89,
-      "return_6m": -37.15,
-      "return_1y": -26.01,
+      "return_1d": 0.06,
+      "return_5d": -15.82,
+      "return_10d": -23.39,
+      "return_1m": -29.09,
+      "return_2m": -24.13,
+      "return_3m": -27.87,
+      "return_6m": -37.14,
+      "return_1y": -25.99,
       "top_movers": [
         {
           "ticker": "QUBT",
-          "pct_1d": 1.96
+          "pct_1d": 2.09
         },
         {
           "ticker": "INFQ",
@@ -1572,14 +1544,14 @@
       "theme": "防衛：電子・情報通信",
       "slug": "defence-comm",
       "theme1": "防衛・宇宙",
-      "return_1d": 0.03,
-      "return_5d": -5.13,
-      "return_10d": -7.98,
-      "return_1m": -9.99,
-      "return_2m": 0.86,
-      "return_3m": -0.02,
-      "return_6m": 2.22,
-      "return_1y": 82.73,
+      "return_1d": 0.04,
+      "return_5d": -5.11,
+      "return_10d": -7.96,
+      "return_1m": -9.98,
+      "return_2m": 0.88,
+      "return_3m": 0.0,
+      "return_6m": 2.24,
+      "return_1y": 82.76,
       "top_movers": [
         {
           "ticker": "MOG.A",
@@ -1592,6 +1564,62 @@
         {
           "ticker": "MRCY",
           "pct_1d": 0.12
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "電力貯蔵",
+      "slug": "battery-storage",
+      "theme1": "データセンター",
+      "return_1d": 0.04,
+      "return_5d": -7.31,
+      "return_10d": -14.68,
+      "return_1m": -21.61,
+      "return_2m": -28.01,
+      "return_3m": -14.84,
+      "return_6m": -44.18,
+      "return_1y": 63.93,
+      "top_movers": [
+        {
+          "ticker": "EOSE",
+          "pct_1d": 4.04
+        },
+        {
+          "ticker": "NRGV",
+          "pct_1d": 0.82
+        },
+        {
+          "ticker": "ENS",
+          "pct_1d": 0.63
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "宇宙：インフラ",
+      "slug": "space-infrastructure",
+      "theme1": "防衛・宇宙",
+      "return_1d": 0.01,
+      "return_5d": -16.79,
+      "return_10d": -28.25,
+      "return_1m": -37.14,
+      "return_2m": -38.08,
+      "return_3m": -26.62,
+      "return_6m": -21.49,
+      "return_1y": -16.11,
+      "top_movers": [
+        {
+          "ticker": "VOYG",
+          "pct_1d": 3.4
+        },
+        {
+          "ticker": "FLY",
+          "pct_1d": 1.31
+        },
+        {
+          "ticker": "LUNR",
+          "pct_1d": 0.45
         }
       ],
       "bucket": null
@@ -2044,14 +2072,14 @@
       "theme": "リチウム",
       "slug": "lithium",
       "theme1": "戦略資源",
-      "return_1d": -0.28,
-      "return_5d": -9.14,
+      "return_1d": -0.29,
+      "return_5d": -9.15,
       "return_10d": -16.22,
       "return_1m": -25.7,
-      "return_2m": -29.16,
-      "return_3m": -30.89,
+      "return_2m": -29.17,
+      "return_3m": -30.9,
       "return_6m": -27.81,
-      "return_1y": 71.39,
+      "return_1y": 71.38,
       "top_movers": [
         {
           "ticker": "SQM",
@@ -2456,14 +2484,14 @@
       "theme": "産業用電池",
       "slug": "industrial-batteries",
       "theme1": "バッテリー",
-      "return_1d": -0.55,
-      "return_5d": -1.74,
-      "return_10d": -7.07,
-      "return_1m": -13.83,
-      "return_2m": -16.45,
-      "return_3m": -19.0,
-      "return_6m": -22.8,
-      "return_1y": 37.74,
+      "return_1d": -0.54,
+      "return_5d": -1.73,
+      "return_10d": -7.05,
+      "return_1m": -13.82,
+      "return_2m": -16.44,
+      "return_3m": -18.99,
+      "return_6m": -22.78,
+      "return_1y": 37.76,
       "top_movers": [
         {
           "ticker": "ENS",
@@ -2475,7 +2503,7 @@
         },
         {
           "ticker": "MVST",
-          "pct_1d": -1.77
+          "pct_1d": -1.73
         }
       ],
       "bucket": null
@@ -2652,18 +2680,18 @@
       "theme": "ソフト：コミュニケション",
       "slug": "soft-comm",
       "theme1": "ソフトウェア",
-      "return_1d": -0.64,
-      "return_5d": 0.32,
-      "return_10d": 5.67,
-      "return_1m": 17.19,
-      "return_2m": 3.16,
-      "return_3m": 21.05,
-      "return_6m": 41.32,
-      "return_1y": 27.87,
+      "return_1d": -0.62,
+      "return_5d": 0.35,
+      "return_10d": 5.7,
+      "return_1m": 17.22,
+      "return_2m": 3.18,
+      "return_3m": 21.08,
+      "return_6m": 41.36,
+      "return_1y": 27.91,
       "top_movers": [
         {
           "ticker": "FIVN",
-          "pct_1d": 1.15
+          "pct_1d": 1.23
         },
         {
           "ticker": "RNG",
@@ -3005,34 +3033,6 @@
       "bucket": null
     },
     {
-      "theme": "原発機器（次世代）",
-      "slug": "nuclear-nextgen",
-      "theme1": "データセンター",
-      "return_1d": -0.89,
-      "return_5d": -16.76,
-      "return_10d": -22.71,
-      "return_1m": -33.01,
-      "return_2m": -33.76,
-      "return_3m": -37.53,
-      "return_6m": -57.03,
-      "return_1y": -59.03,
-      "top_movers": [
-        {
-          "ticker": "SMR",
-          "pct_1d": 0.98
-        },
-        {
-          "ticker": "NNE",
-          "pct_1d": -0.99
-        },
-        {
-          "ticker": "OKLO",
-          "pct_1d": -1.43
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "バイオテック：総合",
       "slug": "biotech-diversified",
       "theme1": "医薬品",
@@ -3056,6 +3056,34 @@
         {
           "ticker": "BIIB",
           "pct_1d": -1.37
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "原発機器（次世代）",
+      "slug": "nuclear-nextgen",
+      "theme1": "データセンター",
+      "return_1d": -0.91,
+      "return_5d": -16.78,
+      "return_10d": -22.73,
+      "return_1m": -33.03,
+      "return_2m": -33.78,
+      "return_3m": -37.55,
+      "return_6m": -57.04,
+      "return_1y": -59.04,
+      "top_movers": [
+        {
+          "ticker": "SMR",
+          "pct_1d": 0.98
+        },
+        {
+          "ticker": "NNE",
+          "pct_1d": -1.1
+        },
+        {
+          "ticker": "OKLO",
+          "pct_1d": -1.43
         }
       ],
       "bucket": null
@@ -3290,16 +3318,16 @@
       "theme1": "データセンター",
       "return_1d": -0.97,
       "return_5d": -5.86,
-      "return_10d": -7.13,
+      "return_10d": -7.14,
       "return_1m": -13.28,
-      "return_2m": -17.37,
+      "return_2m": -17.38,
       "return_3m": 9.36,
-      "return_6m": 45.18,
-      "return_1y": 106.88,
+      "return_6m": 45.17,
+      "return_1y": 106.87,
       "top_movers": [
         {
           "ticker": "IESC",
-          "pct_1d": 0.59
+          "pct_1d": 0.58
         },
         {
           "ticker": "PWR",
@@ -3481,9 +3509,9 @@
       "return_10d": -10.34,
       "return_1m": 7.65,
       "return_2m": 18.55,
-      "return_3m": 7.36,
+      "return_3m": 7.35,
       "return_6m": 10.12,
-      "return_1y": 45.7,
+      "return_1y": 45.69,
       "top_movers": [
         {
           "ticker": "VKTX",
@@ -3829,34 +3857,6 @@
       "bucket": null
     },
     {
-      "theme": "半導体製造装置：後工程",
-      "slug": "semi-equip-back",
-      "theme1": "データセンター",
-      "return_1d": -1.28,
-      "return_5d": -4.82,
-      "return_10d": -5.32,
-      "return_1m": -20.35,
-      "return_2m": -5.64,
-      "return_3m": -5.12,
-      "return_6m": 61.38,
-      "return_1y": 226.63,
-      "top_movers": [
-        {
-          "ticker": "TER",
-          "pct_1d": -0.04
-        },
-        {
-          "ticker": "COHU",
-          "pct_1d": -0.64
-        },
-        {
-          "ticker": "ONTO",
-          "pct_1d": -0.68
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "銅鉱山",
       "slug": "copper-mining",
       "theme1": "戦略資源",
@@ -3880,6 +3880,34 @@
         {
           "ticker": "TECK",
           "pct_1d": -1.31
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "半導体製造装置：後工程",
+      "slug": "semi-equip-back",
+      "theme1": "データセンター",
+      "return_1d": -1.3,
+      "return_5d": -4.84,
+      "return_10d": -5.34,
+      "return_1m": -20.37,
+      "return_2m": -5.66,
+      "return_3m": -5.15,
+      "return_6m": 61.34,
+      "return_1y": 226.55,
+      "top_movers": [
+        {
+          "ticker": "TER",
+          "pct_1d": -0.04
+        },
+        {
+          "ticker": "COHU",
+          "pct_1d": -0.64
+        },
+        {
+          "ticker": "ONTO",
+          "pct_1d": -0.68
         }
       ],
       "bucket": null
@@ -4129,6 +4157,34 @@
       "bucket": null
     },
     {
+      "theme": "レアアース",
+      "slug": "rare-earth",
+      "theme1": "戦略資源",
+      "return_1d": -1.41,
+      "return_5d": -12.42,
+      "return_10d": -18.59,
+      "return_1m": -26.92,
+      "return_2m": -32.2,
+      "return_3m": -33.13,
+      "return_6m": -35.6,
+      "return_1y": 32.71,
+      "top_movers": [
+        {
+          "ticker": "UAMY",
+          "pct_1d": 2.35
+        },
+        {
+          "ticker": "MP",
+          "pct_1d": -0.51
+        },
+        {
+          "ticker": "TMC",
+          "pct_1d": -0.53
+        }
+      ],
+      "bucket": null
+    },
+    {
       "theme": "人型ロボ：脳・完成品",
       "slug": "humanoid-brain",
       "theme1": "ロボティクス",
@@ -4213,6 +4269,34 @@
       "bucket": null
     },
     {
+      "theme": "太陽光発電",
+      "slug": "solar-energy-storage",
+      "theme1": "データセンター",
+      "return_1d": -1.43,
+      "return_5d": -5.15,
+      "return_10d": -8.98,
+      "return_1m": -14.68,
+      "return_2m": -12.17,
+      "return_3m": 11.83,
+      "return_6m": -7.62,
+      "return_1y": 93.1,
+      "top_movers": [
+        {
+          "ticker": "CSIQ",
+          "pct_1d": 1.36
+        },
+        {
+          "ticker": "FSLR",
+          "pct_1d": -0.04
+        },
+        {
+          "ticker": "TE",
+          "pct_1d": -1.68
+        }
+      ],
+      "bucket": null
+    },
+    {
       "theme": "生命科学：総合",
       "slug": "lifescience-pf",
       "theme1": "創薬支援",
@@ -4269,34 +4353,6 @@
       "bucket": null
     },
     {
-      "theme": "太陽光発電",
-      "slug": "solar-energy-storage",
-      "theme1": "データセンター",
-      "return_1d": -1.44,
-      "return_5d": -5.16,
-      "return_10d": -8.99,
-      "return_1m": -14.69,
-      "return_2m": -12.18,
-      "return_3m": 11.82,
-      "return_6m": -7.63,
-      "return_1y": 93.07,
-      "top_movers": [
-        {
-          "ticker": "CSIQ",
-          "pct_1d": 1.36
-        },
-        {
-          "ticker": "FSLR",
-          "pct_1d": -0.04
-        },
-        {
-          "ticker": "TE",
-          "pct_1d": -1.68
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "カスタムAI半導体",
       "slug": "custom-ai-chips",
       "theme1": "データセンター",
@@ -4320,34 +4376,6 @@
         {
           "ticker": "AMZN",
           "pct_1d": -1.05
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "レアアース",
-      "slug": "rare-earth",
-      "theme1": "戦略資源",
-      "return_1d": -1.45,
-      "return_5d": -12.46,
-      "return_10d": -18.63,
-      "return_1m": -26.96,
-      "return_2m": -32.23,
-      "return_3m": -33.17,
-      "return_6m": -35.63,
-      "return_1y": 32.64,
-      "top_movers": [
-        {
-          "ticker": "UAMY",
-          "pct_1d": 2.35
-        },
-        {
-          "ticker": "MP",
-          "pct_1d": -0.51
-        },
-        {
-          "ticker": "TMC",
-          "pct_1d": -0.53
         }
       ],
       "bucket": null
@@ -4945,34 +4973,6 @@
       "bucket": null
     },
     {
-      "theme": "ロボ：物流/サービス",
-      "slug": "robotics-logistics",
-      "theme1": "ロボティクス",
-      "return_1d": -1.75,
-      "return_5d": -5.35,
-      "return_10d": -8.77,
-      "return_1m": -8.57,
-      "return_2m": -15.27,
-      "return_3m": -13.54,
-      "return_6m": -21.14,
-      "return_1y": 14.9,
-      "top_movers": [
-        {
-          "ticker": "RR",
-          "pct_1d": 0.62
-        },
-        {
-          "ticker": "CGNX",
-          "pct_1d": 0.31
-        },
-        {
-          "ticker": "SYM",
-          "pct_1d": -1.7
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "DRAMサプライチェーン",
       "slug": "memory-shortage",
       "theme1": "データセンター",
@@ -4996,6 +4996,34 @@
         {
           "ticker": "MU",
           "pct_1d": -0.5
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "防衛：ドローン",
+      "slug": "drones",
+      "theme1": "防衛・宇宙",
+      "return_1d": -1.76,
+      "return_5d": -8.56,
+      "return_10d": -20.02,
+      "return_1m": -20.82,
+      "return_2m": -16.71,
+      "return_3m": -27.36,
+      "return_6m": -46.92,
+      "return_1y": 13.49,
+      "top_movers": [
+        {
+          "ticker": "MRCY",
+          "pct_1d": 0.12
+        },
+        {
+          "ticker": "RCAT",
+          "pct_1d": -0.52
+        },
+        {
+          "ticker": "DPRO",
+          "pct_1d": -0.71
         }
       ],
       "bucket": null
@@ -5057,34 +5085,6 @@
       "bucket": null
     },
     {
-      "theme": "防衛：ドローン",
-      "slug": "drones",
-      "theme1": "防衛・宇宙",
-      "return_1d": -1.78,
-      "return_5d": -8.57,
-      "return_10d": -20.02,
-      "return_1m": -20.83,
-      "return_2m": -16.72,
-      "return_3m": -27.37,
-      "return_6m": -46.92,
-      "return_1y": 13.47,
-      "top_movers": [
-        {
-          "ticker": "MRCY",
-          "pct_1d": 0.12
-        },
-        {
-          "ticker": "RCAT",
-          "pct_1d": -0.65
-        },
-        {
-          "ticker": "DPRO",
-          "pct_1d": -0.71
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "住宅ローン組成",
       "slug": "mortgage-origination",
       "theme1": "消費者金融",
@@ -5113,29 +5113,29 @@
       "bucket": null
     },
     {
-      "theme": "スマートグラス",
-      "slug": "smart-glass",
-      "theme1": "エッジAI",
+      "theme": "ロボ：物流/サービス",
+      "slug": "robotics-logistics",
+      "theme1": "ロボティクス",
       "return_1d": -1.85,
-      "return_5d": -7.08,
-      "return_10d": -5.97,
-      "return_1m": -7.39,
-      "return_2m": -7.48,
-      "return_3m": 2.22,
-      "return_6m": 1.02,
-      "return_1y": 18.0,
+      "return_5d": -5.45,
+      "return_10d": -8.87,
+      "return_1m": -8.66,
+      "return_2m": -15.36,
+      "return_3m": -13.63,
+      "return_6m": -21.23,
+      "return_1y": 14.78,
       "top_movers": [
         {
-          "ticker": "QCOM",
-          "pct_1d": 0.68
+          "ticker": "CGNX",
+          "pct_1d": 0.31
         },
         {
-          "ticker": "LSCC",
-          "pct_1d": 0.59
+          "ticker": "RR",
+          "pct_1d": 0.0
         },
         {
-          "ticker": "VUZI",
-          "pct_1d": -1.72
+          "ticker": "SYM",
+          "pct_1d": -1.81
         }
       ],
       "bucket": null
@@ -5164,6 +5164,34 @@
         {
           "ticker": "GIS",
           "pct_1d": -1.89
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "スマートグラス",
+      "slug": "smart-glass",
+      "theme1": "エッジAI",
+      "return_1d": -1.89,
+      "return_5d": -7.12,
+      "return_10d": -6.0,
+      "return_1m": -7.42,
+      "return_2m": -7.51,
+      "return_3m": 2.18,
+      "return_6m": 0.99,
+      "return_1y": 17.96,
+      "top_movers": [
+        {
+          "ticker": "QCOM",
+          "pct_1d": 0.68
+        },
+        {
+          "ticker": "LSCC",
+          "pct_1d": 0.59
+        },
+        {
+          "ticker": "VUZI",
+          "pct_1d": -1.94
         }
       ],
       "bucket": null
@@ -5252,18 +5280,18 @@
       "theme": "半導体受託製造：特殊",
       "slug": "foundry-specialty",
       "theme1": "データセンター",
-      "return_1d": -2.01,
-      "return_5d": -7.06,
-      "return_10d": -7.84,
-      "return_1m": -13.42,
-      "return_2m": -4.13,
-      "return_3m": 21.2,
-      "return_6m": 61.89,
-      "return_1y": 212.79,
+      "return_1d": -1.98,
+      "return_5d": -7.04,
+      "return_10d": -7.82,
+      "return_1m": -13.39,
+      "return_2m": -4.1,
+      "return_3m": 21.23,
+      "return_6m": 61.93,
+      "return_1y": 212.88,
       "top_movers": [
         {
           "ticker": "SKYT",
-          "pct_1d": -0.46
+          "pct_1d": -0.35
         },
         {
           "ticker": "GFS",
@@ -5420,14 +5448,14 @@
       "theme": "光接続：シリコンﾌｫﾄﾆｸｽ",
       "slug": "dc-optical-parts",
       "theme1": "データセンター",
-      "return_1d": -2.31,
-      "return_5d": -5.64,
-      "return_10d": -5.89,
-      "return_1m": -19.38,
-      "return_2m": -12.92,
-      "return_3m": 4.18,
-      "return_6m": 80.57,
-      "return_1y": 239.57,
+      "return_1d": -2.34,
+      "return_5d": -5.67,
+      "return_10d": -5.91,
+      "return_1m": -19.4,
+      "return_2m": -12.94,
+      "return_3m": 4.16,
+      "return_6m": 80.52,
+      "return_1y": 239.48,
       "top_movers": [
         {
           "ticker": "GFS",
@@ -5473,6 +5501,58 @@
       "bucket": null
     },
     {
+      "theme": "暗号資産・ブロックチェン",
+      "slug": "crypto",
+      "theme1": "フィンテック",
+      "return_1d": -2.36,
+      "return_5d": -4.54,
+      "return_10d": -6.51,
+      "return_1m": -10.22,
+      "return_2m": -23.88,
+      "return_3m": -21.08,
+      "return_6m": -22.36,
+      "return_1y": -42.22,
+      "top_movers": [
+        {
+          "ticker": "CLSK",
+          "pct_1d": 1.01
+        },
+        {
+          "ticker": "MSTR",
+          "pct_1d": 0.87
+        },
+        {
+          "ticker": "CRCL",
+          "pct_1d": -0.18
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "光接続：投機的",
+      "slug": "dc-optical-speculative",
+      "theme1": "データセンター",
+      "return_1d": -2.37,
+      "return_5d": -9.95,
+      "return_10d": -15.55,
+      "return_1m": -35.28,
+      "return_2m": -53.06,
+      "return_3m": -16.7,
+      "return_6m": 34.59,
+      "return_1y": 167.4,
+      "top_movers": [
+        {
+          "ticker": "LWLG",
+          "pct_1d": -0.95
+        },
+        {
+          "ticker": "POET",
+          "pct_1d": -3.78
+        }
+      ],
+      "bucket": null
+    },
+    {
       "theme": "AI創薬：データ",
       "slug": "ai-pharma-data",
       "theme1": "創薬支援",
@@ -5492,34 +5572,6 @@
         {
           "ticker": "RXRX",
           "pct_1d": -2.65
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "暗号資産・ブロックチェン",
-      "slug": "crypto",
-      "theme1": "フィンテック",
-      "return_1d": -2.38,
-      "return_5d": -4.56,
-      "return_10d": -6.53,
-      "return_1m": -10.23,
-      "return_2m": -23.9,
-      "return_3m": -21.1,
-      "return_6m": -22.37,
-      "return_1y": -42.23,
-      "top_movers": [
-        {
-          "ticker": "CLSK",
-          "pct_1d": 0.93
-        },
-        {
-          "ticker": "MSTR",
-          "pct_1d": 0.87
-        },
-        {
-          "ticker": "CRCL",
-          "pct_1d": -0.18
         }
       ],
       "bucket": null
@@ -5572,30 +5624,6 @@
         {
           "ticker": "TSM",
           "pct_1d": -2.78
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "光接続：投機的",
-      "slug": "dc-optical-speculative",
-      "theme1": "データセンター",
-      "return_1d": -2.41,
-      "return_5d": -9.98,
-      "return_10d": -15.59,
-      "return_1m": -35.31,
-      "return_2m": -53.08,
-      "return_3m": -16.73,
-      "return_6m": 34.54,
-      "return_1y": 167.29,
-      "top_movers": [
-        {
-          "ticker": "LWLG",
-          "pct_1d": -1.03
-        },
-        {
-          "ticker": "POET",
-          "pct_1d": -3.78
         }
       ],
       "bucket": null
@@ -5657,10 +5685,10 @@
       "slug": "beverages-diversified",
       "theme1": "食品",
       "return_1d": -2.57,
-      "return_5d": -1.98,
+      "return_5d": -1.99,
       "return_10d": -5.57,
-      "return_1m": 0.47,
-      "return_2m": 2.31,
+      "return_1m": 0.46,
+      "return_2m": 2.3,
       "return_3m": 4.11,
       "return_6m": -1.55,
       "return_1y": 7.19,
@@ -5684,14 +5712,14 @@
       "theme": "広告テック",
       "slug": "ad-tech",
       "theme1": "メディア",
-      "return_1d": -2.62,
-      "return_5d": -5.82,
+      "return_1d": -2.61,
+      "return_5d": -5.81,
       "return_10d": -4.33,
-      "return_1m": 5.35,
-      "return_2m": 12.57,
-      "return_3m": 8.6,
-      "return_6m": -8.2,
-      "return_1y": -16.28,
+      "return_1m": 5.36,
+      "return_2m": 12.58,
+      "return_3m": 8.61,
+      "return_6m": -8.19,
+      "return_1y": -16.27,
       "top_movers": [
         {
           "ticker": "ZETA",
@@ -5703,7 +5731,7 @@
         },
         {
           "ticker": "TTD",
-          "pct_1d": -2.88
+          "pct_1d": -2.82
         }
       ],
       "bucket": null
@@ -5960,14 +5988,14 @@
       "theme": "BNPL",
       "slug": "bnpl",
       "theme1": "フィンテック",
-      "return_1d": -3.48,
-      "return_5d": -5.1,
-      "return_10d": -6.32,
-      "return_1m": 10.86,
-      "return_2m": 37.46,
-      "return_3m": 49.36,
-      "return_6m": 25.98,
-      "return_1y": -9.42,
+      "return_1d": -3.46,
+      "return_5d": -5.08,
+      "return_10d": -6.3,
+      "return_1m": 10.88,
+      "return_2m": 37.49,
+      "return_3m": 49.39,
+      "return_6m": 26.01,
+      "return_1y": -9.4,
       "top_movers": [
         {
           "ticker": "KLAR",
@@ -5975,7 +6003,7 @@
         },
         {
           "ticker": "SEZL",
-          "pct_1d": -3.27
+          "pct_1d": -3.21
         },
         {
           "ticker": "AFRM",
@@ -6175,37 +6203,9 @@
         }
       ],
       "bucket": null
-    },
-    {
-      "theme": "宇宙：インフラ",
-      "slug": "space-infrastructure",
-      "theme1": "防衛・宇宙",
-      "return_1d": 0.0,
-      "return_5d": -16.8,
-      "return_10d": -28.26,
-      "return_1m": -37.14,
-      "return_2m": -38.08,
-      "return_3m": -26.63,
-      "return_6m": -21.5,
-      "return_1y": -16.12,
-      "top_movers": [
-        {
-          "ticker": "VOYG",
-          "pct_1d": 3.4
-        },
-        {
-          "ticker": "FLY",
-          "pct_1d": 1.31
-        },
-        {
-          "ticker": "LUNR",
-          "pct_1d": 0.45
-        }
-      ],
-      "bucket": null
     }
   ],
   "stock_date": "2026-07-17",
-  "updated_at": "2026-07-17 21:05:25",
-  "saved_at": "2026-07-17T21:15:23.790504"
+  "updated_at": "2026-07-17 21:20:07",
+  "saved_at": "2026-07-17T21:28:21.539663"
 }
