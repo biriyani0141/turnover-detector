@@ -299,7 +299,13 @@ def build_detail_for_code(session: requests.Session, local_code: str) -> dict:
     raw_code = local_code[:-1]
     overview = fetch_overview(session, raw_code)
     margin_weekly = fetch_margin_weekly(session, raw_code, overview["shares_outstanding"])
-    stockholders = fetch_stockholders(session, raw_code)
+    try:
+        stockholders = fetch_stockholders(session, raw_code)
+    except ScrapeError as e:
+        # ETN等、株主という概念自体が存在しない銘柄では株主パネルが無い
+        # (2026-07-17、コード2034=ETNで確認)。個別銘柄の欠損としてバッチは継続する。
+        print(f"警告: {raw_code} {overview['name']} の株主データ取得に失敗、株主情報なしとして続行: {e}")
+        stockholders = []
     news = fetch_news(session, raw_code)
 
     return {
