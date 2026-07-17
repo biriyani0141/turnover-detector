@@ -6,7 +6,20 @@
     "2025-11-27",
     "2026-04-07",
     "2026-06-15",
+    "2026-06-23",
+    "2026-06-24",
+    "2026-06-25",
+    "2026-06-26",
+    "2026-06-29",
+    "2026-06-30",
+    "2026-07-02",
+    "2026-07-03",
+    "2026-07-06",
+    "2026-07-07",
+    "2026-07-08",
+    "2026-07-09",
     "2026-07-10",
+    "2026-07-13",
     "2026-07-14",
     "2026-07-15",
     "2026-07-16",
@@ -257,6 +270,188 @@
       "end_reason": "データ末尾到達",
       "crash_day_count": 7,
       "index_max_dd": -0.1365
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-06-23",
+      "phase_start": "2026-06-23",
+      "day_index": 1,
+      "index_dd": -0.039,
+      "star_count": 151,
+      "universe_count": 319,
+      "median_excess": -0.0027,
+      "large_pick_count": 35
+    },
+    {
+      "date": "2026-06-24",
+      "phase_start": "2026-06-23",
+      "day_index": 2,
+      "index_dd": -0.0572,
+      "star_count": 162,
+      "universe_count": 319,
+      "median_excess": 0.0008,
+      "large_pick_count": 36
+    },
+    {
+      "date": "2026-06-25",
+      "phase_start": "2026-06-23",
+      "day_index": 3,
+      "index_dd": -0.0572,
+      "star_count": 96,
+      "universe_count": 319,
+      "median_excess": -0.021,
+      "large_pick_count": 36
+    },
+    {
+      "date": "2026-06-26",
+      "phase_start": "2026-06-23",
+      "day_index": 4,
+      "index_dd": -0.0572,
+      "star_count": 143,
+      "universe_count": 319,
+      "median_excess": -0.007,
+      "large_pick_count": 26
+    },
+    {
+      "date": "2026-06-29",
+      "phase_start": "2026-06-23",
+      "day_index": 5,
+      "index_dd": -0.0636,
+      "star_count": 130,
+      "universe_count": 319,
+      "median_excess": -0.0183,
+      "large_pick_count": 26
+    },
+    {
+      "date": "2026-06-30",
+      "phase_start": "2026-06-23",
+      "day_index": 6,
+      "index_dd": -0.0636,
+      "star_count": 121,
+      "universe_count": 319,
+      "median_excess": -0.0243,
+      "large_pick_count": 25
+    },
+    {
+      "date": "2026-07-02",
+      "phase_start": "2026-06-23",
+      "day_index": 8,
+      "index_dd": -0.0636,
+      "star_count": 137,
+      "universe_count": 319,
+      "median_excess": -0.0188,
+      "large_pick_count": 40
+    },
+    {
+      "date": "2026-07-03",
+      "phase_start": "2026-06-23",
+      "day_index": 9,
+      "index_dd": -0.069,
+      "star_count": 139,
+      "universe_count": 319,
+      "median_excess": -0.0129,
+      "large_pick_count": 40
+    },
+    {
+      "date": "2026-07-06",
+      "phase_start": "2026-06-23",
+      "day_index": 10,
+      "index_dd": -0.069,
+      "star_count": 131,
+      "universe_count": 319,
+      "median_excess": -0.0299,
+      "large_pick_count": 41
+    },
+    {
+      "date": "2026-07-07",
+      "phase_start": "2026-06-23",
+      "day_index": 11,
+      "index_dd": -0.069,
+      "star_count": 112,
+      "universe_count": 319,
+      "median_excess": -0.04,
+      "large_pick_count": 27
+    },
+    {
+      "date": "2026-07-08",
+      "phase_start": "2026-06-23",
+      "day_index": 12,
+      "index_dd": -0.0799,
+      "star_count": 116,
+      "universe_count": 319,
+      "median_excess": -0.0484,
+      "large_pick_count": 37
+    },
+    {
+      "date": "2026-07-09",
+      "phase_start": "2026-06-23",
+      "day_index": 13,
+      "index_dd": -0.0799,
+      "star_count": 111,
+      "universe_count": 319,
+      "median_excess": -0.0504,
+      "large_pick_count": 37
+    },
+    {
+      "date": "2026-07-10",
+      "phase_start": "2026-06-23",
+      "day_index": 14,
+      "index_dd": -0.0799,
+      "star_count": 118,
+      "universe_count": 319,
+      "median_excess": -0.0427,
+      "large_pick_count": 36
+    },
+    {
+      "date": "2026-07-13",
+      "phase_start": "2026-06-23",
+      "day_index": 15,
+      "index_dd": -0.0821,
+      "star_count": 115,
+      "universe_count": 318,
+      "median_excess": -0.0489,
+      "large_pick_count": 35
+    },
+    {
+      "date": "2026-07-14",
+      "phase_start": "2026-06-23",
+      "day_index": 16,
+      "index_dd": -0.0874,
+      "star_count": 110,
+      "universe_count": 318,
+      "median_excess": -0.0553,
+      "large_pick_count": 35
+    },
+    {
+      "date": "2026-07-15",
+      "phase_start": "2026-06-23",
+      "day_index": 17,
+      "index_dd": -0.0821,
+      "star_count": 123,
+      "universe_count": 318,
+      "median_excess": -0.0374,
+      "large_pick_count": 36
+    },
+    {
+      "date": "2026-07-16",
+      "phase_start": "2026-06-23",
+      "day_index": 18,
+      "index_dd": -0.0874,
+      "star_count": 123,
+      "universe_count": 319,
+      "median_excess": -0.0439,
+      "large_pick_count": 28
+    },
+    {
+      "date": "2026-07-17",
+      "phase_start": "2026-06-23",
+      "day_index": 19,
+      "index_dd": -0.1365,
+      "star_count": 113,
+      "universe_count": 319,
+      "median_excess": -0.0505,
+      "large_pick_count": 19
     }
   ]
 }

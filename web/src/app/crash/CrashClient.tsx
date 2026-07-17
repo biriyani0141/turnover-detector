@@ -3,6 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useHeader } from "../_components/HeaderContext";
 import ChartModal from "./ChartModal";
 import GlossaryModal from "./GlossaryModal";
+import PhaseHistoryChart from "./PhaseHistoryChart";
+import crashThresholds from "../../../config/crash_thresholds.json";
 
 export type CrashStock = {
   code: string;
@@ -52,6 +54,21 @@ export type CrashSnapshot = {
   stocks: CrashStock[];
 };
 
+// 局面内推移チャート・日付選択デルタ表示用の軽量な日次集計。
+// crash_watchlist_{date}.json(銘柄一覧込み、1件150〜330KB)を推移チャートのために
+// 日数分fetchすると通信量が大きいため、必要な集計値だけをcrash_index.jsonに
+// 追記する(ACTIVEだった日のみ。IDLE/COOLDOWN日はエントリを作らない)。
+export type CrashHistoryEntry = {
+  date: string;
+  phase_start: string;
+  day_index: number;
+  index_dd: number | null;
+  star_count: number;
+  universe_count: number;
+  median_excess: number | null;
+  large_pick_count: number;
+};
+
 export type CrashIndex = {
   dates: string[]; // ISO 'YYYY-MM-DD'
   phases: {
@@ -61,6 +78,8 @@ export type CrashIndex = {
     crash_day_count: number;
     index_max_dd: number | null;
   }[];
+  // Phase7で追加。移行期間中は無いcrash_index.jsonも残り得るためオプショナル。
+  history?: CrashHistoryEntry[];
 };
 
 const CRASH_DESCRIPTION =
@@ -225,9 +244,10 @@ function matchesMarketCapFilter(mc: number | null, key: MarketCapFilterKey): boo
   return mc < MARKET_CAP_MID_MIN; // small
 }
 
-// 大型耐性ピック抽出条件の定数(値の根拠を1行ずつ明記)
-const MEGA_CAP_MIN = 300_000_000_000; // 3000億 = Phase1の時価総額フィルタ「大型」プリセットと整合
-const STRONG_RATIO_MIN = 0.6; // strong_day_count/crash_day_count比率の閾値。局面の長さ(crash_day_count)に依存しない基準にするため比率で判定
+// 大型耐性ピック抽出条件の定数。SSOTはweb/config/crash_thresholds.json
+// (crash_screener.py側のlarge_pick_count集計と共有。値を変える場合はJSON側のみ更新すればよい)
+const MEGA_CAP_MIN = crashThresholds.mega_cap_min; // 3000億 = Phase1の時価総額フィルタ「大型」プリセットと整合
+const STRONG_RATIO_MIN = crashThresholds.strong_ratio_min; // strong_day_count/crash_day_count比率の閾値。局面の長さ(crash_day_count)に依存しない基準にするため比率で判定
 
 // 判断ログ(UI微調整タスク2): 大型耐性ピックは横スクロール無し・1画面完結の
 // 方針を維持するテーブルのため、コード/時価総額/超過収益/強日数は固定の
@@ -674,6 +694,13 @@ function PhaseHistoryTab({
   // 逆順にすれば自然に先頭に来る。
   const rows = [...phases].reverse();
 
+  // 直近局面(rows[0]、進行中とは限らない。最後に検出された局面)の推移のみ抽出しチャート表示する。
+  const latestPhaseStart = rows[0]?.start ?? null;
+  const chartEntries = (index?.history ?? [])
+    .filter((h) => h.phase_start === latestPhaseStart)
+    .slice()
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
   if (rows.length === 0) {
     return (
       <div style={{ fontFamily: monoFont, fontSize: 12, color: TEXT_DEFAULT, padding: "8px 2px" }}>
@@ -683,7 +710,16 @@ function PhaseHistoryTab({
   }
 
   return (
-    <div style={{ overflowX: "auto" }}>
+    <div>
+      {chartEntries.length > 0 && (
+        <div>
+          <div style={{ fontFamily: monoFont, fontSize: 12, fontWeight: 700, color: TEXT_BRIGHT, marginBottom: 6, paddingLeft: 2 }}>
+            直近局面の推移（開始{latestPhaseStart}）
+          </div>
+          <PhaseHistoryChart entries={chartEntries} />
+        </div>
+      )}
+      <div style={{ overflowX: "auto" }}>
       <table style={{ borderCollapse: "collapse", width: "100%", minWidth: 640 }}>
         <thead>
           <tr>
@@ -729,8 +765,32 @@ function PhaseHistoryTab({
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
+}
+
+// 日付選択時のサマリ+前日比デルタ表示用ヘルパー。crash_index.jsonのhistory配列
+// (ACTIVEだった日のみ)から該当日・直前日(同一局面内でdate最大の1件)を探す。
+function findHistoryEntry(history: CrashHistoryEntry[] | undefined, date: string): CrashHistoryEntry | null {
+  return history?.find((h) => h.date === date) ?? null;
+}
+
+function findPrevHistoryEntry(
+  history: CrashHistoryEntry[] | undefined, entry: CrashHistoryEntry
+): CrashHistoryEntry | null {
+  const candidates = (history ?? []).filter((h) => h.phase_start === entry.phase_start && h.date < entry.date);
+  if (candidates.length === 0) return null;
+  return candidates.reduce((a, b) => (a.date > b.date ? a : b));
+}
+
+// 判断ログ: デルタの色は既存のpctColor(プラス=赤/マイナス=緑)の符号規則をそのまま
+// 差分値に適用する(★数・大型ピック数が増える=局面拡大方向という意味では逆の印象も
+// あり得るが、本ツール内で色の意味を統一するため他の符号付き数値と同じ規則にした)。
+function DeltaSpan({ value }: { value: number }) {
+  if (value === 0) return <span style={{ color: TEXT_DEFAULT }}> (±0)</span>;
+  const sign = value > 0 ? "+" : "";
+  return <span style={{ color: value > 0 ? UP : DOWN }}> ({sign}{value})</span>;
 }
 
 function DataTab({
@@ -819,6 +879,16 @@ function DataTab({
 
   const nameMap = useMemo(() => buildDisplayNames(sortedRows), [sortedRows]);
 
+  // Phase7: 選択中日付のサマリ+前営業日比デルタ。historyはACTIVEだった日のみ
+  // エントリを持つため、IDLE/COOLDOWN日を表示中は見つからずバッジ・サマリとも出ない。
+  const displayDate = selectedDate ?? snapshot.date;
+  const historyEntry = useMemo(
+    () => findHistoryEntry(index?.history, displayDate), [index, displayDate]
+  );
+  const prevHistoryEntry = useMemo(
+    () => (historyEntry ? findPrevHistoryEntry(index?.history, historyEntry) : null), [index, historyEntry]
+  );
+
   return (
     <div>
       <SectorHighlightControl
@@ -826,6 +896,33 @@ function DataTab({
         selected={highlightSectors}
         onToggle={onToggleHighlightSector}
       />
+      {historyEntry && (
+        <div
+          style={{
+            fontFamily: monoFont, fontSize: 12, color: TEXT_BRIGHT, marginBottom: 8,
+            display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center",
+          }}
+        >
+          {selectedDate && (
+            <span
+              style={{
+                fontSize: 10, fontWeight: 700, color: "#cc8800",
+                border: "1px solid rgba(204,136,0,0.4)", borderRadius: 4, padding: "2px 6px",
+              }}
+            >
+              過去データ
+            </span>
+          )}
+          <span>
+            {historyEntry.date} 指数DD{" "}
+            <span style={{ color: pctColor(historyEntry.index_dd) }}>{fmtPct(historyEntry.index_dd)}</span>
+            {" / "}★{historyEntry.star_count}
+            {prevHistoryEntry && <DeltaSpan value={historyEntry.star_count - prevHistoryEntry.star_count} />}
+            {" / "}大型ピック{historyEntry.large_pick_count}
+            {prevHistoryEntry && <DeltaSpan value={historyEntry.large_pick_count - prevHistoryEntry.large_pick_count} />}
+          </span>
+        </div>
+      )}
       <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
         {dates.length > 1 && (
           <select

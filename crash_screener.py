@@ -97,6 +97,12 @@ META_PATH = DATA_DIR / "jquants" / "meta.json"
 # middleware.tsのmatcherに/data/crash/を明示的に含めることで満たす(次項参照)。
 CRASH_DIR = REPO_ROOT / "web" / "public" / "data" / "crash"
 STATE_PATH = REPO_ROOT / "crash_state.json"
+# 判断ログ(2026-07-17, りゅ承認済み・C案): 「大型耐性ピック」抽出条件(時価総額閾値・
+# 強日数比率)はフロント(CrashClient.tsx)とcrash_index.jsonのhistory集計(本ファイル)の
+# 両方で同じ値を使う必要がある。値のズレを防ぐため、どちらもハードコードせず
+# web/config/crash_thresholds.json をSSOTとして共有する(TS側はJSON importで解決、
+# Python側はload_crash_thresholds()で読む)。
+CRASH_THRESHOLDS_PATH = REPO_ROOT / "web" / "config" / "crash_thresholds.json"
 
 log = logging.getLogger("crash_screener")
 log.setLevel(logging.INFO)
@@ -720,6 +726,54 @@ def compute_population_stats(rows: list[dict]) -> dict:
     }
 
 
+def load_crash_thresholds() -> dict:
+    """web/config/crash_thresholds.json を読む(CrashClient.tsxと共有するSSOT。
+    冒頭CRASH_THRESHOLDS_PATHの判断ログ参照)。"""
+    return json.loads(CRASH_THRESHOLDS_PATH.read_text(encoding="utf-8"))
+
+
+def compute_large_pick_count(stocks: list[dict], crash_day_count: int, thresholds: dict) -> int:
+    """「大型耐性ピック」件数。CrashClient.tsx MegaCapPickBlockのpicksフィルタ
+    (already_recovered条件は無し、UI改修タスク1で撤廃済み)と同一条件で数えるだけの
+    表示専用集計。crash_day_count<=0の場合はJS側の0除算(NaN>=閾値はfalse)と
+    同じ結果になるよう0件を返す。"""
+    if crash_day_count <= 0:
+        return 0
+    mega_cap_min = thresholds["mega_cap_min"]
+    strong_ratio_min = thresholds["strong_ratio_min"]
+    count = 0
+    for s in stocks:
+        mc = s.get("market_cap")
+        if mc is None or mc < mega_cap_min:
+            continue
+        if (s.get("strong_day_count", 0) / crash_day_count) >= strong_ratio_min:
+            count += 1
+    return count
+
+
+def build_history_entry(snapshot: dict, thresholds: dict) -> dict | None:
+    """crash_index.json の history 配列(局面内推移チャート用の軽量な日次集計)に
+    追記する1件を作る。ACTIVEでphase/population_statsが揃っている日のみ対象
+    (IDLE/COOLDOWN日はstocksが空でstar_count等が無意味なため対象外)。"""
+    if snapshot.get("status") != "ACTIVE":
+        return None
+    phase = snapshot.get("phase")
+    pop_stats = snapshot.get("population_stats")
+    if phase is None or pop_stats is None:
+        return None
+    crash_day_count = phase.get("crash_day_count", 0)
+    return {
+        "date": snapshot["date"],
+        "phase_start": phase["start"],
+        "day_index": phase["day_index"],
+        "index_dd": phase.get("index_max_dd"),
+        "star_count": pop_stats.get("positive_count", 0),
+        "universe_count": pop_stats.get("n", 0),
+        "median_excess": pop_stats.get("median_cum_excess_return"),
+        "large_pick_count": compute_large_pick_count(snapshot.get("stocks", []), crash_day_count, thresholds),
+    }
+
+
 def load_previous_snapshot() -> dict | None:
     """既存のcrash_latest.jsonを読む(fail-safeのフォールバック用)。
     存在しない/壊れている場合はNone(=フォールバックできない)。"""
@@ -887,7 +941,7 @@ def run_batch() -> dict:
 
     # --- 出力 ---
     _write_snapshot(snapshot, compact_date)
-    _update_index(episodes, today_str)
+    _update_index(episodes, today_str, snapshot)
 
     # --- Discord通知(局面開始/終了) ---
     if transition == "start" and snapshot["phase"] is not None:
@@ -927,9 +981,14 @@ def _write_snapshot(snapshot: dict, compact_date: str) -> None:
     log.info("スナップショット出力: %s / crash_latest.json", dated_path.name)
 
 
-def _update_index(episodes: list[CrashPhase], today_str: str) -> None:
+def _update_index(episodes: list[CrashPhase], today_str: str, snapshot: dict | None = None) -> None:
     """dates は DateSelector.tsx(ISO 'YYYY-MM-DD'文字列比較)との互換のためISO形式で保持する。
-    スナップショットファイル名自体は_write_snapshotが別途compact_date('YYYYMMDD')で命名する。"""
+    スナップショットファイル名自体は_write_snapshotが別途compact_date('YYYYMMDD')で命名する。
+
+    snapshotを渡した場合、history配列(局面内推移チャート用の軽量な日次集計。
+    build_history_entry参照)にも1件upsertする(日付キーで冪等。バックフィル・
+    再実行で重複しない)。snapshot省略時はhistoryを一切いじらない
+    (rebuild_crash_history.py等、historyの対象外の完了済み局面向け呼び出しに対応)。"""
     index_path = CRASH_DIR / "crash_index.json"
     if index_path.exists():
         try:
@@ -953,8 +1012,18 @@ def _update_index(episodes: list[CrashPhase], today_str: str) -> None:
         }
         for ep in episodes
     ]
+
+    if snapshot is not None:
+        entry = build_history_entry(snapshot, load_crash_thresholds())
+        if entry is not None:
+            history = [h for h in idx.get("history", []) if h["date"] != entry["date"]]
+            history.append(entry)
+            history.sort(key=lambda h: h["date"])
+            idx["history"] = history
+
     index_path.write_text(json.dumps(idx, ensure_ascii=False, indent=2), encoding="utf-8")
-    log.info("crash_index.json 更新完了 (dates=%d件, phases=%d件)", len(idx["dates"]), len(idx["phases"]))
+    log.info("crash_index.json 更新完了 (dates=%d件, phases=%d件, history=%d件)",
+              len(idx["dates"]), len(idx["phases"]), len(idx.get("history", [])))
 
 
 def main():
