@@ -751,7 +751,27 @@ def compute_large_pick_count(stocks: list[dict], crash_day_count: int, threshold
     return count
 
 
-def build_history_entry(snapshot: dict, thresholds: dict) -> dict | None:
+def compute_index_daily_change(index_df: pd.DataFrame, date: pd.Timestamp) -> float | None:
+    """指数の当日騰落率(前日比)。日付セレクタの各項目表示用(2026-07-17, りゅ承認済み)。
+    判断ログ: 「直前の行」ではなく、index_df(fetch_index()が返す実際のN225取引日の
+    DataFrame)上でdateの1つ前の取引日を使う。crash_index.json側のhistory配列や
+    dates一覧は7/1のような欠測日(打ち切り再計算でACTIVE判定されず未生成の日等)を
+    挟むため、そちらを基準にすると数日分の変化率を「前日比」として誤表示してしまう
+    (りゅ指摘)。index_df自体は指数の実際の取引カレンダーそのものなので、この問題が起きない。
+    """
+    trading_days = index_df.index
+    pos = trading_days.searchsorted(date)
+    if pos <= 0 or pos >= len(trading_days) or trading_days[pos] != date:
+        return None
+    close = index_df["Close"]
+    prev_close = close.iloc[pos - 1]
+    cur_close = close.iloc[pos]
+    if pd.isna(prev_close) or pd.isna(cur_close):
+        return None
+    return round(float(cur_close / prev_close - 1), 4)
+
+
+def build_history_entry(snapshot: dict, thresholds: dict, index_df: pd.DataFrame) -> dict | None:
     """crash_index.json の history 配列(局面内推移チャート用の軽量な日次集計)に
     追記する1件を作る。ACTIVEでphase/population_statsが揃っている日のみ対象
     (IDLE/COOLDOWN日はstocksが空でstar_count等が無意味なため対象外)。"""
@@ -771,6 +791,7 @@ def build_history_entry(snapshot: dict, thresholds: dict) -> dict | None:
         "universe_count": pop_stats.get("n", 0),
         "median_excess": pop_stats.get("median_cum_excess_return"),
         "large_pick_count": compute_large_pick_count(snapshot.get("stocks", []), crash_day_count, thresholds),
+        "index_daily_change": compute_index_daily_change(index_df, pd.Timestamp(snapshot["date"])),
     }
 
 
@@ -941,7 +962,7 @@ def run_batch() -> dict:
 
     # --- 出力 ---
     _write_snapshot(snapshot, compact_date)
-    _update_index(episodes, today_str, snapshot)
+    _update_index(episodes, today_str, snapshot, index_df)
 
     # --- Discord通知(局面開始/終了) ---
     if transition == "start" and snapshot["phase"] is not None:
@@ -981,14 +1002,17 @@ def _write_snapshot(snapshot: dict, compact_date: str) -> None:
     log.info("スナップショット出力: %s / crash_latest.json", dated_path.name)
 
 
-def _update_index(episodes: list[CrashPhase], today_str: str, snapshot: dict | None = None) -> None:
+def _update_index(
+    episodes: list[CrashPhase], today_str: str, snapshot: dict | None = None, index_df: pd.DataFrame | None = None,
+) -> None:
     """dates は DateSelector.tsx(ISO 'YYYY-MM-DD'文字列比較)との互換のためISO形式で保持する。
     スナップショットファイル名自体は_write_snapshotが別途compact_date('YYYYMMDD')で命名する。
 
     snapshotを渡した場合、history配列(局面内推移チャート用の軽量な日次集計。
     build_history_entry参照)にも1件upsertする(日付キーで冪等。バックフィル・
     再実行で重複しない)。snapshot省略時はhistoryを一切いじらない
-    (rebuild_crash_history.py等、historyの対象外の完了済み局面向け呼び出しに対応)。"""
+    (rebuild_crash_history.py等、historyの対象外の完了済み局面向け呼び出しに対応)。
+    index_dfはsnapshot指定時のみ必須(build_history_entryのindex_daily_change算出用)。"""
     index_path = CRASH_DIR / "crash_index.json"
     if index_path.exists():
         try:
@@ -1014,7 +1038,8 @@ def _update_index(episodes: list[CrashPhase], today_str: str, snapshot: dict | N
     ]
 
     if snapshot is not None:
-        entry = build_history_entry(snapshot, load_crash_thresholds())
+        assert index_df is not None, "_update_index: snapshot指定時はindex_dfも必須"
+        entry = build_history_entry(snapshot, load_crash_thresholds(), index_df)
         if entry is not None:
             history = [h for h in idx.get("history", []) if h["date"] != entry["date"]]
             history.append(entry)

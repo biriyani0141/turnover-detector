@@ -297,7 +297,7 @@ def main() -> None:
         if not out_path.exists():
             continue
         snap = json.loads(out_path.read_text(encoding="utf-8"))
-        cs._update_index(all_episodes, date_str, snap)
+        cs._update_index(all_episodes, date_str, snap, index_df)
         history_added.append(date_str)
 
     print()

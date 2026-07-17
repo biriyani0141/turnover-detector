@@ -117,7 +117,7 @@ def main() -> None:
 
     # crash_index.json のhistoryエントリもこの日の分だけ更新する
     all_episodes = cs.detect_all_crash_phases(index_df, cs.PHASE_SEARCH_START)
-    cs._update_index(all_episodes, TARGET_DATE, real)
+    cs._update_index(all_episodes, TARGET_DATE, real, index_df)
     print("crash_index.json history更新済み")
 
 

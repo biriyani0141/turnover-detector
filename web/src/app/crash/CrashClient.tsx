@@ -67,6 +67,9 @@ export type CrashHistoryEntry = {
   universe_count: number;
   median_excess: number | null;
   large_pick_count: number;
+  // Phase7(日付セレクタ強化): 指数の当日騰落率(前日比)。移行期間中は無いエントリも
+  // 残り得るためオプショナル(未定義/nullは"—"表示)。
+  index_daily_change?: number | null;
 };
 
 export type CrashIndex = {
@@ -278,6 +281,7 @@ const DROPPED_BG = "rgba(224,85,85,0.10)";
 
 function MegaCapPickBlock({
   stocks, crashDayCount, onTap, highlightSectors, droppedCodes,
+  currentDate, dates, selectedDate, onSelectDate, history, loading,
 }: {
   stocks: CrashStock[]; crashDayCount: number; onTap: (code: string) => void;
   highlightSectors: Set<string>;
@@ -285,6 +289,10 @@ function MegaCapPickBlock({
   // ピックから脱落した銘柄のcodeの集合。未指定(undefined)なら最新日と同じ表示
   // (ハイライト・凡例なし)のまま変わらない。
   droppedCodes?: Set<string>;
+  // Phase7(日付セレクタ強化): 見出しに基準日を併記し、見出しタップで日付セレクタを
+  // 開く(既存の常時表示selectを撤去してここに統合。重複導線を作らない)。
+  currentDate: string; dates: string[]; selectedDate: string | null;
+  onSelectDate: (date: string | null) => void; history?: CrashHistoryEntry[]; loading?: boolean;
 }) {
   const picks = useMemo(() => computeMegaCapPicks(stocks, crashDayCount), [stocks, crashDayCount]);
 
@@ -292,9 +300,18 @@ function MegaCapPickBlock({
 
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontFamily: monoFont, fontSize: 12, fontWeight: 700, color: TEXT_BRIGHT, marginBottom: 2, paddingLeft: 2 }}>
-        大型耐性ピック（{picks.length}）
-      </div>
+      <DateSelector
+        dates={dates}
+        selectedDate={selectedDate}
+        onChange={onSelectDate}
+        history={history}
+        trigger={
+          <div style={{ fontFamily: monoFont, fontSize: 12, fontWeight: 700, color: TEXT_BRIGHT, marginBottom: 2, paddingLeft: 2 }}>
+            大型耐性ピック（{picks.length}）{currentDate}
+            {loading && <span style={{ color: TEXT_DEFAULT, fontWeight: 400 }}> 読込中...</span>}
+          </div>
+        }
+      />
       <div style={{ fontFamily: monoFont, fontSize: 10, color: TEXT_DEFAULT, marginBottom: 6, paddingLeft: 2 }}>
         時価総額3000億以上・暴落日の6割以上で指数超え
         {droppedCodes && <span style={{ marginLeft: 8, color: "#e05555" }}>■ 翌日脱落</span>}
@@ -844,29 +861,66 @@ function useCrashSnapshotAt(date: string | null): { snapshot: CrashSnapshot | nu
   return { snapshot: current, loading };
 }
 
+// 判断ログ(日付セレクタ強化): ネイティブ<option>要素はブラウザ/OS(特にモバイルの
+// ネイティブピッカーUI)によってCSS適用が無視されるため、色分け(赤=上昇/緑=下降)を
+// テキスト色で確実に表現することはできない。そのため▲(上昇)/▼(下降)の記号+符号付き
+// 数値というテキストのみで方向性を伝える(日本の株式アプリで一般的な代替表現)。
+function formatDateOptionLabel(date: string, entry: CrashHistoryEntry | undefined): string {
+  if (!entry) return date;
+  const pickText = `${entry.large_pick_count}件`;
+  const change = entry.index_daily_change;
+  if (change === null || change === undefined) return `${date}　${pickText}`;
+  const arrow = change > 0 ? "▲" : change < 0 ? "▼" : "±";
+  const pctText = `${arrow}${Math.abs(change * 100).toFixed(1)}%`;
+  return `${date}　${pickText}　${pctText}`;
+}
+
 // 日付セレクタ本体。データタブ・まとめタブで共有する(スナップショット存在日のみ選択可、
 // 最新日を選ぶとonChange(null)で「現在」表示に戻す)。
+// Phase7(日付セレクタ強化): historyを渡すと各optionに大型耐性ピック数+指数騰落率を併記する。
+// triggerを渡すと、そのReactNodeを見た目上のクリック領域にして<select>自体は透明な
+// オーバーレイにする(見出しタップで開くパターン。ネイティブselectなのでタップで
+// 自然にOS標準の選択肢一覧が開く)。triggerを渡さない場合は従来通りの可視select。
 function DateSelector({
-  dates, selectedDate, onChange,
-}: { dates: string[]; selectedDate: string | null; onChange: (date: string | null) => void }) {
+  dates, selectedDate, onChange, history, trigger,
+}: {
+  dates: string[]; selectedDate: string | null; onChange: (date: string | null) => void;
+  history?: CrashHistoryEntry[];
+  trigger?: React.ReactNode;
+}) {
   if (dates.length <= 1) return null;
   const latest = dates[dates.length - 1];
-  return (
+  const select = (
     <select
       value={selectedDate ?? latest}
       onChange={(e) => {
         const v = e.target.value;
         onChange(v === latest ? null : v);
       }}
-      style={{
-        fontFamily: monoFont, fontSize: 12, background: "#2a2c2f", color: TEXT_BRIGHT,
-        border: "1px solid #4a4d52", borderRadius: 6, padding: "4px 6px",
-      }}
+      aria-label="基準日を選択"
+      style={
+        trigger
+          ? { position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%" }
+          : {
+              fontFamily: monoFont, fontSize: 12, background: "#2a2c2f", color: TEXT_BRIGHT,
+              border: "1px solid #4a4d52", borderRadius: 6, padding: "4px 6px",
+            }
+      }
     >
       {dates.slice().reverse().map((d) => (
-        <option key={d} value={d}>{d}</option>
+        <option key={d} value={d}>
+          {formatDateOptionLabel(d, history?.find((h) => h.date === d))}
+        </option>
       ))}
     </select>
+  );
+
+  if (!trigger) return select;
+  return (
+    <div style={{ position: "relative", display: "inline-block", cursor: "pointer" }}>
+      {trigger}
+      {select}
+    </div>
   );
 }
 
@@ -1106,13 +1160,24 @@ function SummaryTab({
   const bySection = useMemoSections(filteredStocks);
   const nameMap = useMemo(() => buildDisplayNames(filteredStocks), [filteredStocks]);
 
+  // 判断ログ(日付セレクタ強化): 日付セレクタの起動導線は「大型耐性ピック」見出しに
+  // 統合した(重複導線を作らない指示のため)。ただしピックブロック自体が表示されない
+  // ケース(局面はあるがcrash_day_count=0、データ未取得、非ACTIVE等)では見出しごと
+  // 消えてしまい日付を選び直す手段が無くなるため、その場合のみ簡易フォールバックの
+  // 可視selectを表示する(唯一の導線が完全に失われないようにするための保険)。
+  const showPicks = !!displaySnapshot
+    && (displaySnapshot.status === "ACTIVE" || (!!selectedDate && displaySnapshot.stocks.length > 0));
+  const showPickBlock = showPicks && (displaySnapshot?.phase?.crash_day_count ?? 0) > 0;
+  const currentDate = displaySnapshot?.date ?? selectedDate ?? dates[dates.length - 1] ?? "";
+
   return (
     <div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
-        <DateSelector dates={dates} selectedDate={selectedDate} onChange={onSelectedDateChange} />
-        {selectedDate && <PastDataBadge />}
-        {loading && <span style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT }}>読込中...</span>}
-      </div>
+      {!showPickBlock && (
+        <div style={{ display: "flex", gap: 8, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <DateSelector dates={dates} selectedDate={selectedDate} onChange={onSelectedDateChange} history={index?.history} />
+          {loading && <span style={{ fontFamily: monoFont, fontSize: 11, color: TEXT_DEFAULT }}>読込中...</span>}
+        </div>
+      )}
       <SectorHighlightControl sectors={sectorOptions} selected={highlightSectors} onToggle={onToggleHighlightSector} />
       {!displaySnapshot ? (
         loading ? null : (
@@ -1120,7 +1185,7 @@ function SummaryTab({
             この日のデータを取得できませんでした。
           </div>
         )
-      ) : displaySnapshot.status === "ACTIVE" || (!!selectedDate && displaySnapshot.stocks.length > 0) ? (
+      ) : showPicks ? (
         <>
           <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8, marginBottom: 8 }}>
             <button type="button" onClick={onOpenGlossary} aria-label="用語解説" style={glossaryButtonStyle}>
@@ -1134,13 +1199,19 @@ function SummaryTab({
               チャート生成
             </button>
           </div>
-          {(displaySnapshot.phase?.crash_day_count ?? 0) > 0 && (
+          {showPickBlock && (
             <MegaCapPickBlock
               stocks={displaySnapshot.stocks}
               crashDayCount={displaySnapshot.phase!.crash_day_count}
               onTap={(code) => onRowTap(code, displaySnapshot.phase)}
               highlightSectors={highlightSectors}
               droppedCodes={droppedCodes}
+              currentDate={currentDate}
+              dates={dates}
+              selectedDate={selectedDate}
+              onSelectDate={onSelectedDateChange}
+              history={index?.history}
+              loading={loading}
             />
           )}
           {(["S", "A", "B", "C", "D"] as const).map((s) => (
