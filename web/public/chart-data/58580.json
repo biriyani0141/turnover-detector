@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "非鉄金属",
   "header": {
-    "price": 1380,
-    "change": -22,
-    "changePct": -1.6,
+    "price": 1409,
+    "change": 29,
+    "changePct": 2.1,
     "isStopHigh": false,
-    "turnoverPct": 0.0,
-    "marketCap": 2961480000,
+    "turnoverPct": 0.2,
+    "marketCap": 3023714000,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-08",
-      "o": 1439,
-      "h": 1439,
-      "l": 1418,
-      "c": 1420,
-      "v": 800,
-      "ma5": 1437.0,
-      "ma25": 1413.1,
-      "ma75": 1550.0,
-      "ma200": null
-    },
     {
       "date": "2026-05-11",
       "o": 1420,
@@ -37,7 +25,7 @@
       "ma5": 1445.8,
       "ma25": 1421.3,
       "ma75": 1546.2,
-      "ma200": 1718.0
+      "ma200": null
     },
     {
       "date": "2026-05-12",
@@ -611,6 +599,18 @@
       "c": 1380,
       "v": 100,
       "ma5": 1387.6,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-21",
+      "o": 1399,
+      "h": 1409,
+      "l": 1377,
+      "c": 1409,
+      "v": 3800,
+      "ma5": 1395.4,
       "ma25": null,
       "ma75": null,
       "ma200": null

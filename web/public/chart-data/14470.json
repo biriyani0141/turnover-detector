@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "建設業",
   "header": {
-    "price": 405,
-    "change": -5,
-    "changePct": -1.2,
+    "price": 338,
+    "change": -67,
+    "changePct": -16.5,
     "isStopHigh": false,
-    "turnoverPct": 4.4,
-    "marketCap": 9901017990,
-    "appearCount": 9,
+    "turnoverPct": 3.0,
+    "marketCap": 8263071804,
+    "appearCount": 10,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-11",
-      "o": 299,
-      "h": 304,
-      "l": 296,
-      "c": 298,
-      "v": 118000,
-      "ma5": 299.2,
-      "ma25": 336.8,
-      "ma75": 374.6,
-      "ma200": 302.2
-    },
     {
       "date": "2026-05-12",
       "o": 296,
@@ -642,6 +630,21 @@
       "ma25": 327.5,
       "ma75": 319.9,
       "ma200": 312.4,
+      "marks": [
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-21",
+      "o": 399,
+      "h": 399,
+      "l": 328,
+      "c": 338,
+      "v": 731600,
+      "ma5": 389.4,
+      "ma25": 329.5,
+      "ma75": 319.1,
+      "ma200": 312.8,
       "marks": [
         "appear"
       ]
