@@ -6,31 +6,15 @@
   "sector": "電気･ガス業",
   "header": {
     "price": 337,
-    "change": 1,
-    "changePct": 0.3,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
+    "turnoverPct": 0.2,
     "marketCap": 7291043528,
-    "appearCount": 1,
+    "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-13",
-      "o": 402,
-      "h": 439,
-      "l": 402,
-      "c": 424,
-      "v": 1376100,
-      "ma5": 384.0,
-      "ma25": 377.7,
-      "ma75": 367.5,
-      "ma200": 378.0,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-05-14",
       "o": 416,
@@ -618,6 +602,18 @@
       "ma25": 326.6,
       "ma75": 356.6,
       "ma200": 365.0
+    },
+    {
+      "date": "2026-07-23",
+      "o": 338,
+      "h": 339,
+      "l": 334,
+      "c": 337,
+      "v": 35400,
+      "ma5": 335.4,
+      "ma25": 326.7,
+      "ma75": 356.0,
+      "ma200": 364.4
     }
   ]
 }

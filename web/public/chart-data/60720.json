@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "サービス業",
   "header": {
-    "price": 898,
-    "change": 1,
-    "changePct": 0.1,
+    "price": 915,
+    "change": 17,
+    "changePct": 1.9,
     "isStopHigh": false,
-    "turnoverPct": 2.7,
-    "marketCap": 20786904000,
-    "appearCount": 41,
+    "turnoverPct": 2.1,
+    "marketCap": 21180420000,
+    "appearCount": 42,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-05-13",
-      "o": 1005,
-      "h": 1011,
-      "l": 975,
-      "c": 998,
-      "v": 475200,
-      "ma5": 1020.0,
-      "ma25": 1034.4,
-      "ma75": 830.0,
-      "ma200": 418.0
-    },
     {
       "date": "2026-05-14",
       "o": 998,
@@ -765,6 +753,21 @@
       "ma25": 1037.9,
       "ma75": 1121.1,
       "ma200": 664.1,
+      "marks": [
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-23",
+      "o": 909,
+      "h": 948,
+      "l": 894,
+      "c": 915,
+      "v": 485300,
+      "ma5": 915.8,
+      "ma25": 1031.7,
+      "ma75": 1122.3,
+      "ma200": 667.8,
       "marks": [
         "appear"
       ]

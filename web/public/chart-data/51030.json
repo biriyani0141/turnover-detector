@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "ゴム製品",
   "header": {
-    "price": 14,
-    "change": -1,
-    "changePct": -6.7,
+    "price": 21,
+    "change": 7,
+    "changePct": 50.0,
     "isStopHigh": false,
-    "turnoverPct": 0.7,
-    "marketCap": 1068107964,
-    "appearCount": 3,
+    "turnoverPct": 6.3,
+    "marketCap": 1602161946,
+    "appearCount": 4,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-13",
-      "o": 42,
-      "h": 43,
-      "l": 42,
-      "c": 42,
-      "v": 8500,
-      "ma5": 43.0,
-      "ma25": 43.6,
-      "ma75": 43.9,
-      "ma200": 47.8
-    },
     {
       "date": "2026-05-14",
       "o": 42,
@@ -624,6 +612,22 @@
       "ma25": 31.9,
       "ma75": 38.3,
       "ma200": 43.2
+    },
+    {
+      "date": "2026-07-23",
+      "o": 14,
+      "h": 23,
+      "l": 14,
+      "c": 21,
+      "v": 5339100,
+      "ma5": 17.6,
+      "ma25": 31.2,
+      "ma75": 38.0,
+      "ma200": 43.0,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
     }
   ]
 }
