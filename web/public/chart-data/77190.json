@@ -5,32 +5,16 @@
   "market": "東証S",
   "sector": "精密機器",
   "header": {
-    "price": 436,
-    "change": -9,
-    "changePct": -2.0,
+    "price": 434,
+    "change": -2,
+    "changePct": -0.5,
     "isStopHigh": false,
-    "turnoverPct": 3.5,
-    "marketCap": 3125156876,
-    "appearCount": 19,
+    "turnoverPct": 1.8,
+    "marketCap": 3110821294,
+    "appearCount": 18,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-05-15",
-      "o": 500,
-      "h": 531,
-      "l": 496,
-      "c": 524,
-      "v": 413300,
-      "ma5": 543.4,
-      "ma25": 602.1,
-      "ma75": 539.4,
-      "ma200": 372.0,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-05-18",
       "o": 524,
@@ -683,6 +667,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-27",
+      "o": 428,
+      "h": 438,
+      "l": 418,
+      "c": 434,
+      "v": 131900,
+      "ma5": 441.6,
+      "ma25": 448.6,
+      "ma75": 502.7,
+      "ma200": 420.3
     }
   ]
 }
