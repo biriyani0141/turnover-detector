@@ -6,31 +6,15 @@
   "sector": "サービス業",
   "header": {
     "price": 115,
-    "change": 1,
-    "changePct": 0.9,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.2,
+    "turnoverPct": 0.5,
     "marketCap": 1282891700,
-    "appearCount": 11,
+    "appearCount": 10,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-18",
-      "o": 134,
-      "h": 134,
-      "l": 118,
-      "c": 120,
-      "v": 704000,
-      "ma5": 144.2,
-      "ma25": 148.6,
-      "ma75": 166.6,
-      "ma200": 176.4,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-05-19",
       "o": 122,
@@ -651,6 +635,18 @@
       "ma25": 108.8,
       "ma75": 123.6,
       "ma200": 162.8
+    },
+    {
+      "date": "2026-07-28",
+      "o": 116,
+      "h": 116,
+      "l": 113,
+      "c": 115,
+      "v": 56900,
+      "ma5": 115.0,
+      "ma25": 109.5,
+      "ma75": 123.4,
+      "ma200": 162.6
     }
   ]
 }

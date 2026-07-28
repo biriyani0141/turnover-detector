@@ -6,8 +6,8 @@
   "sector": "パルプ・紙",
   "header": {
     "price": 2771,
-    "change": -37,
-    "changePct": -1.3,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
     "turnoverPct": 0.0,
     "marketCap": 12330950000,
@@ -15,18 +15,6 @@
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-07",
-      "o": 3165,
-      "h": 3165,
-      "l": 3090,
-      "c": 3105,
-      "v": 1200,
-      "ma5": null,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-05-11",
       "o": 3100,
@@ -611,6 +599,18 @@
       "c": 2771,
       "v": 900,
       "ma5": 2823.0,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-28",
+      "o": 2747,
+      "h": 2771,
+      "l": 2718,
+      "c": 2771,
+      "v": 1800,
+      "ma5": 2808.2,
       "ma25": null,
       "ma75": null,
       "ma200": null
