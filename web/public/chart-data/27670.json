@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "卸売業",
   "header": {
-    "price": 1930,
+    "price": 2330,
     "change": 400,
-    "changePct": 26.1,
+    "changePct": 20.7,
     "isStopHigh": true,
-    "turnoverPct": 0.5,
-    "marketCap": 126278259500,
-    "appearCount": 0,
-    "stopHighCount": 1
+    "turnoverPct": 5.4,
+    "marketCap": 152449919500,
+    "appearCount": 1,
+    "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-05-19",
-      "o": 1445,
-      "h": 1469,
-      "l": 1436,
-      "c": 1465,
-      "v": 575100,
-      "ma5": 1455.4,
-      "ma25": 1445.7,
-      "ma75": 1532.0,
-      "ma200": 1885.7
-    },
     {
       "date": "2026-05-20",
       "o": 1470,
@@ -616,6 +604,23 @@
       "ma200": 1678.5,
       "marks": [
         "shc"
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "o": 2190,
+      "h": 2330,
+      "l": 2190,
+      "c": 2330,
+      "v": 3630000,
+      "ma5": 1746.2,
+      "ma25": 1486.7,
+      "ma75": 1436.2,
+      "ma200": 1679.1,
+      "marks": [
+        "shc",
+        "turn5",
+        "appear"
       ]
     }
   ]

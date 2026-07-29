@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "精密機器",
   "header": {
-    "price": 5370,
-    "change": -720,
-    "changePct": -11.8,
+    "price": 4995,
+    "change": -375,
+    "changePct": -7.0,
     "isStopHigh": false,
-    "turnoverPct": 4.6,
-    "marketCap": 54009312000,
-    "appearCount": 36,
+    "turnoverPct": 6.5,
+    "marketCap": 50237712000,
+    "appearCount": 37,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-05-19",
-      "o": 5560,
-      "h": 5670,
-      "l": 5090,
-      "c": 5210,
-      "v": 306000,
-      "ma5": 5408.0,
-      "ma25": 4971.2,
-      "ma75": 4381.7,
-      "ma200": 3601.1
-    },
     {
       "date": "2026-05-20",
       "o": 5120,
@@ -740,6 +728,22 @@
       "ma75": 6150.5,
       "ma200": 4513.9,
       "marks": [
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-07-29",
+      "o": 5670,
+      "h": 5720,
+      "l": 4895,
+      "c": 4995,
+      "v": 631900,
+      "ma5": 5875.0,
+      "ma25": 7281.0,
+      "ma75": 6155.9,
+      "ma200": 4522.3,
+      "marks": [
+        "turn5",
         "appear"
       ]
     }
