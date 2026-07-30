@@ -5,33 +5,16 @@
   "market": "東証P",
   "sector": "化学",
   "header": {
-    "price": 3185,
-    "change": -28,
-    "changePct": -0.9,
+    "price": 3165,
+    "change": -20,
+    "changePct": -0.6,
     "isStopHigh": false,
-    "turnoverPct": 1.1,
-    "marketCap": 338247340795,
-    "appearCount": 2,
-    "stopHighCount": 1
+    "turnoverPct": 0.8,
+    "marketCap": 336123338655,
+    "appearCount": 1,
+    "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-20",
-      "o": 2688,
-      "h": 2890,
-      "l": 2660,
-      "c": 2890,
-      "v": 7261500,
-      "ma5": 2504.9,
-      "ma25": 2413.8,
-      "ma75": 2567.6,
-      "ma200": 2470.1,
-      "marks": [
-        "shc",
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-05-21",
       "o": 2940,
@@ -622,6 +605,18 @@
       "ma25": 3206.4,
       "ma75": 2880.0,
       "ma200": 2660.3
+    },
+    {
+      "date": "2026-07-30",
+      "o": 3159,
+      "h": 3203,
+      "l": 3149,
+      "c": 3165,
+      "v": 826800,
+      "ma5": 3232.6,
+      "ma25": 3208.7,
+      "ma75": 2889.3,
+      "ma200": 2665.0
     }
   ]
 }

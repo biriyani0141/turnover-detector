@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "情報･通信業",
   "header": {
-    "price": 4229,
-    "change": 700,
-    "changePct": 19.8,
-    "isStopHigh": true,
-    "turnoverPct": 3.2,
-    "marketCap": 2254104559334,
+    "price": 4107,
+    "change": -122,
+    "changePct": -2.9,
+    "isStopHigh": false,
+    "turnoverPct": 1.2,
+    "marketCap": 2189077187322,
     "appearCount": 1,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-05-20",
-      "o": 3222,
-      "h": 3232,
-      "l": 3109,
-      "c": 3150,
-      "v": 2588900,
-      "ma5": 3103.4,
-      "ma25": 3405.3,
-      "ma75": 3399.8,
-      "ma200": 3740.3
-    },
     {
       "date": "2026-05-21",
       "o": 3171,
@@ -618,6 +606,18 @@
         "shc",
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-30",
+      "o": 4184,
+      "h": 4210,
+      "l": 4011,
+      "c": 4107,
+      "v": 6612700,
+      "ma5": 3749.6,
+      "ma25": 3338.0,
+      "ma75": 3233.3,
+      "ma200": 3506.9
     }
   ]
 }

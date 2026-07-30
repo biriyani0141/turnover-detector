@@ -6,27 +6,15 @@
   "sector": "繊維製品",
   "header": {
     "price": 968,
-    "change": 8,
-    "changePct": 0.8,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.1,
+    "turnoverPct": 0.0,
     "marketCap": 2004137520,
     "appearCount": 2,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-20",
-      "o": 1021,
-      "h": 1021,
-      "l": 1000,
-      "c": 1000,
-      "v": 2000,
-      "ma5": 1047.4,
-      "ma25": 1235.9,
-      "ma75": 1457.4,
-      "ma200": null
-    },
     {
       "date": "2026-05-21",
       "o": 1015,
@@ -619,6 +607,18 @@
       "ma5": 965.2,
       "ma25": 998.2,
       "ma75": 1131.1,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-30",
+      "o": 953,
+      "h": 968,
+      "l": 953,
+      "c": 968,
+      "v": 600,
+      "ma5": 966.4,
+      "ma25": 996.7,
+      "ma75": 1125.2,
       "ma200": null
     }
   ]
