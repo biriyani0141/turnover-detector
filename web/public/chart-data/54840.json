@@ -6,8 +6,8 @@
   "sector": "鉄鋼",
   "header": {
     "price": 4450,
-    "change": -5,
-    "changePct": -0.1,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
     "turnoverPct": 0.0,
     "marketCap": 33597500000,
@@ -15,21 +15,6 @@
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-18",
-      "o": 2914,
-      "h": 2914,
-      "l": 2914,
-      "c": 2914,
-      "v": 300,
-      "ma5": 2442.0,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null,
-      "marks": [
-        "shc"
-      ]
-    },
     {
       "date": "2026-05-19",
       "o": 3415,
@@ -616,6 +601,18 @@
       "l": 4450,
       "c": 4450,
       "v": 100,
+      "ma5": null,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-07-31",
+      "o": 4455,
+      "h": 4455,
+      "l": 4450,
+      "c": 4450,
+      "v": 300,
       "ma5": null,
       "ma25": null,
       "ma75": null,

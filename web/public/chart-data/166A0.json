@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "不動産業",
   "header": {
-    "price": 1119,
-    "change": 55,
-    "changePct": 5.2,
+    "price": 1109,
+    "change": -10,
+    "changePct": -0.9,
     "isStopHigh": false,
-    "turnoverPct": 7.6,
-    "marketCap": 69082050237,
+    "turnoverPct": 1.7,
+    "marketCap": 68464695007,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-05-21",
-      "o": 860,
-      "h": 872,
-      "l": 852,
-      "c": 862,
-      "v": 388500,
-      "ma5": 858.6,
-      "ma25": 825.4,
-      "ma75": 833.7,
-      "ma200": 783.1
-    },
     {
       "date": "2026-05-22",
       "o": 867,
@@ -618,6 +606,18 @@
         "turn5",
         "appear"
       ]
+    },
+    {
+      "date": "2026-07-31",
+      "o": 1097,
+      "h": 1136,
+      "l": 1072,
+      "c": 1109,
+      "v": 1041800,
+      "ma5": 1090.8,
+      "ma25": 1109.0,
+      "ma75": 985.3,
+      "ma200": 863.1
     }
   ]
 }
