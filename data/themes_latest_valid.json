@@ -1901,6 +1901,34 @@
       "bucket": null
     },
     {
+      "theme": "ソフト：業界特化",
+      "slug": "soft-vertical",
+      "theme1": "ソフトウェア",
+      "return_1d": 0.85,
+      "return_5d": 14.42,
+      "return_10d": 9.03,
+      "return_1m": 21.8,
+      "return_2m": 11.18,
+      "return_3m": 10.62,
+      "return_6m": 3.37,
+      "return_1y": -25.4,
+      "top_movers": [
+        {
+          "ticker": "TTAN",
+          "pct_1d": 3.99
+        },
+        {
+          "ticker": "APPF",
+          "pct_1d": 2.37
+        },
+        {
+          "ticker": "PCOR",
+          "pct_1d": 1.76
+        }
+      ],
+      "bucket": null
+    },
+    {
       "theme": "防衛：ドローン",
       "slug": "drones",
       "theme1": "防衛・宇宙",
@@ -1924,34 +1952,6 @@
         {
           "ticker": "AVAV",
           "pct_1d": 1.94
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "ソフト：業界特化",
-      "slug": "soft-vertical",
-      "theme1": "ソフトウェア",
-      "return_1d": 0.83,
-      "return_5d": 14.4,
-      "return_10d": 9.01,
-      "return_1m": 21.77,
-      "return_2m": 11.16,
-      "return_3m": 10.6,
-      "return_6m": 3.35,
-      "return_1y": -25.41,
-      "top_movers": [
-        {
-          "ticker": "TTAN",
-          "pct_1d": 3.99
-        },
-        {
-          "ticker": "APPF",
-          "pct_1d": 2.21
-        },
-        {
-          "ticker": "PCOR",
-          "pct_1d": 1.76
         }
       ],
       "bucket": null
@@ -2629,13 +2629,13 @@
       "slug": "space-infrastructure",
       "theme1": "防衛・宇宙",
       "return_1d": 0.36,
-      "return_5d": -1.36,
-      "return_10d": -3.72,
+      "return_5d": -1.37,
+      "return_10d": -3.73,
       "return_1m": -32.72,
-      "return_2m": -53.89,
-      "return_3m": -21.82,
-      "return_6m": -15.36,
-      "return_1y": -10.56,
+      "return_2m": -53.9,
+      "return_3m": -21.83,
+      "return_6m": -15.37,
+      "return_1y": -10.57,
       "top_movers": [
         {
           "ticker": "VOYG",
@@ -3449,6 +3449,34 @@
       "bucket": null
     },
     {
+      "theme": "リチウム",
+      "slug": "lithium",
+      "theme1": "戦略資源",
+      "return_1d": -0.3,
+      "return_5d": 0.45,
+      "return_10d": -5.11,
+      "return_1m": -21.2,
+      "return_2m": -34.57,
+      "return_3m": -38.91,
+      "return_6m": -22.13,
+      "return_1y": 78.92,
+      "top_movers": [
+        {
+          "ticker": "IONR",
+          "pct_1d": 4.65
+        },
+        {
+          "ticker": "ATLX",
+          "pct_1d": 0.0
+        },
+        {
+          "ticker": "ALB",
+          "pct_1d": -0.12
+        }
+      ],
+      "bucket": null
+    },
+    {
       "theme": "住設専門商社",
       "slug": "housing-equipment-trading",
       "theme1": "住宅",
@@ -3561,34 +3589,6 @@
       "bucket": null
     },
     {
-      "theme": "リチウム",
-      "slug": "lithium",
-      "theme1": "戦略資源",
-      "return_1d": -0.33,
-      "return_5d": 0.41,
-      "return_10d": -5.15,
-      "return_1m": -21.23,
-      "return_2m": -34.59,
-      "return_3m": -38.93,
-      "return_6m": -22.15,
-      "return_1y": 78.86,
-      "top_movers": [
-        {
-          "ticker": "IONR",
-          "pct_1d": 4.65
-        },
-        {
-          "ticker": "ATLX",
-          "pct_1d": 0.0
-        },
-        {
-          "ticker": "ALB",
-          "pct_1d": -0.12
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "宅配デリバリー",
       "slug": "delivery",
       "theme1": "レストラン",
@@ -3645,34 +3645,6 @@
       "bucket": null
     },
     {
-      "theme": "宇宙：衛星通信",
-      "slug": "satellite-communications",
-      "theme1": "防衛・宇宙",
-      "return_1d": -0.38,
-      "return_5d": 1.91,
-      "return_10d": -0.78,
-      "return_1m": -19.21,
-      "return_2m": -18.63,
-      "return_3m": -2.98,
-      "return_6m": 19.13,
-      "return_1y": 147.53,
-      "top_movers": [
-        {
-          "ticker": "GSAT",
-          "pct_1d": 4.14
-        },
-        {
-          "ticker": "ASTS",
-          "pct_1d": 0.9
-        },
-        {
-          "ticker": "IRDM",
-          "pct_1d": -0.67
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "生命科学：分子分析",
       "slug": "lifescience-molecule",
       "theme1": "創薬支援",
@@ -3696,6 +3668,34 @@
         {
           "ticker": "WAT",
           "pct_1d": -0.79
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "宇宙：衛星通信",
+      "slug": "satellite-communications",
+      "theme1": "防衛・宇宙",
+      "return_1d": -0.39,
+      "return_5d": 1.9,
+      "return_10d": -0.79,
+      "return_1m": -19.21,
+      "return_2m": -18.64,
+      "return_3m": -2.99,
+      "return_6m": 19.12,
+      "return_1y": 147.51,
+      "top_movers": [
+        {
+          "ticker": "GSAT",
+          "pct_1d": 4.14
+        },
+        {
+          "ticker": "ASTS",
+          "pct_1d": 0.9
+        },
+        {
+          "ticker": "IRDM",
+          "pct_1d": -0.67
         }
       ],
       "bucket": null
@@ -4949,7 +4949,7 @@
       "slug": "rare-earth",
       "theme1": "戦略資源",
       "return_1d": -1.18,
-      "return_5d": 0.53,
+      "return_5d": 0.54,
       "return_10d": -2.92,
       "return_1m": -23.41,
       "return_2m": -37.08,
@@ -5936,14 +5936,14 @@
       "theme": "ネオクラウド：リース",
       "slug": "neo-cloud-lease",
       "theme1": "データセンター",
-      "return_1d": -2.72,
-      "return_5d": -3.67,
-      "return_10d": 9.05,
-      "return_1m": -19.23,
-      "return_2m": -21.21,
-      "return_3m": 8.89,
-      "return_6m": 37.6,
-      "return_1y": 403.69,
+      "return_1d": -2.76,
+      "return_5d": -3.71,
+      "return_10d": 9.0,
+      "return_1m": -19.27,
+      "return_2m": -21.24,
+      "return_3m": 8.84,
+      "return_6m": 37.54,
+      "return_1y": 403.47,
       "top_movers": [
         {
           "ticker": "HUT",
@@ -6206,6 +6206,6 @@
     }
   ],
   "stock_date": "2026-07-31",
-  "updated_at": "2026-07-31 21:20:17",
-  "saved_at": "2026-07-31T21:37:17.883627"
+  "updated_at": "2026-07-31 21:34:22",
+  "saved_at": "2026-07-31T21:43:15.984539"
 }
