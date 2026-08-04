@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "金属製品",
   "header": {
-    "price": 3457,
-    "change": 100,
-    "changePct": 3.0,
+    "price": 3545,
+    "change": 88,
+    "changePct": 2.5,
     "isStopHigh": false,
-    "turnoverPct": 6.4,
-    "marketCap": 1210555455523,
-    "appearCount": 40,
+    "turnoverPct": 4.2,
+    "marketCap": 1241370867755,
+    "appearCount": 41,
     "stopHighCount": 4
   },
   "rows": [
-    {
-      "date": "2026-05-25",
-      "o": 3333,
-      "h": 3518,
-      "l": 3317,
-      "c": 3427,
-      "v": 9962100,
-      "ma5": 3132.4,
-      "ma25": 2801.6,
-      "ma75": 2071.6,
-      "ma200": 1657.9
-    },
     {
       "date": "2026-05-26",
       "o": 3380,
@@ -758,6 +746,21 @@
       "ma200": 2326.7,
       "marks": [
         "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-08-04",
+      "o": 3450,
+      "h": 3639,
+      "l": 3437,
+      "c": 3545,
+      "v": 14874300,
+      "ma5": 3232.8,
+      "ma25": 4185.0,
+      "ma75": 3624.7,
+      "ma200": 2336.2,
+      "marks": [
         "appear"
       ]
     }
