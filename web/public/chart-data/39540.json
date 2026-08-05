@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "パルプ・紙",
   "header": {
-    "price": 2800,
-    "change": 0,
-    "changePct": 0.0,
-    "isStopHigh": false,
-    "turnoverPct": 0.0,
-    "marketCap": 12460000000,
+    "price": 3290,
+    "change": 490,
+    "changePct": 17.5,
+    "isStopHigh": true,
+    "turnoverPct": 0.1,
+    "marketCap": 14640500000,
     "appearCount": 0,
-    "stopHighCount": 0
+    "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-05-14",
-      "o": 3135,
-      "h": 3135,
-      "l": 3080,
-      "c": 3080,
-      "v": 1100,
-      "ma5": null,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-05-15",
       "o": 3080,
@@ -614,6 +602,21 @@
       "ma25": null,
       "ma75": null,
       "ma200": null
+    },
+    {
+      "date": "2026-08-05",
+      "o": 2958,
+      "h": 3300,
+      "l": 2958,
+      "c": 3290,
+      "v": 5300,
+      "ma5": null,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null,
+      "marks": [
+        "sht"
+      ]
     }
   ]
 }
