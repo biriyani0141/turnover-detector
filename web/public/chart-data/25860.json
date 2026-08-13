@@ -6,31 +6,15 @@
   "sector": "食料品",
   "header": {
     "price": 92,
-    "change": -1,
-    "changePct": -1.1,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.6,
+    "turnoverPct": 0.4,
     "marketCap": 9788300348,
-    "appearCount": 4,
+    "appearCount": 3,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-02",
-      "o": 113,
-      "h": 117,
-      "l": 105,
-      "c": 107,
-      "v": 5252400,
-      "ma5": 108.2,
-      "ma25": 99.6,
-      "ma75": 111.8,
-      "ma200": 169.9,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-06-03",
       "o": 108,
@@ -629,6 +613,18 @@
       "ma25": 96.0,
       "ma75": 98.9,
       "ma200": 128.3
+    },
+    {
+      "date": "2026-08-13",
+      "o": 92,
+      "h": 94,
+      "l": 92,
+      "c": 92,
+      "v": 408100,
+      "ma5": 93.2,
+      "ma25": 95.4,
+      "ma75": 98.6,
+      "ma200": 127.7
     }
   ]
 }
