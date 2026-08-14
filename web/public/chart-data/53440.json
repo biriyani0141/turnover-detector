@@ -11,7 +11,7 @@
     "isStopHigh": false,
     "turnoverPct": 1.1,
     "marketCap": 754815720000,
-    "appearCount": 0,
+    "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
@@ -481,7 +481,10 @@
       "ma5": 55220.0,
       "ma25": 62455.6,
       "ma75": 68045.6,
-      "ma200": 55718.3
+      "ma200": 55718.3,
+      "marks": [
+        "appear"
+      ]
     },
     {
       "date": "2026-07-30",
