@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "機械",
   "header": {
-    "price": 596,
-    "change": -100,
-    "changePct": -14.4,
+    "price": 587,
+    "change": -9,
+    "changePct": -1.5,
     "isStopHigh": false,
-    "turnoverPct": 4.3,
-    "marketCap": 5202436320,
+    "turnoverPct": 1.3,
+    "marketCap": 5123876040,
     "appearCount": 1,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-06-03",
-      "o": 610,
-      "h": 614,
-      "l": 592,
-      "c": 595,
-      "v": 36400,
-      "ma5": 642.4,
-      "ma25": 570.8,
-      "ma75": 527.8,
-      "ma200": 499.7
-    },
     {
       "date": "2026-06-04",
       "o": 595,
@@ -620,6 +608,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-08-14",
+      "o": 589,
+      "h": 597,
+      "l": 577,
+      "c": 587,
+      "v": 117700,
+      "ma5": 660.4,
+      "ma25": 700.9,
+      "ma75": 624.0,
+      "ma200": 548.2
     }
   ]
 }
