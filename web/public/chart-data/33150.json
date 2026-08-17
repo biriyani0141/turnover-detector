@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "石油･石炭製品",
   "header": {
-    "price": 104,
-    "change": 3,
-    "changePct": 3.0,
+    "price": 102,
+    "change": -2,
+    "changePct": -1.9,
     "isStopHigh": false,
-    "turnoverPct": 1.7,
-    "marketCap": 31444342696,
-    "appearCount": 0,
+    "turnoverPct": 3.6,
+    "marketCap": 30839643798,
+    "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-04",
-      "o": 102,
-      "h": 102,
-      "l": 96,
-      "c": 96,
-      "v": 4442200,
-      "ma5": 97.8,
-      "ma25": 100.2,
-      "ma75": 111.4,
-      "ma200": 105.5
-    },
     {
       "date": "2026-06-05",
       "o": 97,
@@ -614,6 +602,21 @@
       "ma25": 96.8,
       "ma75": 97.7,
       "ma200": 105.2
+    },
+    {
+      "date": "2026-08-17",
+      "o": 105,
+      "h": 106,
+      "l": 102,
+      "c": 102,
+      "v": 10526000,
+      "ma5": 102.2,
+      "ma25": 97.3,
+      "ma75": 97.6,
+      "ma200": 105.3,
+      "marks": [
+        "appear"
+      ]
     }
   ]
 }

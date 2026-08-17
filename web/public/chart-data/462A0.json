@@ -5,31 +5,16 @@
   "market": "東証G",
   "sector": "証券･商品先物取引業",
   "header": {
-    "price": 243,
-    "change": 3,
-    "changePct": 1.2,
+    "price": 234,
+    "change": -9,
+    "changePct": -3.7,
     "isStopHigh": false,
     "turnoverPct": 0.4,
-    "marketCap": 5802864543,
-    "appearCount": 3,
+    "marketCap": 5587943634,
+    "appearCount": 2,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-04",
-      "o": 400,
-      "h": 458,
-      "l": 390,
-      "c": 419,
-      "v": 752200,
-      "ma5": 440.4,
-      "ma25": 562.6,
-      "ma75": 807.8,
-      "ma200": null,
-      "marks": [
-        "appear"
-      ]
-    },
     {
       "date": "2026-06-05",
       "o": 419,
@@ -623,6 +608,18 @@
       "ma5": 232.0,
       "ma25": 233.4,
       "ma75": 368.9,
+      "ma200": null
+    },
+    {
+      "date": "2026-08-17",
+      "o": 239,
+      "h": 239,
+      "l": 232,
+      "c": 234,
+      "v": 99700,
+      "ma5": 234.4,
+      "ma25": 232.6,
+      "ma75": 362.0,
       "ma200": null
     }
   ]

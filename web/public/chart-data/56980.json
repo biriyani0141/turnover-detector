@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "鉄鋼",
   "header": {
-    "price": 772,
-    "change": -101,
-    "changePct": -11.6,
+    "price": 795,
+    "change": 23,
+    "changePct": 3.0,
     "isStopHigh": false,
-    "turnoverPct": 3.5,
-    "marketCap": 23405023536,
+    "turnoverPct": 1.4,
+    "marketCap": 24102323460,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-04",
-      "o": 856,
-      "h": 867,
-      "l": 839,
-      "c": 847,
-      "v": 136100,
-      "ma5": 845.4,
-      "ma25": 981.9,
-      "ma75": 958.5,
-      "ma200": 727.2
-    },
     {
       "date": "2026-06-05",
       "o": 847,
@@ -617,6 +605,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-08-17",
+      "o": 780,
+      "h": 798,
+      "l": 774,
+      "c": 795,
+      "v": 420600,
+      "ma5": 843.4,
+      "ma25": 805.1,
+      "ma75": 872.4,
+      "ma200": 807.4
     }
   ]
 }

@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "食料品",
   "header": {
-    "price": 92,
-    "change": 0,
-    "changePct": 0.0,
+    "price": 82,
+    "change": -10,
+    "changePct": -10.9,
     "isStopHigh": false,
-    "turnoverPct": 1.0,
-    "marketCap": 10683920348,
-    "appearCount": 3,
+    "turnoverPct": 3.7,
+    "marketCap": 9522624658,
+    "appearCount": 4,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-04",
-      "o": 101,
-      "h": 102,
-      "l": 95,
-      "c": 95,
-      "v": 1313100,
-      "ma5": 104.4,
-      "ma25": 98.6,
-      "ma75": 110.7,
-      "ma200": 167.2
-    },
     {
       "date": "2026-06-05",
       "o": 94,
@@ -625,6 +613,21 @@
       "ma25": 95.1,
       "ma75": 98.3,
       "ma200": 127.1
+    },
+    {
+      "date": "2026-08-17",
+      "o": 77,
+      "h": 85,
+      "l": 76,
+      "c": 82,
+      "v": 4384800,
+      "ma5": 90.2,
+      "ma25": 94.4,
+      "ma75": 98.0,
+      "ma200": 126.2,
+      "marks": [
+        "appear"
+      ]
     }
   ]
 }

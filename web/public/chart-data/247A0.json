@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "化学",
   "header": {
-    "price": 866,
-    "change": 38,
-    "changePct": 4.6,
-    "isStopHigh": false,
-    "turnoverPct": 2.6,
-    "marketCap": 56289134000,
-    "appearCount": 2,
-    "stopHighCount": 0
+    "price": 999,
+    "change": 133,
+    "changePct": 15.4,
+    "isStopHigh": true,
+    "turnoverPct": 8.4,
+    "marketCap": 64934001000,
+    "appearCount": 3,
+    "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-06-04",
-      "o": 675,
-      "h": 696,
-      "l": 652,
-      "c": 670,
-      "v": 1104800,
-      "ma5": 673.6,
-      "ma25": 976.3,
-      "ma75": 1169.2,
-      "ma200": 2451.2
-    },
     {
       "date": "2026-06-05",
       "o": 671,
@@ -620,6 +608,23 @@
       "ma25": 819.2,
       "ma75": 853.0,
       "ma200": 1214.5
+    },
+    {
+      "date": "2026-08-17",
+      "o": 966,
+      "h": 1016,
+      "l": 945,
+      "c": 999,
+      "v": 5449200,
+      "ma5": 876.2,
+      "ma25": 826.6,
+      "ma75": 849.8,
+      "ma200": 1210.8,
+      "marks": [
+        "sht",
+        "turn5",
+        "appear"
+      ]
     }
   ]
 }
