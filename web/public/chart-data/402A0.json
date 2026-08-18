@@ -5,32 +5,16 @@
   "market": "東証G",
   "sector": "輸送用機器",
   "header": {
-    "price": 549,
-    "change": 5,
-    "changePct": 0.9,
+    "price": 535,
+    "change": -14,
+    "changePct": -2.6,
     "isStopHigh": false,
     "turnoverPct": 2.1,
-    "marketCap": 36585689400,
-    "appearCount": 32,
+    "marketCap": 35652721000,
+    "appearCount": 31,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-05",
-      "o": 720,
-      "h": 749,
-      "l": 705,
-      "c": 720,
-      "v": 4071500,
-      "ma5": 725.6,
-      "ma25": 735.5,
-      "ma75": 661.5,
-      "ma200": null,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-06-08",
       "o": 682,
@@ -721,6 +705,18 @@
       "ma25": 493.9,
       "ma75": 600.1,
       "ma200": 584.6
+    },
+    {
+      "date": "2026-08-18",
+      "o": 544,
+      "h": 558,
+      "l": 533,
+      "c": 535,
+      "v": 1379500,
+      "ma5": 542.0,
+      "ma25": 494.8,
+      "ma75": 599.4,
+      "ma200": 583.9
     }
   ]
 }
