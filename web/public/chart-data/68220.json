@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "電気機器",
   "header": {
-    "price": 4950,
-    "change": 150,
-    "changePct": 3.1,
-    "isStopHigh": false,
-    "turnoverPct": 0.3,
-    "marketCap": 7276500000,
-    "appearCount": 0,
-    "stopHighCount": 0
+    "price": 5240,
+    "change": 290,
+    "changePct": 5.9,
+    "isStopHigh": true,
+    "turnoverPct": 6.1,
+    "marketCap": 7702800000,
+    "appearCount": 1,
+    "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-06-08",
-      "o": 5490,
-      "h": 5570,
-      "l": 5380,
-      "c": 5470,
-      "v": 7000,
-      "ma5": 5566.0,
-      "ma25": 5661.6,
-      "ma75": 5360.1,
-      "ma200": 4441.6
-    },
     {
       "date": "2026-06-09",
       "o": 5570,
@@ -614,6 +602,23 @@
       "ma25": 5119.8,
       "ma75": 5419.5,
       "ma200": 4774.1
+    },
+    {
+      "date": "2026-08-19",
+      "o": 5200,
+      "h": 5650,
+      "l": 5200,
+      "c": 5240,
+      "v": 86900,
+      "ma5": 4890.0,
+      "ma25": 5109.8,
+      "ma75": 5416.6,
+      "ma200": 4778.6,
+      "marks": [
+        "sht",
+        "turn5",
+        "appear"
+      ]
     }
   ]
 }
