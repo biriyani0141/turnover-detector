@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "化学",
   "header": {
-    "price": 673,
-    "change": -36,
-    "changePct": -5.1,
+    "price": 672,
+    "change": -1,
+    "changePct": -0.1,
     "isStopHigh": false,
-    "turnoverPct": 6.2,
-    "marketCap": 10523797912,
-    "appearCount": 5,
+    "turnoverPct": 3.7,
+    "marketCap": 10508160768,
+    "appearCount": 6,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-06-09",
-      "o": 696,
-      "h": 711,
-      "l": 681,
-      "c": 686,
-      "v": 168000,
-      "ma5": 701.0,
-      "ma25": 883.7,
-      "ma75": 1048.4,
-      "ma200": 880.2
-    },
     {
       "date": "2026-06-10",
       "o": 691,
@@ -633,6 +621,21 @@
       "ma200": 848.1,
       "marks": [
         "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-08-20",
+      "o": 680,
+      "h": 681,
+      "l": 657,
+      "c": 672,
+      "v": 572900,
+      "ma5": 693.0,
+      "ma25": 621.3,
+      "ma75": 725.4,
+      "ma200": 847.9,
+      "marks": [
         "appear"
       ]
     }
