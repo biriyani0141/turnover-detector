@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "海運業",
   "header": {
-    "price": 979,
-    "change": -92,
-    "changePct": -8.6,
-    "isStopHigh": false,
-    "turnoverPct": 0.2,
-    "marketCap": 35244000000,
+    "price": 1129,
+    "change": 150,
+    "changePct": 15.3,
+    "isStopHigh": true,
+    "turnoverPct": 0.7,
+    "marketCap": 40644000000,
     "appearCount": 0,
-    "stopHighCount": 1
+    "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-06-10",
-      "o": 940,
-      "h": 940,
-      "l": 892,
-      "c": 904,
-      "v": 31000,
-      "ma5": 958.6,
-      "ma25": 1123.2,
-      "ma75": 1114.2,
-      "ma200": 853.1
-    },
     {
       "date": "2026-06-11",
       "o": 919,
@@ -617,6 +605,21 @@
       "ma25": 886.2,
       "ma75": 948.2,
       "ma200": 886.3
+    },
+    {
+      "date": "2026-08-21",
+      "o": 979,
+      "h": 1129,
+      "l": 979,
+      "c": 1129,
+      "v": 261600,
+      "ma5": 1063.8,
+      "ma25": 897.2,
+      "ma75": 946.0,
+      "ma200": 888.4,
+      "marks": [
+        "shc"
+      ]
     }
   ]
 }

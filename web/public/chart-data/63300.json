@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "建設業",
   "header": {
-    "price": 2408,
-    "change": 143,
-    "changePct": 6.3,
+    "price": 2328,
+    "change": -80,
+    "changePct": -3.3,
     "isStopHigh": false,
-    "turnoverPct": 5.1,
-    "marketCap": 126633365656,
-    "appearCount": 32,
+    "turnoverPct": 3.5,
+    "marketCap": 122426277096,
+    "appearCount": 33,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-10",
-      "o": 1975,
-      "h": 1987,
-      "l": 1878,
-      "c": 1892,
-      "v": 1040300,
-      "ma5": 1980.2,
-      "ma25": 2086.4,
-      "ma75": 2511.4,
-      "ma200": 2766.6
-    },
     {
       "date": "2026-06-11",
       "o": 1832,
@@ -723,6 +711,21 @@
       "ma200": 2850.3,
       "marks": [
         "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-08-21",
+      "o": 2333,
+      "h": 2385,
+      "l": 2296,
+      "c": 2328,
+      "v": 1850100,
+      "ma5": 2385.4,
+      "ma25": 2108.5,
+      "ma75": 2067.5,
+      "ma200": 2849.2,
+      "marks": [
         "appear"
       ]
     }
