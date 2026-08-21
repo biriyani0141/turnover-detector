@@ -2308,14 +2308,14 @@
       "theme": "鉄道製造・リース",
       "slug": "rail-manufacturing",
       "theme1": "機械",
-      "return_1d": 1.09,
-      "return_5d": 0.17,
-      "return_10d": -2.1,
-      "return_1m": -3.79,
-      "return_2m": -4.41,
-      "return_3m": 3.18,
-      "return_6m": -9.95,
-      "return_1y": 24.95,
+      "return_1d": 1.08,
+      "return_5d": 0.16,
+      "return_10d": -2.11,
+      "return_1m": -3.8,
+      "return_2m": -4.42,
+      "return_3m": 3.17,
+      "return_6m": -9.96,
+      "return_1y": 24.94,
       "top_movers": [
         {
           "ticker": "OSK",
@@ -4001,34 +4001,6 @@
       "bucket": null
     },
     {
-      "theme": "掘削機器",
-      "slug": "drilling-equipment",
-      "theme1": "石油",
-      "return_1d": 0.13,
-      "return_5d": -2.19,
-      "return_10d": 4.75,
-      "return_1m": -0.79,
-      "return_2m": 6.51,
-      "return_3m": -2.6,
-      "return_6m": 9.15,
-      "return_1y": 79.66,
-      "top_movers": [
-        {
-          "ticker": "NOV",
-          "pct_1d": 0.67
-        },
-        {
-          "ticker": "TS",
-          "pct_1d": -0.04
-        },
-        {
-          "ticker": "FTI",
-          "pct_1d": -0.23
-        }
-      ],
-      "bucket": null
-    },
-    {
       "theme": "機械：多角化",
       "slug": "diversified-industrials",
       "theme1": "機械",
@@ -4100,6 +4072,34 @@
         {
           "ticker": "RL",
           "pct_1d": -0.03
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "掘削機器",
+      "slug": "drilling-equipment",
+      "theme1": "石油",
+      "return_1d": 0.11,
+      "return_5d": -2.21,
+      "return_10d": 4.73,
+      "return_1m": -0.81,
+      "return_2m": 6.49,
+      "return_3m": -2.62,
+      "return_6m": 9.13,
+      "return_1y": 79.62,
+      "top_movers": [
+        {
+          "ticker": "NOV",
+          "pct_1d": 0.67
+        },
+        {
+          "ticker": "TS",
+          "pct_1d": -0.09
+        },
+        {
+          "ticker": "FTI",
+          "pct_1d": -0.23
         }
       ],
       "bucket": null
@@ -6206,6 +6206,6 @@
     }
   ],
   "stock_date": "2026-08-21",
-  "updated_at": "2026-08-21 21:19:08",
-  "saved_at": "2026-08-21T21:35:18.356046"
+  "updated_at": "2026-08-21 21:35:15",
+  "saved_at": "2026-08-21T21:41:46.901208"
 }
