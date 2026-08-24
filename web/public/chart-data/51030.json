@@ -6,27 +6,15 @@
   "sector": "ゴム製品",
   "header": {
     "price": 1,
-    "change": -2,
-    "changePct": -66.7,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 14.3,
+    "turnoverPct": 19.1,
     "marketCap": 76293426,
-    "appearCount": 17,
+    "appearCount": 18,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-11",
-      "o": 38,
-      "h": 39,
-      "l": 38,
-      "c": 38,
-      "v": 21500,
-      "ma5": 38.4,
-      "ma25": 40.0,
-      "ma75": 42.4,
-      "ma200": 46.3
-    },
     {
       "date": "2026-06-12",
       "o": 39,
@@ -669,6 +657,22 @@
       "ma25": 8.8,
       "ma75": 28.1,
       "ma200": 38.8,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-08-24",
+      "o": 1,
+      "h": 2,
+      "l": 1,
+      "c": 1,
+      "v": 14331500,
+      "ma5": 2.6,
+      "ma25": 8.1,
+      "ma75": 27.6,
+      "ma200": 38.5,
       "marks": [
         "turn5",
         "appear"
