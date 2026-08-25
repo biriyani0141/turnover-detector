@@ -1,9 +1,9 @@
 {
   "_meta": {
-    "generated": "2026-08-24",
+    "generated": "2026-08-25",
     "date_range": [
       "2025-07-07",
-      "2026-08-24"
+      "2026-08-25"
     ],
     "top_n": 100
   },
@@ -28159,6 +28159,108 @@
       "95010",
       "40220",
       "65700"
+    ],
+    "2026-08-25": [
+      "45640",
+      "462A0",
+      "96100",
+      "51310",
+      "31030",
+      "71380",
+      "45970",
+      "89950",
+      "60850",
+      "89180",
+      "43920",
+      "73560",
+      "39070",
+      "62320",
+      "66130",
+      "69760",
+      "323A0",
+      "65220",
+      "39050",
+      "57070",
+      "48330",
+      "278A0",
+      "77190",
+      "43810",
+      "63300",
+      "36640",
+      "41990",
+      "57240",
+      "62270",
+      "59850",
+      "33500",
+      "73760",
+      "44240",
+      "58010",
+      "45880",
+      "150A0",
+      "285A0",
+      "76150",
+      "31890",
+      "23340",
+      "485A0",
+      "81050",
+      "68400",
+      "74250",
+      "63150",
+      "31100",
+      "94250",
+      "32760",
+      "66590",
+      "58030",
+      "77940",
+      "27760",
+      "186A0",
+      "63270",
+      "52400",
+      "196A0",
+      "33150",
+      "34360",
+      "29260",
+      "29620",
+      "68550",
+      "37530",
+      "44250",
+      "95010",
+      "65260",
+      "68380",
+      "288A0",
+      "75780",
+      "581A0",
+      "65700",
+      "62170",
+      "219A0",
+      "68340",
+      "66190",
+      "247A0",
+      "57060",
+      "40620",
+      "23150",
+      "45820",
+      "62760",
+      "190A0",
+      "31310",
+      "36670",
+      "38530",
+      "464A0",
+      "23540",
+      "36240",
+      "44130",
+      "40520",
+      "68710",
+      "69200",
+      "402A0",
+      "77460",
+      "65250",
+      "68620",
+      "72200",
+      "78260",
+      "91300",
+      "21600",
+      "76030"
     ]
   },
   "by_code": {
@@ -28280,7 +28382,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 7,
+      "turnover_100": 6,
       "stophigh_100": 0,
       "turnover_200": 36,
       "stophigh_200": 0
@@ -28461,7 +28563,7 @@
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 1,
-      "turnover_200": 62,
+      "turnover_200": 61,
       "stophigh_200": 4
     },
     "67860": {
@@ -28629,7 +28731,7 @@
       "stophigh_50": 0,
       "turnover_100": 8,
       "stophigh_100": 1,
-      "turnover_200": 49,
+      "turnover_200": 48,
       "stophigh_200": 1
     },
     "48890": {
@@ -28761,7 +28863,7 @@
       "score": 112,
       "turnover_25": 11,
       "stophigh_25": 0,
-      "turnover_50": 16,
+      "turnover_50": 15,
       "stophigh_50": 1,
       "turnover_100": 39,
       "stophigh_100": 3,
@@ -28798,7 +28900,7 @@
       "stophigh_50": 0,
       "turnover_100": 2,
       "stophigh_100": 0,
-      "turnover_200": 11,
+      "turnover_200": 10,
       "stophigh_200": 0
     },
     "94190": {
@@ -28898,7 +29000,7 @@
       "stophigh_25": 1,
       "turnover_50": 3,
       "stophigh_50": 2,
-      "turnover_100": 8,
+      "turnover_100": 7,
       "stophigh_100": 3,
       "turnover_200": 19,
       "stophigh_200": 5
@@ -29236,8 +29338,8 @@
       "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 0,
-      "turnover_200": 38,
-      "stophigh_200": 2
+      "turnover_200": 37,
+      "stophigh_200": 1
     },
     "62320": {
       "turnover_dates": [
@@ -29393,7 +29495,8 @@
         "2026-08-04",
         "2026-08-05",
         "2026-08-17",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -29406,8 +29509,8 @@
         "2026-05-15"
       ],
       "first_date": "2025-07-07",
-      "score": 153,
-      "turnover_25": 9,
+      "score": 154,
+      "turnover_25": 10,
       "stophigh_25": 0,
       "turnover_50": 24,
       "stophigh_50": 0,
@@ -29563,7 +29666,8 @@
         "2026-08-17",
         "2026-08-18",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -29583,15 +29687,15 @@
         "2026-06-18"
       ],
       "first_date": "2025-07-07",
-      "score": 146,
+      "score": 147,
       "turnover_25": 9,
       "stophigh_25": 0,
       "turnover_50": 31,
       "stophigh_50": 1,
-      "turnover_100": 62,
+      "turnover_100": 63,
       "stophigh_100": 2,
-      "turnover_200": 89,
-      "stophigh_200": 5
+      "turnover_200": 90,
+      "stophigh_200": 4
     },
     "31370": {
       "turnover_dates": [
@@ -29633,8 +29737,8 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 5,
-      "stophigh_100": 1,
+      "turnover_100": 4,
+      "stophigh_100": 0,
       "turnover_200": 11,
       "stophigh_200": 2
     },
@@ -29806,13 +29910,13 @@
       ],
       "first_date": "2025-07-07",
       "score": 141,
-      "turnover_25": 3,
+      "turnover_25": 2,
       "stophigh_25": 0,
-      "turnover_50": 24,
+      "turnover_50": 23,
       "stophigh_50": 2,
-      "turnover_100": 74,
+      "turnover_100": 73,
       "stophigh_100": 9,
-      "turnover_200": 90,
+      "turnover_200": 89,
       "stophigh_200": 14
     },
     "61770": {
@@ -29948,7 +30052,7 @@
       "stophigh_50": 0,
       "turnover_100": 5,
       "stophigh_100": 0,
-      "turnover_200": 47,
+      "turnover_200": 46,
       "stophigh_200": 1
     },
     "52460": {
@@ -30059,7 +30163,7 @@
       "stophigh_50": 1,
       "turnover_100": 13,
       "stophigh_100": 2,
-      "turnover_200": 47,
+      "turnover_200": 46,
       "stophigh_200": 2
     },
     "49290": {
@@ -30128,19 +30232,20 @@
         "2026-07-14",
         "2026-07-27",
         "2026-07-30",
-        "2026-08-19"
+        "2026-08-19",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-07",
-      "score": 47,
-      "turnover_25": 3,
+      "score": 48,
+      "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 6,
+      "turnover_50": 7,
       "stophigh_50": 0,
-      "turnover_100": 6,
+      "turnover_100": 7,
       "stophigh_100": 0,
-      "turnover_200": 15,
+      "turnover_200": 16,
       "stophigh_200": 0
     },
     "341A0": {
@@ -30269,7 +30374,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 4,
+      "turnover_200": 3,
       "stophigh_200": 0
     },
     "48830": {
@@ -30501,7 +30606,7 @@
       "stophigh_50": 0,
       "turnover_100": 10,
       "stophigh_100": 1,
-      "turnover_200": 56,
+      "turnover_200": 55,
       "stophigh_200": 3
     },
     "76940": {
@@ -30762,7 +30867,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -30778,10 +30884,10 @@
         "2026-03-16"
       ],
       "first_date": "2025-07-07",
-      "score": 213,
+      "score": 214,
       "turnover_25": 25,
       "stophigh_25": 0,
-      "turnover_50": 34,
+      "turnover_50": 35,
       "stophigh_50": 0,
       "turnover_100": 58,
       "stophigh_100": 0,
@@ -30882,7 +30988,7 @@
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 0,
-      "turnover_200": 17,
+      "turnover_200": 16,
       "stophigh_200": 0
     },
     "43160": {
@@ -31119,7 +31225,7 @@
       "stophigh_25": 0,
       "turnover_50": 12,
       "stophigh_50": 0,
-      "turnover_100": 48,
+      "turnover_100": 47,
       "stophigh_100": 4,
       "turnover_200": 129,
       "stophigh_200": 12
@@ -31336,7 +31442,7 @@
       "stophigh_50": 0,
       "turnover_100": 37,
       "stophigh_100": 1,
-      "turnover_200": 125,
+      "turnover_200": 124,
       "stophigh_200": 5
     },
     "21340": {
@@ -31495,9 +31601,9 @@
       ],
       "first_date": "2025-07-07",
       "score": 85,
-      "turnover_25": 16,
+      "turnover_25": 15,
       "stophigh_25": 0,
-      "turnover_50": 31,
+      "turnover_50": 30,
       "stophigh_50": 0,
       "turnover_100": 33,
       "stophigh_100": 0,
@@ -31636,9 +31742,9 @@
       "score": 97,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 12,
-      "stophigh_50": 1,
-      "turnover_100": 22,
+      "turnover_50": 11,
+      "stophigh_50": 0,
+      "turnover_100": 21,
       "stophigh_100": 1,
       "turnover_200": 48,
       "stophigh_200": 1
@@ -31784,7 +31890,7 @@
       ],
       "first_date": "2025-07-07",
       "score": 18,
-      "turnover_25": 2,
+      "turnover_25": 1,
       "stophigh_25": 0,
       "turnover_50": 3,
       "stophigh_50": 0,
@@ -32065,12 +32171,13 @@
         "2026-08-18",
         "2026-08-19",
         "2026-08-20",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-07",
-      "score": 271,
+      "score": 272,
       "turnover_25": 24,
       "stophigh_25": 0,
       "turnover_50": 49,
@@ -32224,7 +32331,7 @@
       "stophigh_50": 0,
       "turnover_100": 7,
       "stophigh_100": 0,
-      "turnover_200": 57,
+      "turnover_200": 56,
       "stophigh_200": 1
     },
     "36640": {
@@ -32437,19 +32544,20 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2025-10-06"
       ],
       "first_date": "2025-07-07",
-      "score": 209,
+      "score": 210,
       "turnover_25": 25,
       "stophigh_25": 0,
-      "turnover_50": 42,
+      "turnover_50": 43,
       "stophigh_50": 0,
-      "turnover_100": 83,
+      "turnover_100": 84,
       "stophigh_100": 0,
       "turnover_200": 152,
       "stophigh_200": 0
@@ -32685,14 +32793,15 @@
         "2026-08-14",
         "2026-08-18",
         "2026-08-20",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2025-10-30"
       ],
       "first_date": "2025-07-07",
-      "score": 230,
+      "score": 231,
       "turnover_25": 22,
       "stophigh_25": 0,
       "turnover_50": 44,
@@ -32956,7 +33065,8 @@
         "2026-08-18",
         "2026-08-19",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -32964,14 +33074,14 @@
         "2026-06-02"
       ],
       "first_date": "2025-07-07",
-      "score": 93,
+      "score": 94,
       "turnover_25": 14,
       "stophigh_25": 0,
       "turnover_50": 37,
       "stophigh_50": 0,
-      "turnover_100": 51,
+      "turnover_100": 52,
       "stophigh_100": 2,
-      "turnover_200": 61,
+      "turnover_200": 62,
       "stophigh_200": 2
     },
     "319A0": {
@@ -33272,12 +33382,13 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-07",
-      "score": 276,
+      "score": 277,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
@@ -33485,14 +33596,15 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2025-10-31"
       ],
       "first_date": "2025-07-07",
-      "score": 197,
+      "score": 198,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
@@ -33681,7 +33793,8 @@
         "2026-08-10",
         "2026-08-12",
         "2026-08-14",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -33693,12 +33806,12 @@
         "2026-01-16"
       ],
       "first_date": "2025-07-07",
-      "score": 81,
-      "turnover_25": 4,
+      "score": 82,
+      "turnover_25": 5,
       "stophigh_25": 0,
-      "turnover_50": 5,
+      "turnover_50": 6,
       "stophigh_50": 0,
-      "turnover_100": 6,
+      "turnover_100": 7,
       "stophigh_100": 0,
       "turnover_200": 63,
       "stophigh_200": 5
@@ -33835,7 +33948,8 @@
         "2026-08-18",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -33843,14 +33957,14 @@
         "2026-05-25"
       ],
       "first_date": "2025-07-07",
-      "score": 131,
+      "score": 132,
       "turnover_25": 23,
       "stophigh_25": 0,
       "turnover_50": 48,
       "stophigh_50": 0,
-      "turnover_100": 69,
+      "turnover_100": 70,
       "stophigh_100": 2,
-      "turnover_200": 87,
+      "turnover_200": 88,
       "stophigh_200": 2
     },
     "88870": {
@@ -34120,11 +34234,11 @@
       ],
       "first_date": "2025-07-07",
       "score": 79,
-      "turnover_25": 10,
+      "turnover_25": 9,
       "stophigh_25": 0,
       "turnover_50": 13,
       "stophigh_50": 0,
-      "turnover_100": 15,
+      "turnover_100": 14,
       "stophigh_100": 0,
       "turnover_200": 28,
       "stophigh_200": 1
@@ -34264,11 +34378,11 @@
       ],
       "first_date": "2025-07-07",
       "score": 118,
-      "turnover_25": 12,
+      "turnover_25": 11,
       "stophigh_25": 1,
-      "turnover_50": 32,
+      "turnover_50": 31,
       "stophigh_50": 2,
-      "turnover_100": 73,
+      "turnover_100": 72,
       "stophigh_100": 3,
       "turnover_200": 107,
       "stophigh_200": 9
@@ -34577,14 +34691,15 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2025-11-10"
       ],
       "first_date": "2025-07-07",
-      "score": 229,
+      "score": 230,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
@@ -34744,7 +34859,7 @@
       "stophigh_50": 0,
       "turnover_100": 16,
       "stophigh_100": 0,
-      "turnover_200": 69,
+      "turnover_200": 68,
       "stophigh_200": 0
     },
     "33500": {
@@ -34824,7 +34939,8 @@
         "2026-07-10",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -34832,12 +34948,12 @@
         "2026-01-05"
       ],
       "first_date": "2025-07-07",
-      "score": 76,
-      "turnover_25": 3,
+      "score": 77,
+      "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 5,
+      "turnover_50": 6,
       "stophigh_50": 0,
-      "turnover_100": 6,
+      "turnover_100": 7,
       "stophigh_100": 0,
       "turnover_200": 23,
       "stophigh_200": 1
@@ -34962,7 +35078,7 @@
       "stophigh_50": 0,
       "turnover_100": 9,
       "stophigh_100": 1,
-      "turnover_200": 44,
+      "turnover_200": 43,
       "stophigh_200": 1
     },
     "95010": {
@@ -35144,17 +35260,18 @@
         "2026-08-03",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-03-18"
       ],
       "first_date": "2025-07-07",
-      "score": 178,
-      "turnover_25": 9,
+      "score": 179,
+      "turnover_25": 10,
       "stophigh_25": 0,
-      "turnover_50": 13,
+      "turnover_50": 14,
       "stophigh_50": 0,
       "turnover_100": 32,
       "stophigh_100": 0,
@@ -35479,7 +35596,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -35490,8 +35608,8 @@
         "2026-07-31"
       ],
       "first_date": "2025-07-07",
-      "score": 249,
-      "turnover_25": 17,
+      "score": 250,
+      "turnover_25": 18,
       "stophigh_25": 1,
       "turnover_50": 34,
       "stophigh_50": 2,
@@ -35540,8 +35658,8 @@
       "score": 28,
       "turnover_25": 2,
       "stophigh_25": 0,
-      "turnover_50": 5,
-      "stophigh_50": 1,
+      "turnover_50": 4,
+      "stophigh_50": 0,
       "turnover_100": 6,
       "stophigh_100": 2,
       "turnover_200": 13,
@@ -35643,7 +35761,8 @@
         "2026-07-06",
         "2026-08-17",
         "2026-08-18",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -35652,14 +35771,14 @@
         "2026-08-17"
       ],
       "first_date": "2025-07-07",
-      "score": 95,
-      "turnover_25": 3,
+      "score": 96,
+      "turnover_25": 4,
       "stophigh_25": 1,
-      "turnover_50": 5,
+      "turnover_50": 6,
       "stophigh_50": 1,
-      "turnover_100": 14,
+      "turnover_100": 15,
       "stophigh_100": 1,
-      "turnover_200": 51,
+      "turnover_200": 52,
       "stophigh_200": 1
     },
     "58030": {
@@ -35798,7 +35917,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -35807,12 +35927,12 @@
         "2026-06-22"
       ],
       "first_date": "2025-07-07",
-      "score": 135,
-      "turnover_25": 15,
+      "score": 136,
+      "turnover_25": 16,
       "stophigh_25": 0,
-      "turnover_50": 24,
+      "turnover_50": 25,
       "stophigh_50": 2,
-      "turnover_100": 46,
+      "turnover_100": 47,
       "stophigh_100": 3,
       "turnover_200": 97,
       "stophigh_200": 3
@@ -35899,9 +36019,9 @@
       "stophigh_25": 0,
       "turnover_50": 18,
       "stophigh_50": 0,
-      "turnover_100": 42,
+      "turnover_100": 41,
       "stophigh_100": 2,
-      "turnover_200": 47,
+      "turnover_200": 46,
       "stophigh_200": 2
     },
     "24590": {
@@ -35962,8 +36082,8 @@
       "stophigh_50": 1,
       "turnover_100": 10,
       "stophigh_100": 1,
-      "turnover_200": 33,
-      "stophigh_200": 4
+      "turnover_200": 32,
+      "stophigh_200": 3
     },
     "34940": {
       "turnover_dates": [
@@ -36060,7 +36180,7 @@
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 34,
       "stophigh_200": 1
@@ -36275,9 +36395,9 @@
       "stophigh_25": 0,
       "turnover_50": 12,
       "stophigh_50": 0,
-      "turnover_100": 38,
+      "turnover_100": 37,
       "stophigh_100": 0,
-      "turnover_200": 138,
+      "turnover_200": 137,
       "stophigh_200": 0
     },
     "81360": {
@@ -36614,7 +36734,8 @@
         "2026-07-10",
         "2026-07-14",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -36624,14 +36745,14 @@
         "2026-01-26"
       ],
       "first_date": "2025-07-07",
-      "score": 55,
-      "turnover_25": 2,
+      "score": 56,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 4,
+      "turnover_50": 5,
       "stophigh_50": 0,
-      "turnover_100": 9,
+      "turnover_100": 10,
       "stophigh_100": 0,
-      "turnover_200": 16,
+      "turnover_200": 17,
       "stophigh_200": 2
     },
     "276A0": {
@@ -36914,7 +37035,7 @@
       "stophigh_50": 0,
       "turnover_100": 2,
       "stophigh_100": 0,
-      "turnover_200": 12,
+      "turnover_200": 11,
       "stophigh_200": 0
     },
     "63100": {
@@ -37042,19 +37163,20 @@
         "2026-08-18",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-07",
-      "score": 39,
-      "turnover_25": 6,
+      "score": 40,
+      "turnover_25": 7,
       "stophigh_25": 0,
       "turnover_50": 7,
       "stophigh_50": 0,
-      "turnover_100": 11,
+      "turnover_100": 12,
       "stophigh_100": 0,
-      "turnover_200": 30,
+      "turnover_200": 31,
       "stophigh_200": 0
     },
     "42220": {
@@ -37195,7 +37317,7 @@
       "stophigh_50": 0,
       "turnover_100": 7,
       "stophigh_100": 0,
-      "turnover_200": 29,
+      "turnover_200": 28,
       "stophigh_200": 0
     },
     "56020": {
@@ -37450,7 +37572,8 @@
         "2026-07-13",
         "2026-07-15",
         "2026-07-16",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -37465,14 +37588,14 @@
         "2026-08-24"
       ],
       "first_date": "2025-07-08",
-      "score": 49,
-      "turnover_25": 1,
+      "score": 50,
+      "turnover_25": 2,
       "stophigh_25": 1,
-      "turnover_50": 6,
+      "turnover_50": 7,
       "stophigh_50": 3,
-      "turnover_100": 6,
+      "turnover_100": 7,
       "stophigh_100": 3,
-      "turnover_200": 42,
+      "turnover_200": 43,
       "stophigh_200": 6
     },
     "39050": {
@@ -37676,7 +37799,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -37699,12 +37823,12 @@
         "2026-06-03"
       ],
       "first_date": "2025-07-08",
-      "score": 200,
+      "score": 201,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
       "stophigh_50": 0,
-      "turnover_100": 77,
+      "turnover_100": 78,
       "stophigh_100": 8,
       "turnover_200": 127,
       "stophigh_200": 8
@@ -37793,7 +37917,7 @@
       ],
       "first_date": "2025-07-08",
       "score": 18,
-      "turnover_25": 10,
+      "turnover_25": 9,
       "stophigh_25": 4,
       "turnover_50": 14,
       "stophigh_50": 6,
@@ -37896,7 +38020,7 @@
       "stophigh_50": 0,
       "turnover_100": 8,
       "stophigh_100": 0,
-      "turnover_200": 38,
+      "turnover_200": 37,
       "stophigh_200": 0
     },
     "38560": {
@@ -38323,7 +38447,7 @@
       "stophigh_50": 0,
       "turnover_100": 7,
       "stophigh_100": 1,
-      "turnover_200": 86,
+      "turnover_200": 85,
       "stophigh_200": 4
     },
     "45930": {
@@ -38535,7 +38659,7 @@
       ],
       "first_date": "2025-07-08",
       "score": 64,
-      "turnover_25": 5,
+      "turnover_25": 4,
       "stophigh_25": 0,
       "turnover_50": 12,
       "stophigh_50": 1,
@@ -38688,9 +38812,9 @@
       ],
       "first_date": "2025-07-08",
       "score": 115,
-      "turnover_25": 15,
+      "turnover_25": 14,
       "stophigh_25": 0,
-      "turnover_50": 32,
+      "turnover_50": 31,
       "stophigh_50": 1,
       "turnover_100": 40,
       "stophigh_100": 1,
@@ -38876,7 +39000,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -38909,14 +39034,14 @@
         "2026-08-24"
       ],
       "first_date": "2025-07-08",
-      "score": 87,
-      "turnover_25": 16,
+      "score": 88,
+      "turnover_25": 17,
       "stophigh_25": 1,
       "turnover_50": 27,
       "stophigh_50": 1,
       "turnover_100": 55,
       "stophigh_100": 7,
-      "turnover_200": 85,
+      "turnover_200": 86,
       "stophigh_200": 27
     },
     "97910": {
@@ -39053,7 +39178,7 @@
       ],
       "first_date": "2025-07-09",
       "score": 44,
-      "turnover_25": 2,
+      "turnover_25": 1,
       "stophigh_25": 0,
       "turnover_50": 3,
       "stophigh_50": 1,
@@ -39175,7 +39300,8 @@
         "2026-06-23",
         "2026-06-24",
         "2026-07-13",
-        "2026-08-17"
+        "2026-08-17",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -39188,14 +39314,14 @@
         "2026-04-21"
       ],
       "first_date": "2025-07-09",
-      "score": 112,
-      "turnover_25": 1,
+      "score": 113,
+      "turnover_25": 2,
       "stophigh_25": 0,
-      "turnover_50": 6,
+      "turnover_50": 7,
       "stophigh_50": 0,
-      "turnover_100": 20,
+      "turnover_100": 21,
       "stophigh_100": 1,
-      "turnover_200": 76,
+      "turnover_200": 77,
       "stophigh_200": 3
     },
     "76150": {
@@ -39292,7 +39418,8 @@
         "2026-03-25",
         "2026-05-11",
         "2026-05-12",
-        "2026-05-14"
+        "2026-05-14",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -39304,12 +39431,12 @@
         "2025-09-01"
       ],
       "first_date": "2025-07-09",
-      "score": 93,
-      "turnover_25": 0,
+      "score": 94,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 0,
+      "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 4,
       "stophigh_100": 0,
       "turnover_200": 42,
       "stophigh_200": 0
@@ -39396,7 +39523,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 1,
-      "turnover_200": 4,
+      "turnover_200": 3,
       "stophigh_200": 1
     },
     "48330": {
@@ -39530,7 +39657,8 @@
         "2026-07-27",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -39542,12 +39670,12 @@
         "2026-01-09"
       ],
       "first_date": "2025-07-09",
-      "score": 130,
+      "score": 131,
       "turnover_25": 7,
       "stophigh_25": 0,
-      "turnover_50": 17,
+      "turnover_50": 18,
       "stophigh_50": 0,
-      "turnover_100": 20,
+      "turnover_100": 21,
       "stophigh_100": 0,
       "turnover_200": 85,
       "stophigh_200": 1
@@ -39613,7 +39741,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 4,
+      "turnover_200": 3,
       "stophigh_200": 0
     },
     "77710": {
@@ -39698,7 +39826,7 @@
       "score": 59,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 0,
@@ -39918,7 +40046,8 @@
         "2026-07-02",
         "2026-07-09",
         "2026-07-21",
-        "2026-07-24"
+        "2026-07-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -39941,10 +40070,10 @@
         "2026-06-16"
       ],
       "first_date": "2025-07-09",
-      "score": 152,
-      "turnover_25": 2,
+      "score": 153,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 11,
+      "turnover_50": 12,
       "stophigh_50": 1,
       "turnover_100": 32,
       "stophigh_100": 5,
@@ -40120,7 +40249,7 @@
       "stophigh_25": 0,
       "turnover_50": 4,
       "stophigh_50": 0,
-      "turnover_100": 24,
+      "turnover_100": 23,
       "stophigh_100": 0,
       "turnover_200": 34,
       "stophigh_200": 0
@@ -40166,7 +40295,8 @@
         "2026-01-05",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -40175,14 +40305,14 @@
         "2026-08-21"
       ],
       "first_date": "2025-07-09",
-      "score": 10,
-      "turnover_25": 3,
+      "score": 11,
+      "turnover_25": 4,
       "stophigh_25": 1,
-      "turnover_50": 3,
+      "turnover_50": 4,
       "stophigh_50": 1,
-      "turnover_100": 3,
+      "turnover_100": 4,
       "stophigh_100": 1,
-      "turnover_200": 5,
+      "turnover_200": 6,
       "stophigh_200": 2
     },
     "38100": {
@@ -40413,7 +40543,7 @@
       "stophigh_50": 1,
       "turnover_100": 3,
       "stophigh_100": 2,
-      "turnover_200": 13,
+      "turnover_200": 12,
       "stophigh_200": 2
     },
     "81050": {
@@ -40573,7 +40703,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -40605,12 +40736,12 @@
         "2026-06-03"
       ],
       "first_date": "2025-07-10",
-      "score": 156,
+      "score": 157,
       "turnover_25": 8,
       "stophigh_25": 0,
       "turnover_50": 23,
       "stophigh_50": 0,
-      "turnover_100": 40,
+      "turnover_100": 41,
       "stophigh_100": 4,
       "turnover_200": 110,
       "stophigh_200": 8
@@ -40626,7 +40757,8 @@
         "2026-04-30",
         "2026-05-01",
         "2026-05-07",
-        "2026-07-23"
+        "2026-07-23",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -40635,14 +40767,14 @@
         "2026-07-23"
       ],
       "first_date": "2025-07-10",
-      "score": 10,
-      "turnover_25": 1,
+      "score": 11,
+      "turnover_25": 2,
       "stophigh_25": 1,
-      "turnover_50": 1,
+      "turnover_50": 2,
       "stophigh_50": 1,
-      "turnover_100": 6,
+      "turnover_100": 7,
       "stophigh_100": 3,
-      "turnover_200": 7,
+      "turnover_200": 8,
       "stophigh_200": 3
     },
     "36970": {
@@ -40709,7 +40841,7 @@
       "stophigh_dates": [],
       "first_date": "2025-07-10",
       "score": 57,
-      "turnover_25": 10,
+      "turnover_25": 9,
       "stophigh_25": 0,
       "turnover_50": 16,
       "stophigh_50": 0,
@@ -40756,8 +40888,8 @@
       ],
       "first_date": "2025-07-10",
       "score": 9,
-      "turnover_25": 4,
-      "stophigh_25": 1,
+      "turnover_25": 3,
+      "stophigh_25": 0,
       "turnover_50": 4,
       "stophigh_50": 2,
       "turnover_100": 6,
@@ -40826,7 +40958,7 @@
       "stophigh_25": 0,
       "turnover_50": 7,
       "stophigh_50": 0,
-      "turnover_100": 11,
+      "turnover_100": 10,
       "stophigh_100": 0,
       "turnover_200": 28,
       "stophigh_200": 0
@@ -41096,13 +41228,13 @@
       ],
       "first_date": "2025-07-10",
       "score": 226,
-      "turnover_25": 20,
+      "turnover_25": 19,
       "stophigh_25": 0,
-      "turnover_50": 38,
+      "turnover_50": 37,
       "stophigh_50": 1,
-      "turnover_100": 87,
+      "turnover_100": 86,
       "stophigh_100": 1,
-      "turnover_200": 178,
+      "turnover_200": 177,
       "stophigh_200": 1
     },
     "65250": {
@@ -41175,21 +41307,22 @@
         "2026-08-14",
         "2026-08-18",
         "2026-08-19",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-07-31"
       ],
       "first_date": "2025-07-10",
-      "score": 69,
+      "score": 70,
       "turnover_25": 19,
       "stophigh_25": 1,
-      "turnover_50": 35,
+      "turnover_50": 36,
       "stophigh_50": 1,
-      "turnover_100": 49,
+      "turnover_100": 50,
       "stophigh_100": 1,
-      "turnover_200": 61,
+      "turnover_200": 62,
       "stophigh_200": 1
     },
     "64940": {
@@ -41554,7 +41687,8 @@
         "2026-08-04",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -41578,14 +41712,14 @@
         "2026-08-21"
       ],
       "first_date": "2025-07-11",
-      "score": 107,
+      "score": 108,
       "turnover_25": 11,
       "stophigh_25": 1,
-      "turnover_50": 16,
+      "turnover_50": 17,
       "stophigh_50": 1,
-      "turnover_100": 19,
+      "turnover_100": 20,
       "stophigh_100": 1,
-      "turnover_200": 65,
+      "turnover_200": 66,
       "stophigh_200": 8
     },
     "44870": {
@@ -41670,7 +41804,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -41689,14 +41824,14 @@
         "2026-08-05"
       ],
       "first_date": "2025-07-11",
-      "score": 64,
+      "score": 65,
       "turnover_25": 24,
       "stophigh_25": 5,
       "turnover_50": 39,
       "stophigh_50": 7,
-      "turnover_100": 58,
+      "turnover_100": 59,
       "stophigh_100": 12,
-      "turnover_200": 59,
+      "turnover_200": 60,
       "stophigh_200": 12
     },
     "66630": {
@@ -41880,7 +42015,7 @@
       ],
       "first_date": "2025-07-11",
       "score": 15,
-      "turnover_25": 6,
+      "turnover_25": 5,
       "stophigh_25": 1,
       "turnover_50": 7,
       "stophigh_50": 2,
@@ -41953,7 +42088,7 @@
       "stophigh_50": 0,
       "turnover_100": 2,
       "stophigh_100": 0,
-      "turnover_200": 15,
+      "turnover_200": 14,
       "stophigh_200": 1
     },
     "58850": {
@@ -42241,12 +42376,13 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-11",
-      "score": 230,
+      "score": 231,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
@@ -42459,7 +42595,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -42482,14 +42619,14 @@
         "2026-07-31"
       ],
       "first_date": "2025-07-11",
-      "score": 152,
+      "score": 153,
       "turnover_25": 25,
       "stophigh_25": 1,
       "turnover_50": 49,
       "stophigh_50": 3,
       "turnover_100": 99,
       "stophigh_100": 8,
-      "turnover_200": 142,
+      "turnover_200": 143,
       "stophigh_200": 17
     },
     "43930": {
@@ -42910,7 +43047,7 @@
       "stophigh_dates": [],
       "first_date": "2025-07-14",
       "score": 15,
-      "turnover_25": 8,
+      "turnover_25": 7,
       "stophigh_25": 0,
       "turnover_50": 11,
       "stophigh_50": 0,
@@ -42991,7 +43128,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 32,
+      "turnover_200": 31,
       "stophigh_200": 0
     },
     "77250": {
@@ -43421,7 +43558,7 @@
       "stophigh_25": 1,
       "turnover_50": 7,
       "stophigh_50": 3,
-      "turnover_100": 14,
+      "turnover_100": 13,
       "stophigh_100": 6,
       "turnover_200": 60,
       "stophigh_200": 13
@@ -43483,7 +43620,7 @@
       ],
       "first_date": "2025-07-15",
       "score": 6,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 2,
       "stophigh_50": 0,
@@ -43544,7 +43681,7 @@
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 0,
-      "turnover_200": 31,
+      "turnover_200": 30,
       "stophigh_200": 0
     },
     "46160": {
@@ -43864,7 +44001,7 @@
       "score": 24,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 11,
+      "turnover_50": 10,
       "stophigh_50": 0,
       "turnover_100": 22,
       "stophigh_100": 2,
@@ -44115,7 +44252,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 4,
+      "turnover_200": 3,
       "stophigh_200": 1
     },
     "60440": {
@@ -44434,10 +44571,10 @@
       ],
       "first_date": "2025-07-17",
       "score": 28,
-      "turnover_25": 14,
+      "turnover_25": 13,
       "stophigh_25": 1,
       "turnover_50": 18,
-      "stophigh_50": 2,
+      "stophigh_50": 1,
       "turnover_100": 25,
       "stophigh_100": 2,
       "turnover_200": 27,
@@ -44590,7 +44727,7 @@
       "score": 52,
       "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 13,
+      "turnover_50": 12,
       "stophigh_50": 1,
       "turnover_100": 38,
       "stophigh_100": 8,
@@ -44652,7 +44789,7 @@
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 1,
-      "turnover_200": 13,
+      "turnover_200": 12,
       "stophigh_200": 1
     },
     "36670": {
@@ -44730,19 +44867,20 @@
         "2026-07-21",
         "2026-07-22",
         "2026-07-23",
-        "2026-07-24"
+        "2026-07-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-17",
-      "score": 74,
+      "score": 75,
       "turnover_25": 5,
       "stophigh_25": 0,
       "turnover_50": 30,
       "stophigh_50": 0,
-      "turnover_100": 43,
+      "turnover_100": 44,
       "stophigh_100": 0,
-      "turnover_200": 70,
+      "turnover_200": 71,
       "stophigh_200": 0
     },
     "386A0": {
@@ -44927,7 +45065,7 @@
       "stophigh_50": 1,
       "turnover_100": 1,
       "stophigh_100": 1,
-      "turnover_200": 3,
+      "turnover_200": 2,
       "stophigh_200": 1
     },
     "26670": {
@@ -45038,7 +45176,7 @@
       "stophigh_25": 0,
       "turnover_50": 6,
       "stophigh_50": 1,
-      "turnover_100": 28,
+      "turnover_100": 27,
       "stophigh_100": 1,
       "turnover_200": 75,
       "stophigh_200": 2
@@ -45533,7 +45671,7 @@
       "stophigh_50": 1,
       "turnover_100": 5,
       "stophigh_100": 1,
-      "turnover_200": 70,
+      "turnover_200": 69,
       "stophigh_200": 6
     },
     "37440": {
@@ -45962,8 +46100,8 @@
       "score": 14,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 2,
-      "stophigh_50": 1,
+      "turnover_50": 1,
+      "stophigh_50": 0,
       "turnover_100": 5,
       "stophigh_100": 1,
       "turnover_200": 10,
@@ -46098,7 +46236,7 @@
       "score": 41,
       "turnover_25": 11,
       "stophigh_25": 0,
-      "turnover_50": 17,
+      "turnover_50": 16,
       "stophigh_50": 0,
       "turnover_100": 24,
       "stophigh_100": 2,
@@ -46257,7 +46395,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -46276,14 +46415,14 @@
         "2026-07-31"
       ],
       "first_date": "2025-07-23",
-      "score": 116,
+      "score": 117,
       "turnover_25": 20,
       "stophigh_25": 2,
       "turnover_50": 37,
       "stophigh_50": 2,
       "turnover_100": 69,
       "stophigh_100": 10,
-      "turnover_200": 108,
+      "turnover_200": 109,
       "stophigh_200": 12
     },
     "20550": {
@@ -46344,7 +46483,7 @@
       "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 0,
-      "turnover_200": 6,
+      "turnover_200": 5,
       "stophigh_200": 0
     },
     "65370": {
@@ -46635,21 +46774,22 @@
         "2026-08-18",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-05-21"
       ],
       "first_date": "2025-07-24",
-      "score": 30,
-      "turnover_25": 7,
+      "score": 31,
+      "turnover_25": 8,
       "stophigh_25": 0,
-      "turnover_50": 12,
+      "turnover_50": 13,
       "stophigh_50": 0,
-      "turnover_100": 20,
+      "turnover_100": 21,
       "stophigh_100": 1,
-      "turnover_200": 27,
+      "turnover_200": 28,
       "stophigh_200": 1
     },
     "55760": {
@@ -46717,7 +46857,8 @@
         "2026-07-07",
         "2026-07-08",
         "2026-08-18",
-        "2026-08-20"
+        "2026-08-20",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -46726,14 +46867,14 @@
         "2026-02-24"
       ],
       "first_date": "2025-07-24",
-      "score": 30,
-      "turnover_25": 2,
+      "score": 31,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 4,
+      "turnover_50": 5,
       "stophigh_50": 0,
-      "turnover_100": 5,
+      "turnover_100": 6,
       "stophigh_100": 0,
-      "turnover_200": 27,
+      "turnover_200": 28,
       "stophigh_200": 3
     },
     "330A0": {
@@ -46863,7 +47004,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 2,
       "stophigh_200": 0
     },
     "40130": {
@@ -47252,7 +47393,7 @@
       "stophigh_25": 0,
       "turnover_50": 2,
       "stophigh_50": 0,
-      "turnover_100": 26,
+      "turnover_100": 25,
       "stophigh_100": 1,
       "turnover_200": 54,
       "stophigh_200": 8
@@ -47572,7 +47713,7 @@
       "stophigh_50": 0,
       "turnover_100": 2,
       "stophigh_100": 1,
-      "turnover_200": 7,
+      "turnover_200": 6,
       "stophigh_200": 1
     },
     "78590": {
@@ -47653,7 +47794,8 @@
         "2025-12-03",
         "2025-12-04",
         "2025-12-16",
-        "2026-03-31"
+        "2026-03-31",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -47661,14 +47803,14 @@
         "2025-11-25"
       ],
       "first_date": "2025-07-29",
-      "score": 15,
-      "turnover_25": 0,
+      "score": 16,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 0,
+      "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 2,
       "stophigh_100": 0,
-      "turnover_200": 9,
+      "turnover_200": 10,
       "stophigh_200": 1
     },
     "38450": {
@@ -47896,13 +48038,13 @@
       ],
       "first_date": "2025-07-29",
       "score": 74,
-      "turnover_25": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 17,
+      "turnover_50": 16,
       "stophigh_50": 0,
       "turnover_100": 34,
       "stophigh_100": 1,
-      "turnover_200": 54,
+      "turnover_200": 53,
       "stophigh_200": 1
     },
     "288A0": {
@@ -47915,19 +48057,20 @@
         "2025-08-28",
         "2025-10-22",
         "2026-01-26",
-        "2026-03-04"
+        "2026-03-04",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-07-29",
-      "score": 9,
-      "turnover_25": 0,
+      "score": 10,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 0,
+      "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 0,
+      "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 2,
+      "turnover_200": 3,
       "stophigh_200": 0
     },
     "69610": {
@@ -47973,8 +48116,8 @@
       "stophigh_50": 0,
       "turnover_100": 17,
       "stophigh_100": 0,
-      "turnover_200": 24,
-      "stophigh_200": 2
+      "turnover_200": 23,
+      "stophigh_200": 1
     },
     "39110": {
       "turnover_dates": [
@@ -47996,7 +48139,7 @@
       "score": 11,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 3,
+      "turnover_50": 2,
       "stophigh_50": 0,
       "turnover_100": 5,
       "stophigh_100": 0,
@@ -48076,7 +48219,7 @@
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 0,
-      "turnover_200": 9,
+      "turnover_200": 8,
       "stophigh_200": 1
     },
     "44980": {
@@ -48387,7 +48530,7 @@
       "stophigh_50": 0,
       "turnover_100": 10,
       "stophigh_100": 0,
-      "turnover_200": 64,
+      "turnover_200": 63,
       "stophigh_200": 1
     },
     "34960": {
@@ -48598,7 +48741,7 @@
       "score": 22,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 7,
       "stophigh_100": 1,
@@ -48874,7 +49017,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -48885,14 +49029,14 @@
         "2026-08-10"
       ],
       "first_date": "2025-07-31",
-      "score": 134,
+      "score": 135,
       "turnover_25": 15,
       "stophigh_25": 1,
-      "turnover_50": 23,
+      "turnover_50": 24,
       "stophigh_50": 1,
       "turnover_100": 57,
       "stophigh_100": 1,
-      "turnover_200": 101,
+      "turnover_200": 102,
       "stophigh_200": 3
     },
     "18440": {
@@ -49218,21 +49362,22 @@
         "2026-08-18",
         "2026-08-19",
         "2026-08-20",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-05-14"
       ],
       "first_date": "2025-07-31",
-      "score": 90,
+      "score": 91,
       "turnover_25": 24,
       "stophigh_25": 0,
       "turnover_50": 42,
       "stophigh_50": 0,
-      "turnover_100": 47,
+      "turnover_100": 48,
       "stophigh_100": 1,
-      "turnover_200": 70,
+      "turnover_200": 71,
       "stophigh_200": 1
     },
     "45920": {
@@ -49370,7 +49515,7 @@
       "score": 47,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 7,
+      "turnover_50": 6,
       "stophigh_50": 0,
       "turnover_100": 8,
       "stophigh_100": 0,
@@ -49463,8 +49608,8 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 21,
-      "stophigh_200": 5
+      "turnover_200": 20,
+      "stophigh_200": 4
     },
     "30790": {
       "turnover_dates": [
@@ -49556,7 +49701,7 @@
       "stophigh_dates": [],
       "first_date": "2025-08-01",
       "score": 5,
-      "turnover_25": 2,
+      "turnover_25": 1,
       "stophigh_25": 0,
       "turnover_50": 2,
       "stophigh_50": 0,
@@ -49785,7 +49930,7 @@
       "stophigh_50": 2,
       "turnover_100": 21,
       "stophigh_100": 2,
-      "turnover_200": 63,
+      "turnover_200": 62,
       "stophigh_200": 3
     },
     "92350": {
@@ -49844,7 +49989,7 @@
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 1,
-      "turnover_100": 17,
+      "turnover_100": 16,
       "stophigh_100": 3,
       "turnover_200": 33,
       "stophigh_200": 7
@@ -49865,7 +50010,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 0,
       "stophigh_100": 0,
       "turnover_200": 4,
       "stophigh_200": 0
@@ -49938,7 +50083,7 @@
       "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 15,
-      "stophigh_200": 3
+      "stophigh_200": 2
     },
     "45120": {
       "turnover_dates": [
@@ -49996,7 +50141,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 2,
+      "turnover_100": 1,
       "stophigh_100": 0,
       "turnover_200": 11,
       "stophigh_200": 1
@@ -50229,7 +50374,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -50238,14 +50384,14 @@
         "2026-02-24"
       ],
       "first_date": "2025-08-04",
-      "score": 176,
+      "score": 177,
       "turnover_25": 20,
       "stophigh_25": 0,
       "turnover_50": 39,
       "stophigh_50": 0,
       "turnover_100": 89,
       "stophigh_100": 0,
-      "turnover_200": 163,
+      "turnover_200": 164,
       "stophigh_200": 3
     },
     "73630": {
@@ -50456,7 +50602,8 @@
         "2026-08-10",
         "2026-08-13",
         "2026-08-19",
-        "2026-08-20"
+        "2026-08-20",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -50465,12 +50612,12 @@
         "2026-08-05"
       ],
       "first_date": "2025-08-04",
-      "score": 61,
+      "score": 62,
       "turnover_25": 18,
       "stophigh_25": 2,
       "turnover_50": 37,
       "stophigh_50": 2,
-      "turnover_100": 47,
+      "turnover_100": 48,
       "stophigh_100": 3,
       "turnover_200": 58,
       "stophigh_200": 3
@@ -50580,9 +50727,9 @@
       "score": 94,
       "turnover_25": 2,
       "stophigh_25": 0,
-      "turnover_50": 9,
+      "turnover_50": 8,
       "stophigh_50": 0,
-      "turnover_100": 31,
+      "turnover_100": 30,
       "stophigh_100": 0,
       "turnover_200": 72,
       "stophigh_200": 1
@@ -50688,7 +50835,8 @@
         "2026-06-15",
         "2026-08-18",
         "2026-08-20",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -50696,14 +50844,14 @@
         "2026-06-02"
       ],
       "first_date": "2025-08-04",
-      "score": 43,
-      "turnover_25": 3,
+      "score": 44,
+      "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 4,
+      "turnover_50": 5,
       "stophigh_50": 0,
-      "turnover_100": 5,
+      "turnover_100": 6,
       "stophigh_100": 1,
-      "turnover_200": 21,
+      "turnover_200": 22,
       "stophigh_200": 1
     },
     "28970": {
@@ -50842,9 +50990,9 @@
       "score": 104,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 24,
+      "turnover_100": 23,
       "stophigh_100": 1,
       "turnover_200": 88,
       "stophigh_200": 3
@@ -50945,7 +51093,7 @@
       "stophigh_50": 1,
       "turnover_100": 12,
       "stophigh_100": 4,
-      "turnover_200": 47,
+      "turnover_200": 46,
       "stophigh_200": 11
     },
     "48940": {
@@ -51211,7 +51359,7 @@
       ],
       "first_date": "2025-08-05",
       "score": 65,
-      "turnover_25": 6,
+      "turnover_25": 5,
       "stophigh_25": 0,
       "turnover_50": 15,
       "stophigh_50": 0,
@@ -51299,7 +51447,7 @@
       "stophigh_50": 0,
       "turnover_100": 16,
       "stophigh_100": 0,
-      "turnover_200": 24,
+      "turnover_200": 23,
       "stophigh_200": 0
     },
     "23230": {
@@ -51441,7 +51589,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 23,
+      "turnover_200": 22,
       "stophigh_200": 0
     },
     "78180": {
@@ -51554,11 +51702,11 @@
       ],
       "first_date": "2025-08-05",
       "score": 71,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 4,
       "stophigh_50": 1,
-      "turnover_100": 15,
+      "turnover_100": 14,
       "stophigh_100": 2,
       "turnover_200": 70,
       "stophigh_200": 14
@@ -51807,7 +51955,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -51832,14 +51981,14 @@
         "2026-05-22"
       ],
       "first_date": "2025-08-06",
-      "score": 186,
+      "score": 187,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
       "stophigh_50": 0,
       "turnover_100": 99,
       "stophigh_100": 8,
-      "turnover_200": 178,
+      "turnover_200": 179,
       "stophigh_200": 19
     },
     "35630": {
@@ -51925,7 +52074,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -51961,14 +52111,14 @@
         "2026-08-20"
       ],
       "first_date": "2025-08-06",
-      "score": 56,
-      "turnover_25": 16,
+      "score": 57,
+      "turnover_25": 17,
       "stophigh_25": 10,
-      "turnover_50": 16,
+      "turnover_50": 17,
       "stophigh_50": 10,
-      "turnover_100": 16,
+      "turnover_100": 17,
       "stophigh_100": 10,
-      "turnover_200": 36,
+      "turnover_200": 37,
       "stophigh_200": 19
     },
     "58840": {
@@ -52067,7 +52217,7 @@
       "stophigh_50": 0,
       "turnover_100": 5,
       "stophigh_100": 0,
-      "turnover_200": 15,
+      "turnover_200": 14,
       "stophigh_200": 0
     },
     "70890": {
@@ -52266,7 +52416,7 @@
       "stophigh_50": 1,
       "turnover_100": 39,
       "stophigh_100": 1,
-      "turnover_200": 80,
+      "turnover_200": 79,
       "stophigh_200": 2
     },
     "64020": {
@@ -52369,19 +52519,20 @@
         "2026-01-22",
         "2026-01-23",
         "2026-02-27",
-        "2026-04-28"
+        "2026-04-28",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-08-06",
-      "score": 38,
-      "turnover_25": 0,
+      "score": 39,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 0,
+      "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 2,
       "stophigh_100": 0,
-      "turnover_200": 23,
+      "turnover_200": 24,
       "stophigh_200": 0
     },
     "39920": {
@@ -52450,7 +52601,8 @@
         "2026-07-21",
         "2026-07-27",
         "2026-07-28",
-        "2026-08-06"
+        "2026-08-06",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -52462,14 +52614,14 @@
         "2026-06-03"
       ],
       "first_date": "2025-08-06",
-      "score": 46,
+      "score": 47,
       "turnover_25": 5,
       "stophigh_25": 0,
       "turnover_50": 17,
       "stophigh_50": 0,
-      "turnover_100": 40,
+      "turnover_100": 41,
       "stophigh_100": 6,
-      "turnover_200": 44,
+      "turnover_200": 45,
       "stophigh_200": 6
     },
     "48960": {
@@ -52524,7 +52676,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 4,
+      "turnover_100": 3,
       "stophigh_100": 0,
       "turnover_200": 12,
       "stophigh_200": 1
@@ -52615,13 +52767,13 @@
       ],
       "first_date": "2025-08-07",
       "score": 38,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 8,
       "stophigh_100": 0,
-      "turnover_200": 13,
+      "turnover_200": 12,
       "stophigh_200": 0
     },
     "99800": {
@@ -52719,7 +52871,7 @@
       "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 0,
-      "turnover_200": 43,
+      "turnover_200": 42,
       "stophigh_200": 0
     },
     "70940": {
@@ -52767,7 +52919,7 @@
       "score": 6,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 0,
@@ -52910,11 +53062,11 @@
       ],
       "first_date": "2025-08-07",
       "score": 88,
-      "turnover_25": 23,
+      "turnover_25": 22,
       "stophigh_25": 1,
-      "turnover_50": 48,
+      "turnover_50": 47,
       "stophigh_50": 2,
-      "turnover_100": 79,
+      "turnover_100": 78,
       "stophigh_100": 5,
       "turnover_200": 85,
       "stophigh_200": 5
@@ -53015,7 +53167,7 @@
       "stophigh_25": 0,
       "turnover_50": 3,
       "stophigh_50": 0,
-      "turnover_100": 7,
+      "turnover_100": 6,
       "stophigh_100": 1,
       "turnover_200": 10,
       "stophigh_200": 1
@@ -53169,9 +53321,9 @@
       ],
       "first_date": "2025-08-08",
       "score": 53,
-      "turnover_25": 18,
+      "turnover_25": 17,
       "stophigh_25": 0,
-      "turnover_50": 33,
+      "turnover_50": 32,
       "stophigh_50": 0,
       "turnover_100": 51,
       "stophigh_100": 3,
@@ -53319,7 +53471,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -53329,14 +53482,14 @@
         "2026-07-31"
       ],
       "first_date": "2025-08-08",
-      "score": 140,
+      "score": 141,
       "turnover_25": 25,
       "stophigh_25": 1,
       "turnover_50": 50,
       "stophigh_50": 1,
       "turnover_100": 93,
       "stophigh_100": 2,
-      "turnover_200": 134,
+      "turnover_200": 135,
       "stophigh_200": 4
     },
     "44140": {
@@ -53411,7 +53564,7 @@
       "stophigh_25": 0,
       "turnover_50": 18,
       "stophigh_50": 0,
-      "turnover_100": 33,
+      "turnover_100": 32,
       "stophigh_100": 0,
       "turnover_200": 39,
       "stophigh_200": 0
@@ -53430,7 +53583,8 @@
         "2026-06-02",
         "2026-08-07",
         "2026-08-10",
-        "2026-08-12"
+        "2026-08-12",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -53441,14 +53595,14 @@
         "2026-08-07"
       ],
       "first_date": "2025-08-08",
-      "score": 13,
-      "turnover_25": 3,
+      "score": 14,
+      "turnover_25": 4,
       "stophigh_25": 1,
-      "turnover_50": 3,
+      "turnover_50": 4,
       "stophigh_50": 1,
-      "turnover_100": 9,
+      "turnover_100": 10,
       "stophigh_100": 2,
-      "turnover_200": 12,
+      "turnover_200": 13,
       "stophigh_200": 5
     },
     "86980": {
@@ -53632,7 +53786,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 6,
       "stophigh_200": 0
@@ -53898,13 +54052,13 @@
       ],
       "first_date": "2025-08-12",
       "score": 37,
-      "turnover_25": 5,
+      "turnover_25": 4,
       "stophigh_25": 1,
       "turnover_50": 9,
       "stophigh_50": 2,
       "turnover_100": 9,
       "stophigh_100": 2,
-      "turnover_200": 30,
+      "turnover_200": 29,
       "stophigh_200": 3
     },
     "55720": {
@@ -54030,19 +54184,20 @@
         "2026-03-16",
         "2026-03-17",
         "2026-04-21",
-        "2026-06-15"
+        "2026-06-15",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-08-12",
-      "score": 15,
-      "turnover_25": 0,
+      "score": 16,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 2,
       "stophigh_50": 0,
-      "turnover_100": 2,
+      "turnover_100": 3,
       "stophigh_100": 0,
-      "turnover_200": 8,
+      "turnover_200": 9,
       "stophigh_200": 0
     },
     "45760": {
@@ -54426,7 +54581,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -54445,14 +54601,14 @@
         "2026-07-31"
       ],
       "first_date": "2025-08-13",
-      "score": 151,
+      "score": 152,
       "turnover_25": 24,
       "stophigh_25": 2,
       "turnover_50": 48,
-      "stophigh_50": 6,
+      "stophigh_50": 5,
       "turnover_100": 95,
       "stophigh_100": 9,
-      "turnover_200": 145,
+      "turnover_200": 146,
       "stophigh_200": 11
     },
     "73690": {
@@ -54555,7 +54711,7 @@
       "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 3,
-      "stophigh_50": 1,
+      "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 2,
       "turnover_200": 5,
@@ -54746,7 +54902,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -54759,14 +54916,14 @@
         "2026-07-01"
       ],
       "first_date": "2025-08-13",
-      "score": 83,
+      "score": 84,
       "turnover_25": 18,
       "stophigh_25": 0,
-      "turnover_50": 30,
+      "turnover_50": 31,
       "stophigh_50": 1,
-      "turnover_100": 50,
+      "turnover_100": 51,
       "stophigh_100": 4,
-      "turnover_200": 53,
+      "turnover_200": 54,
       "stophigh_200": 4
     },
     "269A0": {
@@ -54986,7 +55143,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -54998,14 +55156,14 @@
         "2026-08-13"
       ],
       "first_date": "2025-08-13",
-      "score": 157,
+      "score": 158,
       "turnover_25": 12,
       "stophigh_25": 1,
       "turnover_50": 23,
       "stophigh_50": 1,
       "turnover_100": 55,
       "stophigh_100": 3,
-      "turnover_200": 146,
+      "turnover_200": 147,
       "stophigh_200": 6
     },
     "343A0": {
@@ -55655,7 +55813,7 @@
       "stophigh_25": 0,
       "turnover_50": 11,
       "stophigh_50": 0,
-      "turnover_100": 17,
+      "turnover_100": 16,
       "stophigh_100": 0,
       "turnover_200": 34,
       "stophigh_200": 0
@@ -55667,19 +55825,20 @@
         "2025-10-01",
         "2025-11-21",
         "2025-12-18",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-08-15",
-      "score": 6,
-      "turnover_25": 1,
+      "score": 7,
+      "turnover_25": 2,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 2,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 2,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 4,
       "stophigh_200": 0
     },
     "264A0": {
@@ -55726,7 +55885,7 @@
       "stophigh_50": 2,
       "turnover_100": 8,
       "stophigh_100": 2,
-      "turnover_200": 22,
+      "turnover_200": 21,
       "stophigh_200": 4
     },
     "70330": {
@@ -55938,7 +56097,7 @@
       "stophigh_25": 0,
       "turnover_50": 4,
       "stophigh_50": 0,
-      "turnover_100": 48,
+      "turnover_100": 47,
       "stophigh_100": 6,
       "turnover_200": 58,
       "stophigh_200": 7
@@ -56106,7 +56265,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -56116,14 +56276,14 @@
         "2026-01-15"
       ],
       "first_date": "2025-08-15",
-      "score": 97,
-      "turnover_25": 14,
+      "score": 98,
+      "turnover_25": 15,
       "stophigh_25": 0,
-      "turnover_50": 16,
+      "turnover_50": 17,
       "stophigh_50": 0,
-      "turnover_100": 35,
+      "turnover_100": 36,
       "stophigh_100": 0,
-      "turnover_200": 91,
+      "turnover_200": 92,
       "stophigh_200": 4
     },
     "61930": {
@@ -56582,7 +56742,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -56604,14 +56765,14 @@
         "2026-07-10"
       ],
       "first_date": "2025-08-18",
-      "score": 114,
+      "score": 115,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 50,
       "stophigh_50": 8,
       "turnover_100": 86,
       "stophigh_100": 16,
-      "turnover_200": 113,
+      "turnover_200": 114,
       "stophigh_200": 16
     },
     "194A0": {
@@ -56678,7 +56839,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 2,
       "stophigh_200": 0
     },
     "33170": {
@@ -56850,7 +57011,8 @@
         "2026-06-25",
         "2026-06-29",
         "2026-07-07",
-        "2026-08-14"
+        "2026-08-14",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -56864,8 +57026,8 @@
         "2026-01-20"
       ],
       "first_date": "2025-08-19",
-      "score": 149,
-      "turnover_25": 1,
+      "score": 150,
+      "turnover_25": 2,
       "stophigh_25": 0,
       "turnover_50": 13,
       "stophigh_50": 0,
@@ -56986,7 +57148,8 @@
         "2026-08-18",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -56994,12 +57157,12 @@
         "2025-08-25"
       ],
       "first_date": "2025-08-20",
-      "score": 74,
-      "turnover_25": 6,
+      "score": 75,
+      "turnover_25": 7,
       "stophigh_25": 0,
-      "turnover_50": 13,
+      "turnover_50": 14,
       "stophigh_50": 0,
-      "turnover_100": 13,
+      "turnover_100": 14,
       "stophigh_100": 0,
       "turnover_200": 37,
       "stophigh_200": 0
@@ -57313,21 +57476,22 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-05-07"
       ],
       "first_date": "2025-08-20",
-      "score": 126,
-      "turnover_25": 12,
+      "score": 127,
+      "turnover_25": 13,
       "stophigh_25": 0,
       "turnover_50": 23,
       "stophigh_50": 0,
       "turnover_100": 55,
       "stophigh_100": 1,
-      "turnover_200": 109,
+      "turnover_200": 110,
       "stophigh_200": 1
     },
     "99780": {
@@ -57484,7 +57648,7 @@
       "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 8,
-      "stophigh_200": 2
+      "stophigh_200": 1
     },
     "43880": {
       "turnover_dates": [
@@ -57839,7 +58003,7 @@
       "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 5,
-      "stophigh_100": 2,
+      "stophigh_100": 1,
       "turnover_200": 5,
       "stophigh_200": 2
     },
@@ -58096,7 +58260,7 @@
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 2,
+      "turnover_100": 1,
       "stophigh_100": 0,
       "turnover_200": 20,
       "stophigh_200": 1
@@ -58229,7 +58393,8 @@
         "2026-07-23",
         "2026-07-24",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -58249,14 +58414,14 @@
         "2026-08-21"
       ],
       "first_date": "2025-08-27",
-      "score": 93,
+      "score": 94,
       "turnover_25": 7,
       "stophigh_25": 1,
-      "turnover_50": 15,
+      "turnover_50": 16,
       "stophigh_50": 2,
       "turnover_100": 49,
       "stophigh_100": 4,
-      "turnover_200": 85,
+      "turnover_200": 86,
       "stophigh_200": 13
     },
     "70630": {
@@ -58310,7 +58475,7 @@
       "stophigh_25": 0,
       "turnover_50": 16,
       "stophigh_50": 1,
-      "turnover_100": 21,
+      "turnover_100": 20,
       "stophigh_100": 1,
       "turnover_200": 34,
       "stophigh_200": 3
@@ -58761,19 +58926,20 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-08-29",
-      "score": 107,
+      "score": 108,
       "turnover_25": 22,
       "stophigh_25": 0,
       "turnover_50": 43,
       "stophigh_50": 0,
       "turnover_100": 81,
       "stophigh_100": 0,
-      "turnover_200": 105,
+      "turnover_200": 106,
       "stophigh_200": 0
     },
     "91270": {
@@ -59166,7 +59332,8 @@
         "2026-07-21",
         "2026-07-22",
         "2026-07-29",
-        "2026-08-05"
+        "2026-08-05",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -59178,7 +59345,7 @@
         "2026-04-10"
       ],
       "first_date": "2025-09-01",
-      "score": 165,
+      "score": 166,
       "turnover_25": 5,
       "stophigh_25": 0,
       "turnover_50": 27,
@@ -59361,7 +59528,7 @@
       "stophigh_25": 1,
       "turnover_50": 2,
       "stophigh_50": 1,
-      "turnover_100": 16,
+      "turnover_100": 15,
       "stophigh_100": 2,
       "turnover_200": 21,
       "stophigh_200": 2
@@ -59651,7 +59818,8 @@
         "2025-09-04",
         "2025-09-05",
         "2026-04-21",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -59660,14 +59828,14 @@
         "2026-07-02"
       ],
       "first_date": "2025-09-04",
-      "score": 4,
-      "turnover_25": 1,
+      "score": 5,
+      "turnover_25": 2,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 2,
       "stophigh_50": 1,
-      "turnover_100": 2,
+      "turnover_100": 3,
       "stophigh_100": 2,
-      "turnover_200": 2,
+      "turnover_200": 3,
       "stophigh_200": 2
     },
     "59940": {
@@ -59796,7 +59964,7 @@
       "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 1,
-      "stophigh_50": 1,
+      "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 1,
       "turnover_200": 7,
@@ -59898,11 +60066,11 @@
       ],
       "first_date": "2025-09-05",
       "score": 74,
-      "turnover_25": 9,
+      "turnover_25": 8,
       "stophigh_25": 0,
       "turnover_50": 29,
       "stophigh_50": 3,
-      "turnover_100": 43,
+      "turnover_100": 42,
       "stophigh_100": 4,
       "turnover_200": 52,
       "stophigh_200": 6
@@ -60212,7 +60380,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -60224,7 +60393,7 @@
         "2026-07-31"
       ],
       "first_date": "2025-09-05",
-      "score": 214,
+      "score": 215,
       "turnover_25": 24,
       "stophigh_25": 1,
       "turnover_50": 49,
@@ -60359,7 +60528,7 @@
       "score": 9,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 3,
+      "turnover_50": 2,
       "stophigh_50": 1,
       "turnover_100": 8,
       "stophigh_100": 5,
@@ -60388,7 +60557,7 @@
       "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 0,
-      "stophigh_50": 1,
+      "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 3,
       "turnover_200": 2,
@@ -60558,7 +60727,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -60568,7 +60738,7 @@
         "2026-05-25"
       ],
       "first_date": "2025-09-08",
-      "score": 145,
+      "score": 146,
       "turnover_25": 19,
       "stophigh_25": 0,
       "turnover_50": 44,
@@ -60590,21 +60760,22 @@
         "2026-03-04",
         "2026-03-05",
         "2026-05-13",
-        "2026-06-16"
+        "2026-06-16",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-02-27"
       ],
       "first_date": "2025-09-08",
-      "score": 11,
-      "turnover_25": 0,
+      "score": 12,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 2,
       "stophigh_50": 0,
-      "turnover_100": 2,
+      "turnover_100": 3,
       "stophigh_100": 0,
-      "turnover_200": 9,
+      "turnover_200": 10,
       "stophigh_200": 1
     },
     "40260": {
@@ -60703,7 +60874,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -60718,14 +60890,14 @@
         "2026-08-14"
       ],
       "first_date": "2025-09-08",
-      "score": 71,
+      "score": 72,
       "turnover_25": 22,
       "stophigh_25": 1,
       "turnover_50": 46,
       "stophigh_50": 1,
-      "turnover_100": 66,
+      "turnover_100": 67,
       "stophigh_100": 9,
-      "turnover_200": 69,
+      "turnover_200": 70,
       "stophigh_200": 9
     },
     "166A0": {
@@ -61223,7 +61395,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 5,
+      "turnover_200": 4,
       "stophigh_200": 0
     },
     "50310": {
@@ -61360,7 +61532,8 @@
         "2026-07-23",
         "2026-07-31",
         "2026-08-14",
-        "2026-08-20"
+        "2026-08-20",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -61381,14 +61554,14 @@
         "2026-05-28"
       ],
       "first_date": "2025-09-11",
-      "score": 69,
-      "turnover_25": 4,
+      "score": 70,
+      "turnover_25": 5,
       "stophigh_25": 0,
-      "turnover_50": 10,
+      "turnover_50": 11,
       "stophigh_50": 0,
       "turnover_100": 31,
       "stophigh_100": 2,
-      "turnover_200": 66,
+      "turnover_200": 67,
       "stophigh_200": 13
     },
     "29290": {
@@ -61503,7 +61676,7 @@
       "score": 5,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 3,
+      "turnover_50": 2,
       "stophigh_50": 0,
       "turnover_100": 4,
       "stophigh_100": 1,
@@ -61540,7 +61713,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 2,
       "stophigh_200": 0
     },
     "65350": {
@@ -61598,13 +61771,13 @@
       ],
       "first_date": "2025-09-12",
       "score": 25,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 10,
+      "turnover_200": 9,
       "stophigh_200": 0
     },
     "63350": {
@@ -61733,7 +61906,7 @@
       "score": 74,
       "turnover_25": 6,
       "stophigh_25": 1,
-      "turnover_50": 15,
+      "turnover_50": 14,
       "stophigh_50": 1,
       "turnover_100": 43,
       "stophigh_100": 2,
@@ -61756,7 +61929,7 @@
       "score": 7,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
@@ -61799,7 +61972,7 @@
       "score": 5,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
@@ -61829,7 +62002,7 @@
       "score": 12,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 0,
@@ -61949,21 +62122,22 @@
         "2025-09-25",
         "2026-05-26",
         "2026-06-24",
-        "2026-06-26"
+        "2026-06-26",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2025-09-16"
       ],
       "first_date": "2025-09-16",
-      "score": 7,
-      "turnover_25": 0,
+      "score": 8,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 3,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 4,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 4,
       "stophigh_200": 0
     },
     "324A0": {
@@ -62104,7 +62278,7 @@
       "score": 9,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 5,
       "stophigh_100": 0,
@@ -62264,7 +62438,7 @@
       ],
       "first_date": "2025-09-16",
       "score": 111,
-      "turnover_25": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
       "turnover_50": 12,
       "stophigh_50": 2,
@@ -62416,7 +62590,8 @@
         "2026-08-04",
         "2026-08-14",
         "2026-08-19",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -62426,7 +62601,7 @@
         "2026-06-16"
       ],
       "first_date": "2025-09-16",
-      "score": 105,
+      "score": 106,
       "turnover_25": 13,
       "stophigh_25": 0,
       "turnover_50": 34,
@@ -62702,9 +62877,9 @@
       "stophigh_dates": [],
       "first_date": "2025-09-17",
       "score": 22,
-      "turnover_25": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 9,
+      "turnover_50": 8,
       "stophigh_50": 0,
       "turnover_100": 21,
       "stophigh_100": 0,
@@ -62827,7 +63002,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -62848,14 +63024,14 @@
         "2026-06-22"
       ],
       "first_date": "2025-09-17",
-      "score": 115,
+      "score": 116,
       "turnover_25": 25,
       "stophigh_25": 0,
       "turnover_50": 46,
       "stophigh_50": 2,
       "turnover_100": 95,
       "stophigh_100": 10,
-      "turnover_200": 109,
+      "turnover_200": 110,
       "stophigh_200": 15
     },
     "39960": {
@@ -62988,7 +63164,7 @@
       ],
       "first_date": "2025-09-18",
       "score": 29,
-      "turnover_25": 2,
+      "turnover_25": 1,
       "stophigh_25": 0,
       "turnover_50": 5,
       "stophigh_50": 1,
@@ -63065,9 +63241,9 @@
       ],
       "first_date": "2025-09-18",
       "score": 58,
-      "turnover_25": 17,
+      "turnover_25": 16,
       "stophigh_25": 0,
-      "turnover_50": 40,
+      "turnover_50": 39,
       "stophigh_50": 1,
       "turnover_100": 54,
       "stophigh_100": 2,
@@ -63286,7 +63462,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -63297,14 +63474,14 @@
         "2026-07-31"
       ],
       "first_date": "2025-09-22",
-      "score": 88,
+      "score": 89,
       "turnover_25": 25,
       "stophigh_25": 1,
       "turnover_50": 45,
       "stophigh_50": 4,
-      "turnover_100": 74,
+      "turnover_100": 75,
       "stophigh_100": 5,
-      "turnover_200": 83,
+      "turnover_200": 84,
       "stophigh_200": 5
     },
     "40200": {
@@ -63540,11 +63717,11 @@
       ],
       "first_date": "2025-09-24",
       "score": 73,
-      "turnover_25": 13,
+      "turnover_25": 12,
       "stophigh_25": 0,
       "turnover_50": 23,
       "stophigh_50": 0,
-      "turnover_100": 57,
+      "turnover_100": 56,
       "stophigh_100": 2,
       "turnover_200": 72,
       "stophigh_200": 3
@@ -63752,7 +63929,7 @@
       ],
       "first_date": "2025-09-25",
       "score": 53,
-      "turnover_25": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
       "turnover_50": 22,
       "stophigh_50": 3,
@@ -63845,7 +64022,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -63876,15 +64054,15 @@
         "2026-08-18"
       ],
       "first_date": "2025-09-25",
-      "score": 66,
-      "turnover_25": 6,
+      "score": 67,
+      "turnover_25": 7,
       "stophigh_25": 1,
-      "turnover_50": 18,
+      "turnover_50": 19,
       "stophigh_50": 3,
-      "turnover_100": 29,
+      "turnover_100": 30,
       "stophigh_100": 7,
       "turnover_200": 56,
-      "stophigh_200": 20
+      "stophigh_200": 19
     },
     "99760": {
       "turnover_dates": [
@@ -64033,7 +64211,7 @@
       "stophigh_25": 0,
       "turnover_50": 3,
       "stophigh_50": 4,
-      "turnover_100": 21,
+      "turnover_100": 20,
       "stophigh_100": 10,
       "turnover_200": 23,
       "stophigh_200": 12
@@ -64235,7 +64413,7 @@
       "stophigh_50": 0,
       "turnover_100": 8,
       "stophigh_100": 0,
-      "turnover_200": 29,
+      "turnover_200": 28,
       "stophigh_200": 0
     },
     "24100": {
@@ -64452,7 +64630,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -64475,14 +64654,14 @@
         "2026-08-14"
       ],
       "first_date": "2025-09-30",
-      "score": 99,
+      "score": 100,
       "turnover_25": 25,
       "stophigh_25": 1,
       "turnover_50": 46,
       "stophigh_50": 7,
       "turnover_100": 90,
       "stophigh_100": 10,
-      "turnover_200": 98,
+      "turnover_200": 99,
       "stophigh_200": 17
     },
     "65320": {
@@ -64716,7 +64895,7 @@
       "stophigh_50": 4,
       "turnover_100": 12,
       "stophigh_100": 6,
-      "turnover_200": 66,
+      "turnover_200": 65,
       "stophigh_200": 11
     },
     "55350": {
@@ -64937,7 +65116,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 1,
+      "turnover_200": 0,
       "stophigh_200": 0
     },
     "414A0": {
@@ -65128,7 +65307,7 @@
       "score": 133,
       "turnover_25": 6,
       "stophigh_25": 0,
-      "turnover_50": 14,
+      "turnover_50": 13,
       "stophigh_50": 1,
       "turnover_100": 48,
       "stophigh_100": 2,
@@ -65243,7 +65422,7 @@
       "stophigh_50": 1,
       "turnover_100": 3,
       "stophigh_100": 1,
-      "turnover_200": 8,
+      "turnover_200": 7,
       "stophigh_200": 2
     },
     "29340": {
@@ -65371,9 +65550,9 @@
       ],
       "first_date": "2025-10-06",
       "score": 52,
-      "turnover_25": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 25,
+      "turnover_50": 24,
       "stophigh_50": 0,
       "turnover_100": 41,
       "stophigh_100": 2,
@@ -65442,7 +65621,7 @@
       "stophigh_dates": [],
       "first_date": "2025-10-06",
       "score": 24,
-      "turnover_25": 9,
+      "turnover_25": 8,
       "stophigh_25": 0,
       "turnover_50": 13,
       "stophigh_50": 0,
@@ -65514,7 +65693,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 9,
+      "turnover_100": 8,
       "stophigh_100": 0,
       "turnover_200": 29,
       "stophigh_200": 1
@@ -65629,7 +65808,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 8,
       "stophigh_200": 1
@@ -66006,10 +66185,10 @@
       ],
       "first_date": "2025-10-14",
       "score": 47,
-      "turnover_25": 7,
+      "turnover_25": 6,
       "stophigh_25": 0,
-      "turnover_50": 29,
-      "stophigh_50": 1,
+      "turnover_50": 28,
+      "stophigh_50": 0,
       "turnover_100": 34,
       "stophigh_100": 1,
       "turnover_200": 44,
@@ -66093,7 +66272,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 2,
       "stophigh_200": 0
     },
     "70360": {
@@ -66392,7 +66571,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 10,
+      "turnover_200": 9,
       "stophigh_200": 0
     },
     "31130": {
@@ -66626,7 +66805,7 @@
       "stophigh_50": 0,
       "turnover_100": 16,
       "stophigh_100": 3,
-      "turnover_200": 19,
+      "turnover_200": 18,
       "stophigh_200": 3
     },
     "47770": {
@@ -66668,7 +66847,7 @@
       "score": 5,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 1,
@@ -66745,7 +66924,7 @@
       "stophigh_50": 0,
       "turnover_100": 13,
       "stophigh_100": 0,
-      "turnover_200": 15,
+      "turnover_200": 14,
       "stophigh_200": 0
     },
     "63020": {
@@ -66816,7 +66995,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 8,
+      "turnover_200": 7,
       "stophigh_200": 0
     },
     "49600": {
@@ -66867,7 +67046,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 20,
+      "turnover_200": 19,
       "stophigh_200": 11
     },
     "70210": {
@@ -66890,8 +67069,8 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 2,
-      "stophigh_200": 1
+      "turnover_200": 1,
+      "stophigh_200": 0
     },
     "33060": {
       "turnover_dates": [
@@ -66997,7 +67176,7 @@
       "stophigh_50": 0,
       "turnover_100": 6,
       "stophigh_100": 0,
-      "turnover_200": 58,
+      "turnover_200": 57,
       "stophigh_200": 9
     },
     "63560": {
@@ -67082,9 +67261,9 @@
       "stophigh_25": 0,
       "turnover_50": 8,
       "stophigh_50": 1,
-      "turnover_100": 35,
+      "turnover_100": 34,
       "stophigh_100": 2,
-      "turnover_200": 63,
+      "turnover_200": 62,
       "stophigh_200": 6
     },
     "42740": {
@@ -67122,7 +67301,7 @@
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
-      "turnover_200": 21,
+      "turnover_200": 20,
       "stophigh_200": 0
     },
     "18140": {
@@ -67224,7 +67403,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 4,
+      "turnover_200": 3,
       "stophigh_200": 0
     },
     "66290": {
@@ -67306,7 +67485,7 @@
       "stophigh_50": 1,
       "turnover_100": 15,
       "stophigh_100": 3,
-      "turnover_200": 58,
+      "turnover_200": 57,
       "stophigh_200": 6
     },
     "66530": {
@@ -67329,7 +67508,7 @@
       "stophigh_50": 0,
       "turnover_100": 3,
       "stophigh_100": 0,
-      "turnover_200": 7,
+      "turnover_200": 6,
       "stophigh_200": 0
     },
     "44900": {
@@ -67353,7 +67532,7 @@
       "stophigh_50": 1,
       "turnover_100": 2,
       "stophigh_100": 3,
-      "turnover_200": 4,
+      "turnover_200": 3,
       "stophigh_200": 3
     },
     "60180": {
@@ -67370,7 +67549,7 @@
       "stophigh_50": 0,
       "turnover_100": 0,
       "stophigh_100": 0,
-      "turnover_200": 1,
+      "turnover_200": 0,
       "stophigh_200": 0
     },
     "75010": {
@@ -67443,7 +67622,7 @@
       "turnover_100": 2,
       "stophigh_100": 1,
       "turnover_200": 3,
-      "stophigh_200": 2
+      "stophigh_200": 1
     },
     "39140": {
       "turnover_dates": [
@@ -67465,7 +67644,7 @@
       "turnover_100": 0,
       "stophigh_100": 1,
       "turnover_200": 3,
-      "stophigh_200": 2
+      "stophigh_200": 1
     },
     "22160": {
       "turnover_dates": [
@@ -67560,7 +67739,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -67574,14 +67754,14 @@
         "2026-05-18"
       ],
       "first_date": "2025-10-30",
-      "score": 56,
-      "turnover_25": 6,
+      "score": 57,
+      "turnover_25": 7,
       "stophigh_25": 0,
-      "turnover_50": 7,
+      "turnover_50": 8,
       "stophigh_50": 0,
-      "turnover_100": 22,
+      "turnover_100": 23,
       "stophigh_100": 3,
-      "turnover_200": 56,
+      "turnover_200": 57,
       "stophigh_200": 8
     },
     "94240": {
@@ -67968,7 +68148,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -67977,14 +68158,14 @@
         "2026-07-31"
       ],
       "first_date": "2025-10-31",
-      "score": 83,
+      "score": 84,
       "turnover_25": 24,
       "stophigh_25": 1,
       "turnover_50": 49,
       "stophigh_50": 1,
-      "turnover_100": 76,
+      "turnover_100": 77,
       "stophigh_100": 3,
-      "turnover_200": 83,
+      "turnover_200": 84,
       "stophigh_200": 3
     },
     "22810": {
@@ -68296,21 +68477,22 @@
         "2026-06-23",
         "2026-08-19",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-02-16"
       ],
       "first_date": "2025-11-04",
-      "score": 46,
-      "turnover_25": 3,
+      "score": 47,
+      "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 7,
+      "turnover_50": 8,
       "stophigh_50": 0,
-      "turnover_100": 20,
+      "turnover_100": 21,
       "stophigh_100": 0,
-      "turnover_200": 46,
+      "turnover_200": 47,
       "stophigh_200": 1
     },
     "58020": {
@@ -68596,7 +68778,8 @@
         "2026-08-17",
         "2026-08-18",
         "2026-08-19",
-        "2026-08-20"
+        "2026-08-20",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -68621,14 +68804,14 @@
         "2026-06-22"
       ],
       "first_date": "2025-11-05",
-      "score": 73,
-      "turnover_25": 9,
+      "score": 74,
+      "turnover_25": 10,
       "stophigh_25": 0,
-      "turnover_50": 21,
+      "turnover_50": 22,
       "stophigh_50": 3,
-      "turnover_100": 48,
+      "turnover_100": 49,
       "stophigh_100": 12,
-      "turnover_200": 73,
+      "turnover_200": 74,
       "stophigh_200": 19
     },
     "77290": {
@@ -68742,7 +68925,7 @@
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 11,
+      "turnover_100": 10,
       "stophigh_100": 1,
       "turnover_200": 35,
       "stophigh_200": 3
@@ -69720,7 +69903,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -69733,14 +69917,14 @@
         "2026-08-13"
       ],
       "first_date": "2025-11-11",
-      "score": 110,
+      "score": 111,
       "turnover_25": 18,
       "stophigh_25": 3,
-      "turnover_50": 28,
+      "turnover_50": 29,
       "stophigh_50": 3,
       "turnover_100": 72,
       "stophigh_100": 4,
-      "turnover_200": 110,
+      "turnover_200": 111,
       "stophigh_200": 7
     },
     "40640": {
@@ -69802,7 +69986,8 @@
         "2026-08-17",
         "2026-08-18",
         "2026-08-19",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -69810,14 +69995,14 @@
         "2026-08-12"
       ],
       "first_date": "2025-11-12",
-      "score": 18,
-      "turnover_25": 14,
+      "score": 19,
+      "turnover_25": 15,
       "stophigh_25": 2,
-      "turnover_50": 15,
+      "turnover_50": 16,
       "stophigh_50": 2,
-      "turnover_100": 16,
+      "turnover_100": 17,
       "stophigh_100": 2,
-      "turnover_200": 18,
+      "turnover_200": 19,
       "stophigh_200": 2
     },
     "58050": {
@@ -69900,7 +70085,7 @@
       "score": 37,
       "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 7,
+      "turnover_50": 6,
       "stophigh_50": 0,
       "turnover_100": 14,
       "stophigh_100": 1,
@@ -69979,7 +70164,7 @@
       "score": 35,
       "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 10,
+      "turnover_50": 9,
       "stophigh_50": 0,
       "turnover_100": 26,
       "stophigh_100": 0,
@@ -70320,19 +70505,20 @@
         "2026-08-17",
         "2026-08-18",
         "2026-08-19",
-        "2026-08-20"
+        "2026-08-20",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-11-14",
-      "score": 56,
-      "turnover_25": 9,
+      "score": 57,
+      "turnover_25": 10,
       "stophigh_25": 0,
-      "turnover_50": 14,
+      "turnover_50": 15,
       "stophigh_50": 0,
-      "turnover_100": 37,
+      "turnover_100": 38,
       "stophigh_100": 0,
-      "turnover_200": 56,
+      "turnover_200": 57,
       "stophigh_200": 0
     },
     "51370": {
@@ -70591,7 +70777,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -70603,14 +70790,14 @@
         "2026-08-12"
       ],
       "first_date": "2025-11-17",
-      "score": 31,
+      "score": 32,
       "turnover_25": 25,
       "stophigh_25": 3,
-      "turnover_50": 29,
+      "turnover_50": 30,
       "stophigh_50": 6,
-      "turnover_100": 30,
+      "turnover_100": 31,
       "stophigh_100": 6,
-      "turnover_200": 31,
+      "turnover_200": 32,
       "stophigh_200": 6
     },
     "60690": {
@@ -70719,7 +70906,7 @@
       ],
       "first_date": "2025-11-18",
       "score": 68,
-      "turnover_25": 8,
+      "turnover_25": 7,
       "stophigh_25": 0,
       "turnover_50": 19,
       "stophigh_50": 2,
@@ -70929,7 +71116,8 @@
         "2026-08-18",
         "2026-08-19",
         "2026-08-20",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -70948,14 +71136,14 @@
         "2026-08-18"
       ],
       "first_date": "2025-11-19",
-      "score": 47,
+      "score": 48,
       "turnover_25": 19,
       "stophigh_25": 3,
-      "turnover_50": 31,
+      "turnover_50": 32,
       "stophigh_50": 8,
-      "turnover_100": 32,
+      "turnover_100": 33,
       "stophigh_100": 8,
-      "turnover_200": 47,
+      "turnover_200": 48,
       "stophigh_200": 13
     },
     "31740": {
@@ -71122,19 +71310,20 @@
         "2026-04-13",
         "2026-08-17",
         "2026-08-18",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2025-11-20",
-      "score": 20,
-      "turnover_25": 3,
+      "score": 21,
+      "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 3,
+      "turnover_50": 4,
       "stophigh_50": 0,
       "turnover_100": 13,
       "stophigh_100": 0,
-      "turnover_200": 20,
+      "turnover_200": 21,
       "stophigh_200": 0
     },
     "446A0": {
@@ -71448,7 +71637,7 @@
       "stophigh_25": 0,
       "turnover_50": 8,
       "stophigh_50": 0,
-      "turnover_100": 50,
+      "turnover_100": 49,
       "stophigh_100": 1,
       "turnover_200": 74,
       "stophigh_200": 5
@@ -71557,7 +71746,7 @@
       ],
       "first_date": "2025-11-25",
       "score": 26,
-      "turnover_25": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
       "turnover_50": 20,
       "stophigh_50": 1,
@@ -71865,10 +72054,10 @@
       ],
       "first_date": "2025-11-28",
       "score": 43,
-      "turnover_25": 11,
+      "turnover_25": 10,
       "stophigh_25": 0,
-      "turnover_50": 32,
-      "stophigh_50": 5,
+      "turnover_50": 31,
+      "stophigh_50": 4,
       "turnover_100": 41,
       "stophigh_100": 9,
       "turnover_200": 43,
@@ -72018,7 +72207,7 @@
       "score": 25,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 3,
+      "turnover_50": 2,
       "stophigh_50": 1,
       "turnover_100": 3,
       "stophigh_100": 3,
@@ -72657,25 +72846,27 @@
         "2026-06-04",
         "2026-06-15",
         "2026-06-16",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2025-12-12",
         "2025-12-15",
         "2025-12-25",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "first_date": "2025-12-05",
-      "score": 23,
-      "turnover_25": 1,
-      "stophigh_25": 1,
-      "turnover_50": 3,
-      "stophigh_50": 1,
-      "turnover_100": 4,
-      "stophigh_100": 1,
-      "turnover_200": 23,
-      "stophigh_200": 4
+      "score": 24,
+      "turnover_25": 2,
+      "stophigh_25": 2,
+      "turnover_50": 4,
+      "stophigh_50": 2,
+      "turnover_100": 5,
+      "stophigh_100": 2,
+      "turnover_200": 24,
+      "stophigh_200": 5
     },
     "66150": {
       "turnover_dates": [
@@ -73069,7 +73260,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 0,
       "stophigh_100": 0,
       "turnover_200": 8,
       "stophigh_200": 3
@@ -73164,7 +73355,7 @@
       "score": 21,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 16,
+      "turnover_50": 15,
       "stophigh_50": 0,
       "turnover_100": 20,
       "stophigh_100": 2,
@@ -73404,7 +73595,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -73417,14 +73609,14 @@
         "2026-08-20"
       ],
       "first_date": "2025-12-16",
-      "score": 41,
+      "score": 42,
       "turnover_25": 22,
       "stophigh_25": 2,
-      "turnover_50": 27,
+      "turnover_50": 28,
       "stophigh_50": 4,
-      "turnover_100": 30,
+      "turnover_100": 31,
       "stophigh_100": 4,
-      "turnover_200": 41,
+      "turnover_200": 42,
       "stophigh_200": 7
     },
     "46660": {
@@ -73642,9 +73834,9 @@
       ],
       "first_date": "2025-12-17",
       "score": 66,
-      "turnover_25": 2,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 15,
+      "turnover_50": 14,
       "stophigh_50": 4,
       "turnover_100": 27,
       "stophigh_100": 7,
@@ -74044,7 +74236,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -74053,14 +74246,14 @@
         "2026-07-21"
       ],
       "first_date": "2025-12-24",
-      "score": 27,
+      "score": 28,
       "turnover_25": 24,
-      "stophigh_25": 2,
-      "turnover_50": 25,
+      "stophigh_25": 1,
+      "turnover_50": 26,
       "stophigh_50": 3,
-      "turnover_100": 26,
+      "turnover_100": 27,
       "stophigh_100": 3,
-      "turnover_200": 27,
+      "turnover_200": 28,
       "stophigh_200": 3
     },
     "61030": {
@@ -74147,7 +74340,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 0,
       "stophigh_100": 0,
       "turnover_200": 2,
       "stophigh_200": 0
@@ -74340,9 +74533,9 @@
       ],
       "first_date": "2025-12-29",
       "score": 71,
-      "turnover_25": 21,
+      "turnover_25": 20,
       "stophigh_25": 0,
-      "turnover_50": 38,
+      "turnover_50": 37,
       "stophigh_50": 0,
       "turnover_100": 64,
       "stophigh_100": 1,
@@ -74475,9 +74668,9 @@
       ],
       "first_date": "2025-12-29",
       "score": 54,
-      "turnover_25": 9,
+      "turnover_25": 8,
       "stophigh_25": 1,
-      "turnover_50": 29,
+      "turnover_50": 28,
       "stophigh_50": 1,
       "turnover_100": 44,
       "stophigh_100": 6,
@@ -74672,7 +74865,8 @@
         "2026-08-14",
         "2026-08-18",
         "2026-08-19",
-        "2026-08-21"
+        "2026-08-21",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -74693,14 +74887,14 @@
         "2026-06-22"
       ],
       "first_date": "2026-01-05",
-      "score": 122,
+      "score": 123,
       "turnover_25": 18,
       "stophigh_25": 0,
       "turnover_50": 41,
       "stophigh_50": 1,
       "turnover_100": 74,
       "stophigh_100": 6,
-      "turnover_200": 122,
+      "turnover_200": 123,
       "stophigh_200": 15
     },
     "477A0": {
@@ -74738,7 +74932,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 7,
+      "turnover_100": 6,
       "stophigh_100": 0,
       "turnover_200": 21,
       "stophigh_200": 2
@@ -74873,7 +75067,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -74888,14 +75083,14 @@
         "2026-08-12"
       ],
       "first_date": "2026-01-06",
-      "score": 38,
-      "turnover_25": 23,
+      "score": 39,
+      "turnover_25": 24,
       "stophigh_25": 8,
-      "turnover_50": 23,
+      "turnover_50": 24,
       "stophigh_50": 8,
-      "turnover_100": 23,
+      "turnover_100": 24,
       "stophigh_100": 8,
-      "turnover_200": 38,
+      "turnover_200": 39,
       "stophigh_200": 9
     },
     "62650": {
@@ -74960,17 +75155,19 @@
         "2026-05-19"
       ],
       "volume_dates": [],
-      "stophigh_dates": [],
+      "stophigh_dates": [
+        "2026-08-25"
+      ],
       "first_date": "2026-01-07",
       "score": 3,
       "turnover_25": 0,
-      "stophigh_25": 0,
+      "stophigh_25": 1,
       "turnover_50": 0,
-      "stophigh_50": 0,
+      "stophigh_50": 1,
       "turnover_100": 1,
-      "stophigh_100": 0,
+      "stophigh_100": 1,
       "turnover_200": 3,
-      "stophigh_200": 0
+      "stophigh_200": 1
     },
     "69860": {
       "turnover_dates": [
@@ -75162,7 +75359,7 @@
       "score": 11,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 6,
+      "turnover_50": 5,
       "stophigh_50": 1,
       "turnover_100": 8,
       "stophigh_100": 2,
@@ -75301,9 +75498,9 @@
       "score": 53,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 33,
+      "turnover_100": 32,
       "stophigh_100": 12,
       "turnover_200": 53,
       "stophigh_200": 25
@@ -75851,7 +76048,7 @@
       "stophigh_25": 0,
       "turnover_50": 2,
       "stophigh_50": 0,
-      "turnover_100": 7,
+      "turnover_100": 6,
       "stophigh_100": 0,
       "turnover_200": 28,
       "stophigh_200": 1
@@ -76052,18 +76249,19 @@
       "volume_dates": [],
       "stophigh_dates": [
         "2026-01-26",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "first_date": "2026-01-26",
       "score": 6,
       "turnover_25": 1,
-      "stophigh_25": 1,
+      "stophigh_25": 2,
       "turnover_50": 2,
-      "stophigh_50": 1,
+      "stophigh_50": 2,
       "turnover_100": 3,
-      "stophigh_100": 1,
+      "stophigh_100": 2,
       "turnover_200": 6,
-      "stophigh_200": 2
+      "stophigh_200": 3
     },
     "39170": {
       "turnover_dates": [
@@ -76108,7 +76306,7 @@
       "stophigh_dates": [],
       "first_date": "2026-01-26",
       "score": 14,
-      "turnover_25": 2,
+      "turnover_25": 1,
       "stophigh_25": 0,
       "turnover_50": 10,
       "stophigh_50": 0,
@@ -76327,7 +76525,7 @@
       "score": 19,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 2,
       "stophigh_100": 0,
@@ -76585,8 +76783,8 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 6,
-      "stophigh_100": 1,
+      "turnover_100": 5,
+      "stophigh_100": 0,
       "turnover_200": 30,
       "stophigh_200": 8
     },
@@ -76672,7 +76870,7 @@
       "score": 18,
       "turnover_25": 5,
       "stophigh_25": 1,
-      "turnover_50": 9,
+      "turnover_50": 8,
       "stophigh_50": 1,
       "turnover_100": 17,
       "stophigh_100": 3,
@@ -77448,7 +77646,7 @@
       "stophigh_dates": [],
       "first_date": "2026-02-13",
       "score": 3,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
@@ -77521,7 +77719,7 @@
       "score": 48,
       "turnover_25": 11,
       "stophigh_25": 0,
-      "turnover_50": 31,
+      "turnover_50": 30,
       "stophigh_50": 1,
       "turnover_100": 47,
       "stophigh_100": 6,
@@ -77761,9 +77959,9 @@
       ],
       "first_date": "2026-02-17",
       "score": 105,
-      "turnover_25": 23,
+      "turnover_25": 22,
       "stophigh_25": 0,
-      "turnover_50": 46,
+      "turnover_50": 45,
       "stophigh_50": 0,
       "turnover_100": 84,
       "stophigh_100": 3,
@@ -77865,7 +78063,7 @@
       "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 9,
-      "stophigh_100": 2,
+      "stophigh_100": 1,
       "turnover_200": 14,
       "stophigh_200": 3
     },
@@ -78393,7 +78591,7 @@
       "score": 17,
       "turnover_25": 7,
       "stophigh_25": 0,
-      "turnover_50": 9,
+      "turnover_50": 8,
       "stophigh_50": 0,
       "turnover_100": 16,
       "stophigh_100": 1,
@@ -78490,19 +78688,20 @@
         "2026-08-12",
         "2026-08-18",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2026-03-02",
-      "score": 89,
+      "score": 90,
       "turnover_25": 11,
       "stophigh_25": 0,
       "turnover_50": 27,
       "stophigh_50": 0,
       "turnover_100": 75,
       "stophigh_100": 0,
-      "turnover_200": 89,
+      "turnover_200": 90,
       "stophigh_200": 0
     },
     "91300": {
@@ -78535,7 +78734,8 @@
         "2026-04-07",
         "2026-04-08",
         "2026-04-09",
-        "2026-04-13"
+        "2026-04-13",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -78545,14 +78745,14 @@
         "2026-03-13"
       ],
       "first_date": "2026-03-02",
-      "score": 29,
-      "turnover_25": 0,
+      "score": 30,
+      "turnover_25": 1,
       "stophigh_25": 0,
-      "turnover_50": 0,
+      "turnover_50": 1,
       "stophigh_50": 0,
       "turnover_100": 10,
       "stophigh_100": 0,
-      "turnover_200": 29,
+      "turnover_200": 30,
       "stophigh_200": 4
     },
     "32050": {
@@ -78829,7 +79029,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 9,
+      "turnover_100": 8,
       "stophigh_100": 0,
       "turnover_200": 16,
       "stophigh_200": 0
@@ -79013,7 +79213,7 @@
       "score": 3,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 0,
@@ -79135,7 +79335,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 7,
       "stophigh_200": 2
@@ -79166,7 +79366,7 @@
       "score": 14,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 8,
+      "turnover_50": 7,
       "stophigh_50": 0,
       "turnover_100": 9,
       "stophigh_100": 0,
@@ -79317,8 +79517,8 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 21,
-      "stophigh_100": 5,
+      "turnover_100": 20,
+      "stophigh_100": 4,
       "turnover_200": 25,
       "stophigh_200": 9
     },
@@ -79346,7 +79546,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 6,
+      "turnover_100": 5,
       "stophigh_100": 0,
       "turnover_200": 11,
       "stophigh_200": 1
@@ -79383,7 +79583,7 @@
       "stophigh_25": 0,
       "turnover_50": 2,
       "stophigh_50": 2,
-      "turnover_100": 9,
+      "turnover_100": 8,
       "stophigh_100": 2,
       "turnover_200": 13,
       "stophigh_200": 7
@@ -79434,8 +79634,8 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 12,
-      "stophigh_100": 1,
+      "turnover_100": 11,
+      "stophigh_100": 0,
       "turnover_200": 15,
       "stophigh_200": 1
     },
@@ -79596,7 +79796,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 5,
+      "turnover_100": 4,
       "stophigh_100": 0,
       "turnover_200": 7,
       "stophigh_200": 2
@@ -79649,7 +79849,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 16,
+      "turnover_100": 15,
       "stophigh_100": 1,
       "turnover_200": 17,
       "stophigh_200": 2
@@ -79700,7 +79900,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 0,
       "stophigh_100": 0,
       "turnover_200": 1,
       "stophigh_200": 0
@@ -79717,7 +79917,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 0,
       "stophigh_100": 0,
       "turnover_200": 1,
       "stophigh_200": 0
@@ -79736,7 +79936,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 2,
       "stophigh_100": 0,
       "turnover_200": 3,
       "stophigh_200": 0
@@ -79754,7 +79954,7 @@
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 2,
+      "turnover_100": 1,
       "stophigh_100": 0,
       "turnover_200": 2,
       "stophigh_200": 0
@@ -79782,7 +79982,7 @@
       "stophigh_25": 0,
       "turnover_50": 1,
       "stophigh_50": 0,
-      "turnover_100": 10,
+      "turnover_100": 9,
       "stophigh_100": 1,
       "turnover_200": 10,
       "stophigh_200": 1
@@ -79802,7 +80002,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 2,
+      "turnover_100": 1,
       "stophigh_100": 0,
       "turnover_200": 2,
       "stophigh_200": 1
@@ -79822,8 +80022,8 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 2,
-      "stophigh_100": 1,
+      "turnover_100": 1,
+      "stophigh_100": 0,
       "turnover_200": 2,
       "stophigh_200": 1
     },
@@ -79839,7 +80039,7 @@
       "stophigh_25": 0,
       "turnover_50": 0,
       "stophigh_50": 0,
-      "turnover_100": 1,
+      "turnover_100": 0,
       "stophigh_100": 0,
       "turnover_200": 1,
       "stophigh_200": 0
@@ -79917,7 +80117,7 @@
       "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 3,
-      "stophigh_100": 1,
+      "stophigh_100": 0,
       "turnover_200": 3,
       "stophigh_200": 1
     },
@@ -80419,7 +80619,7 @@
       "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 1,
-      "stophigh_50": 1,
+      "stophigh_50": 0,
       "turnover_100": 2,
       "stophigh_100": 1,
       "turnover_200": 2,
@@ -80736,19 +80936,20 @@
       "turnover_dates": [
         "2026-04-17",
         "2026-08-19",
-        "2026-08-20"
+        "2026-08-20",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [],
       "first_date": "2026-04-17",
-      "score": 3,
-      "turnover_25": 2,
+      "score": 4,
+      "turnover_25": 3,
       "stophigh_25": 0,
-      "turnover_50": 2,
+      "turnover_50": 3,
       "stophigh_50": 0,
-      "turnover_100": 3,
+      "turnover_100": 4,
       "stophigh_100": 0,
-      "turnover_200": 3,
+      "turnover_200": 4,
       "stophigh_200": 0
     },
     "42700": {
@@ -81503,7 +81704,7 @@
       "score": 15,
       "turnover_25": 4,
       "stophigh_25": 2,
-      "turnover_50": 8,
+      "turnover_50": 7,
       "stophigh_50": 2,
       "turnover_100": 15,
       "stophigh_100": 7,
@@ -82014,7 +82215,7 @@
       "score": 25,
       "turnover_25": 4,
       "stophigh_25": 0,
-      "turnover_50": 13,
+      "turnover_50": 12,
       "stophigh_50": 1,
       "turnover_100": 25,
       "stophigh_100": 4,
@@ -82078,7 +82279,7 @@
       "score": 22,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 11,
+      "turnover_50": 10,
       "stophigh_50": 0,
       "turnover_100": 22,
       "stophigh_100": 2,
@@ -82202,7 +82403,7 @@
       "turnover_25": 0,
       "stophigh_25": 0,
       "turnover_50": 1,
-      "stophigh_50": 2,
+      "stophigh_50": 1,
       "turnover_100": 2,
       "stophigh_100": 3,
       "turnover_200": 2,
@@ -82496,9 +82697,9 @@
       ],
       "first_date": "2026-06-04",
       "score": 14,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 10,
+      "turnover_50": 9,
       "stophigh_50": 0,
       "turnover_100": 14,
       "stophigh_100": 5,
@@ -82646,9 +82847,9 @@
       ],
       "first_date": "2026-06-11",
       "score": 12,
-      "turnover_25": 1,
+      "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 11,
+      "turnover_50": 10,
       "stophigh_50": 2,
       "turnover_100": 12,
       "stophigh_100": 4,
@@ -82684,7 +82885,7 @@
       "score": 1,
       "turnover_25": 0,
       "stophigh_25": 0,
-      "turnover_50": 1,
+      "turnover_50": 0,
       "stophigh_50": 0,
       "turnover_100": 1,
       "stophigh_100": 1,
@@ -82756,21 +82957,22 @@
         "2026-07-31",
         "2026-08-07",
         "2026-08-10",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-07-15"
       ],
       "first_date": "2026-06-16",
-      "score": 27,
+      "score": 28,
       "turnover_25": 11,
       "stophigh_25": 0,
-      "turnover_50": 27,
+      "turnover_50": 28,
       "stophigh_50": 1,
-      "turnover_100": 27,
+      "turnover_100": 28,
       "stophigh_100": 1,
-      "turnover_200": 27,
+      "turnover_200": 28,
       "stophigh_200": 1
     },
     "97600": {
@@ -83139,7 +83341,7 @@
       ],
       "first_date": "2026-06-30",
       "score": 19,
-      "turnover_25": 7,
+      "turnover_25": 6,
       "stophigh_25": 0,
       "turnover_50": 19,
       "stophigh_50": 3,
@@ -83246,7 +83448,7 @@
       ],
       "first_date": "2026-07-01",
       "score": 25,
-      "turnover_25": 13,
+      "turnover_25": 12,
       "stophigh_25": 2,
       "turnover_50": 25,
       "stophigh_50": 11,
@@ -83743,8 +83945,8 @@
       ],
       "first_date": "2026-07-17",
       "score": 4,
-      "turnover_25": 4,
-      "stophigh_25": 1,
+      "turnover_25": 3,
+      "stophigh_25": 0,
       "turnover_50": 4,
       "stophigh_50": 1,
       "turnover_100": 4,
@@ -83774,7 +83976,8 @@
         "2026-08-19",
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -83784,14 +83987,14 @@
         "2026-08-18"
       ],
       "first_date": "2026-07-17",
-      "score": 21,
+      "score": 22,
       "turnover_25": 21,
-      "stophigh_25": 3,
-      "turnover_50": 21,
+      "stophigh_25": 2,
+      "turnover_50": 22,
       "stophigh_50": 4,
-      "turnover_100": 21,
+      "turnover_100": 22,
       "stophigh_100": 4,
-      "turnover_200": 21,
+      "turnover_200": 22,
       "stophigh_200": 4
     },
     "296A0": {
@@ -84309,21 +84512,22 @@
     "32760": {
       "turnover_dates": [
         "2026-08-05",
-        "2026-08-06"
+        "2026-08-06",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
         "2026-08-04"
       ],
       "first_date": "2026-08-05",
-      "score": 2,
-      "turnover_25": 2,
+      "score": 3,
+      "turnover_25": 3,
       "stophigh_25": 1,
-      "turnover_50": 2,
+      "turnover_50": 3,
       "stophigh_50": 1,
-      "turnover_100": 2,
+      "turnover_100": 3,
       "stophigh_100": 1,
-      "turnover_200": 2,
+      "turnover_200": 3,
       "stophigh_200": 1
     },
     "74800": {
@@ -85172,7 +85376,8 @@
       "turnover_dates": [
         "2026-08-20",
         "2026-08-21",
-        "2026-08-24"
+        "2026-08-24",
+        "2026-08-25"
       ],
       "volume_dates": [],
       "stophigh_dates": [
@@ -85180,15 +85385,32 @@
         "2026-08-10"
       ],
       "first_date": "2026-08-20",
-      "score": 3,
-      "turnover_25": 3,
+      "score": 4,
+      "turnover_25": 4,
       "stophigh_25": 1,
-      "turnover_50": 3,
+      "turnover_50": 4,
       "stophigh_50": 1,
-      "turnover_100": 3,
+      "turnover_100": 4,
       "stophigh_100": 2,
-      "turnover_200": 3,
+      "turnover_200": 4,
       "stophigh_200": 2
+    },
+    "74250": {
+      "turnover_dates": [
+        "2026-08-25"
+      ],
+      "volume_dates": [],
+      "stophigh_dates": [],
+      "first_date": "2026-08-25",
+      "score": 1,
+      "turnover_25": 1,
+      "stophigh_25": 0,
+      "turnover_50": 1,
+      "stophigh_50": 0,
+      "turnover_100": 1,
+      "stophigh_100": 0,
+      "turnover_200": 1,
+      "stophigh_200": 0
     }
   }
 }
