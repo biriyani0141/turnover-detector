@@ -5,31 +5,16 @@
   "market": "東証P",
   "sector": "輸送用機器",
   "header": {
-    "price": 800,
-    "change": -4,
-    "changePct": -0.5,
+    "price": 790,
+    "change": -10,
+    "changePct": -1.2,
     "isStopHigh": false,
-    "turnoverPct": 1.5,
-    "marketCap": 29689600000,
-    "appearCount": 8,
+    "turnoverPct": 1.1,
+    "marketCap": 29318480000,
+    "appearCount": 7,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-15",
-      "o": 993,
-      "h": 1026,
-      "l": 951,
-      "c": 1015,
-      "v": 1546300,
-      "ma5": 991.6,
-      "ma25": 902.8,
-      "ma75": 790.6,
-      "ma200": 838.0,
-      "marks": [
-        "appear"
-      ]
-    },
     {
       "date": "2026-06-16",
       "o": 1016,
@@ -638,6 +623,18 @@
       "ma25": 814.1,
       "ma75": 886.2,
       "ma200": 835.4
+    },
+    {
+      "date": "2026-08-26",
+      "o": 795,
+      "h": 797,
+      "l": 789,
+      "c": 790,
+      "v": 406200,
+      "ma5": 803.2,
+      "ma25": 812.6,
+      "ma75": 885.4,
+      "ma200": 834.7
     }
   ]
 }

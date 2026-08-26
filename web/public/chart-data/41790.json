@@ -6,30 +6,15 @@
   "sector": "情報･通信業",
   "header": {
     "price": 355,
-    "change": -2,
-    "changePct": -0.6,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.5,
+    "turnoverPct": 0.4,
     "marketCap": 1929270930,
     "appearCount": 31,
-    "stopHighCount": 4
+    "stopHighCount": 3
   },
   "rows": [
-    {
-      "date": "2026-06-15",
-      "o": 600,
-      "h": 600,
-      "l": 600,
-      "c": 600,
-      "v": 50300,
-      "ma5": 441.0,
-      "ma25": 349.0,
-      "ma75": 305.0,
-      "ma200": 310.4,
-      "marks": [
-        "shc"
-      ]
-    },
     {
       "date": "2026-06-16",
       "o": 700,
@@ -733,6 +718,18 @@
       "ma25": 361.3,
       "ma75": 397.7,
       "ma200": 337.7
+    },
+    {
+      "date": "2026-08-26",
+      "o": 356,
+      "h": 360,
+      "l": 351,
+      "c": 355,
+      "v": 19500,
+      "ma5": 357.2,
+      "ma25": 359.7,
+      "ma75": 398.5,
+      "ma200": 338.0
     }
   ]
 }
