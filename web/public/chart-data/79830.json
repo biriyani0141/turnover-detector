@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "その他製品",
   "header": {
-    "price": 1330,
-    "change": 235,
-    "changePct": 21.5,
+    "price": 1292,
+    "change": -38,
+    "changePct": -2.9,
     "isStopHigh": false,
-    "turnoverPct": 9.2,
-    "marketCap": 3997236530,
+    "turnoverPct": 2.1,
+    "marketCap": 3883029772,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-16",
-      "o": 1052,
-      "h": 1052,
-      "l": 1046,
-      "c": 1049,
-      "v": 1400,
-      "ma5": 1060.2,
-      "ma25": 1085.0,
-      "ma75": 1124.1,
-      "ma200": 1200.6
-    },
     {
       "date": "2026-06-17",
       "o": 1049,
@@ -618,6 +606,18 @@
         "turn5",
         "appear"
       ]
+    },
+    {
+      "date": "2026-08-27",
+      "o": 1310,
+      "h": 1310,
+      "l": 1241,
+      "c": 1292,
+      "v": 64000,
+      "ma5": 1180.0,
+      "ma25": 1076.8,
+      "ma75": 1068.6,
+      "ma200": 1151.9
     }
   ]
 }
