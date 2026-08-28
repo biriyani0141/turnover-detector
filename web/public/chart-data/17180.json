@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "建設業",
   "header": {
-    "price": 6870,
-    "change": 50,
-    "changePct": 0.7,
+    "price": 6840,
+    "change": -30,
+    "changePct": -0.4,
     "isStopHigh": false,
-    "turnoverPct": 0.0,
-    "marketCap": 7922916810,
+    "turnoverPct": 0.2,
+    "marketCap": 7888318920,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-16",
-      "o": 6790,
-      "h": 6790,
-      "l": 6790,
-      "c": 6790,
-      "v": 300,
-      "ma5": 6812.0,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-06-17",
       "o": 6790,
@@ -615,6 +603,18 @@
       "v": 400,
       "ma5": 6830.0,
       "ma25": 6862.4,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-08-28",
+      "o": 6870,
+      "h": 6910,
+      "l": 6840,
+      "c": 6840,
+      "v": 2600,
+      "ma5": 6842.0,
+      "ma25": 6853.6,
       "ma75": null,
       "ma200": null
     }

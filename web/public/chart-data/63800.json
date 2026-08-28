@@ -6,27 +6,15 @@
   "sector": "機械",
   "header": {
     "price": 3865,
-    "change": -155,
-    "changePct": -3.9,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.8,
+    "turnoverPct": 2.1,
     "marketCap": 7400443045,
     "appearCount": 3,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-17",
-      "o": 4770,
-      "h": 4795,
-      "l": 4630,
-      "c": 4775,
-      "v": 8200,
-      "ma5": 4776.0,
-      "ma25": 4984.4,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-06-18",
       "o": 4745,
@@ -622,6 +610,18 @@
       "ma5": 3960.0,
       "ma25": 3832.0,
       "ma75": 4409.3,
+      "ma200": null
+    },
+    {
+      "date": "2026-08-28",
+      "o": 3835,
+      "h": 3915,
+      "l": 3815,
+      "c": 3865,
+      "v": 39600,
+      "ma5": 3950.0,
+      "ma25": 3812.6,
+      "ma75": 4401.1,
       "ma200": null
     }
   ]
