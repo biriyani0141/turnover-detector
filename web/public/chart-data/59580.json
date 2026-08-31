@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "金属製品",
   "header": {
-    "price": 4630,
-    "change": -5,
-    "changePct": -0.1,
+    "price": 4635,
+    "change": 5,
+    "changePct": 0.1,
     "isStopHigh": false,
-    "turnoverPct": 0.0,
-    "marketCap": 13704800000,
+    "turnoverPct": 0.1,
+    "marketCap": 13719600000,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-17",
-      "o": 4480,
-      "h": 4480,
-      "l": 4365,
-      "c": 4460,
-      "v": 900,
-      "ma5": 4396.0,
-      "ma25": 4240.0,
-      "ma75": 4582.4,
-      "ma200": null
-    },
     {
       "date": "2026-06-18",
       "o": 4480,
@@ -37,7 +25,7 @@
       "ma5": 4415.0,
       "ma25": 4253.0,
       "ma75": 4574.7,
-      "ma200": 4447.9
+      "ma200": null
     },
     {
       "date": "2026-06-19",
@@ -613,6 +601,18 @@
       "l": 4590,
       "c": 4630,
       "v": 700,
+      "ma5": null,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-08-31",
+      "o": 4645,
+      "h": 4645,
+      "l": 4565,
+      "c": 4635,
+      "v": 2200,
       "ma5": null,
       "ma25": null,
       "ma75": null,
