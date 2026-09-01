@@ -6,27 +6,15 @@
   "sector": "非鉄金属",
   "header": {
     "price": 1097,
-    "change": -85,
-    "changePct": -7.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 6.9,
+    "turnoverPct": 4.6,
     "marketCap": 19987700913,
-    "appearCount": 21,
+    "appearCount": 22,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-19",
-      "o": 892,
-      "h": 907,
-      "l": 869,
-      "c": 876,
-      "v": 270100,
-      "ma5": 891.8,
-      "ma25": 940.8,
-      "ma75": 1184.0,
-      "ma200": 1055.7
-    },
     {
       "date": "2026-06-22",
       "o": 876,
@@ -686,6 +674,21 @@
       "ma200": 1114.7,
       "marks": [
         "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-09-01",
+      "o": 1072,
+      "h": 1127,
+      "l": 1057,
+      "c": 1097,
+      "v": 833900,
+      "ma5": 1164.0,
+      "ma25": 1032.3,
+      "ma75": 930.2,
+      "ma200": 1116.9,
+      "marks": [
         "appear"
       ]
     }
