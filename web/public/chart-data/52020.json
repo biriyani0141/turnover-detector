@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "ガラス･土石製品",
   "header": {
-    "price": 492,
-    "change": 0,
-    "changePct": 0.0,
+    "price": 491,
+    "change": -1,
+    "changePct": -0.2,
     "isStopHigh": false,
-    "turnoverPct": 2.7,
-    "marketCap": 70021076904,
+    "turnoverPct": 1.8,
+    "marketCap": 69878757642,
     "appearCount": 2,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-22",
-      "o": 474,
-      "h": 475,
-      "l": 474,
-      "c": 474,
-      "v": 688400,
-      "ma5": 474.0,
-      "ma25": 475.4,
-      "ma75": 480.8,
-      "ma200": 525.3
-    },
     {
       "date": "2026-06-23",
       "o": 475,
@@ -620,6 +608,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-09-02",
+      "o": 491,
+      "h": 492,
+      "l": 490,
+      "c": 491,
+      "v": 2563000,
+      "ma5": 491.8,
+      "ma25": 485.6,
+      "ma75": 480.6,
+      "ma200": 510.2
     }
   ]
 }

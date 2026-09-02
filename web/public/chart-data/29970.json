@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "不動産業",
   "header": {
-    "price": 1324,
-    "change": 0,
-    "changePct": 0.0,
+    "price": 1323,
+    "change": -1,
+    "changePct": -0.1,
     "isStopHigh": false,
-    "turnoverPct": 0.7,
-    "marketCap": 2454696000,
+    "turnoverPct": 0.3,
+    "marketCap": 2452842000,
     "appearCount": 11,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-06-22",
-      "o": 942,
-      "h": 942,
-      "l": 942,
-      "c": 942,
-      "v": 1000,
-      "ma5": 941.8,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-06-23",
       "o": 942,
@@ -653,6 +641,18 @@
       "v": 13900,
       "ma5": 1323.6,
       "ma25": 1330.7,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-09-02",
+      "o": 1324,
+      "h": 1324,
+      "l": 1323,
+      "c": 1323,
+      "v": 5100,
+      "ma5": 1323.6,
+      "ma25": 1330.1,
       "ma75": null,
       "ma200": null
     }

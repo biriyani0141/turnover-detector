@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "情報･通信業",
   "header": {
-    "price": 62,
-    "change": 4,
-    "changePct": 6.9,
+    "price": 60,
+    "change": -2,
+    "changePct": -3.2,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
-    "marketCap": 5126174632,
+    "turnoverPct": 0.1,
+    "marketCap": 4960814160,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-22",
-      "o": 55,
-      "h": 58,
-      "l": 55,
-      "c": 56,
-      "v": 287000,
-      "ma5": 56.0,
-      "ma25": 57.0,
-      "ma75": 62.4,
-      "ma200": 73.0
-    },
     {
       "date": "2026-06-23",
       "o": 56,
@@ -614,6 +602,18 @@
       "ma25": 56.9,
       "ma75": 58.1,
       "ma200": 61.7
+    },
+    {
+      "date": "2026-09-02",
+      "o": 61,
+      "h": 61,
+      "l": 59,
+      "c": 60,
+      "v": 88200,
+      "ma5": 59.0,
+      "ma25": 57.0,
+      "ma75": 58.1,
+      "ma200": 61.6
     }
   ]
 }
