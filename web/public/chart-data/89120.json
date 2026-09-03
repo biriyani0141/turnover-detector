@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "不動産業",
   "header": {
-    "price": 170,
-    "change": 14,
-    "changePct": 9.0,
+    "price": 164,
+    "change": -6,
+    "changePct": -3.5,
     "isStopHigh": false,
-    "turnoverPct": 26.6,
-    "marketCap": 2914786000,
+    "turnoverPct": 2.1,
+    "marketCap": 2811911200,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-23",
-      "o": 172,
-      "h": 172,
-      "l": 171,
-      "c": 172,
-      "v": 36500,
-      "ma5": 171.6,
-      "ma25": 174.5,
-      "ma75": 173.7,
-      "ma200": 165.4
-    },
     {
       "date": "2026-06-24",
       "o": 171,
@@ -618,6 +606,18 @@
         "turn5",
         "appear"
       ]
+    },
+    {
+      "date": "2026-09-03",
+      "o": 167,
+      "h": 168,
+      "l": 163,
+      "c": 164,
+      "v": 349700,
+      "ma5": 160.2,
+      "ma25": 154.7,
+      "ma75": 161.1,
+      "ma200": 162.9
     }
   ]
 }

@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "その他製品",
   "header": {
-    "price": 9670,
-    "change": -140,
-    "changePct": -1.4,
+    "price": 10360,
+    "change": 690,
+    "changePct": 7.1,
     "isStopHigh": false,
-    "turnoverPct": 3.3,
-    "marketCap": 245517780120,
-    "appearCount": 5,
+    "turnoverPct": 4.4,
+    "marketCap": 263036628960,
+    "appearCount": 6,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-06-23",
-      "o": 9780,
-      "h": 9920,
-      "l": 9350,
-      "c": 9350,
-      "v": 545000,
-      "ma5": 9326.0,
-      "ma25": 9055.6,
-      "ma75": 7930.7,
-      "ma200": 5261.8
-    },
     {
       "date": "2026-06-24",
       "o": 9200,
@@ -627,6 +615,21 @@
       "ma25": 8130.4,
       "ma75": 8231.7,
       "ma200": 6481.6,
+      "marks": [
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-09-03",
+      "o": 9890,
+      "h": 10500,
+      "l": 9670,
+      "c": 10360,
+      "v": 1143300,
+      "ma5": 9584.0,
+      "ma25": 8311.6,
+      "ma75": 8233.2,
+      "ma200": 6517.9,
       "marks": [
         "appear"
       ]
