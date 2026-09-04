@@ -6,27 +6,15 @@
   "sector": "建設業",
   "header": {
     "price": 2665,
-    "change": 32,
-    "changePct": 1.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.1,
+    "turnoverPct": 0.0,
     "marketCap": 2901385500,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-24",
-      "o": 2809,
-      "h": 2809,
-      "l": 2780,
-      "c": 2780,
-      "v": 1000,
-      "ma5": null,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-06-25",
       "o": 2815,
@@ -615,6 +603,18 @@
       "v": 1300,
       "ma5": 2664.6,
       "ma25": 2637.6,
+      "ma75": null,
+      "ma200": null
+    },
+    {
+      "date": "2026-09-04",
+      "o": 2665,
+      "h": 2665,
+      "l": 2665,
+      "c": 2665,
+      "v": 200,
+      "ma5": 2665.0,
+      "ma25": 2641.0,
       "ma75": null,
       "ma200": null
     }
