@@ -54,7 +54,8 @@
     "2026-08-28",
     "2026-08-31",
     "2026-09-02",
-    "2026-09-03"
+    "2026-09-03",
+    "2026-09-04"
   ],
   "phases": [
     {
@@ -297,7 +298,7 @@
     },
     {
       "start": "2026-06-23",
-      "end": "2026-09-03",
+      "end": "2026-09-04",
       "end_reason": "データ末尾到達",
       "crash_day_count": 12,
       "index_max_dd": -0.1676
@@ -677,6 +678,17 @@
       "median_excess": -0.0799,
       "large_pick_count": 16,
       "index_daily_change": -0.0017
+    },
+    {
+      "date": "2026-09-04",
+      "phase_start": "2026-06-23",
+      "day_index": 52,
+      "index_dd": -0.1676,
+      "star_count": 112,
+      "universe_count": 316,
+      "median_excess": -0.082,
+      "large_pick_count": 16,
+      "index_daily_change": 0.0126
     }
   ]
 }
