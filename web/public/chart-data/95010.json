@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "電気･ガス業",
   "header": {
-    "price": 575,
-    "change": 18,
-    "changePct": 3.2,
+    "price": 546,
+    "change": -29,
+    "changePct": -5.0,
     "isStopHigh": false,
-    "turnoverPct": 2.4,
-    "marketCap": 924195782078,
-    "appearCount": 17,
+    "turnoverPct": 2.7,
+    "marketCap": 877913677185,
+    "appearCount": 18,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-30",
-      "o": 466,
-      "h": 469,
-      "l": 458,
-      "c": 461,
-      "v": 26801100,
-      "ma5": 466.4,
-      "ma25": 515.3,
-      "ma75": 585.1,
-      "ma200": 663.5
-    },
     {
       "date": "2026-07-01",
       "o": 458,
@@ -665,6 +653,21 @@
       "ma25": 537.1,
       "ma75": 518.3,
       "ma200": 606.1
+    },
+    {
+      "date": "2026-09-10",
+      "o": 573,
+      "h": 577,
+      "l": 546,
+      "c": 546,
+      "v": 42620800,
+      "ma5": 559.4,
+      "ma25": 537.9,
+      "ma75": 517.9,
+      "ma200": 604.5,
+      "marks": [
+        "appear"
+      ]
     }
   ]
 }
