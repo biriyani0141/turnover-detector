@@ -5,28 +5,16 @@
   "market": "東証P",
   "sector": "食料品",
   "header": {
-    "price": 622,
-    "change": 11,
-    "changePct": 1.8,
+    "price": 692,
+    "change": 70,
+    "changePct": 11.3,
     "isStopHigh": false,
-    "turnoverPct": 0.4,
-    "marketCap": 18087138000,
-    "appearCount": 0,
+    "turnoverPct": 4.8,
+    "marketCap": 20122668000,
+    "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-01",
-      "o": 554,
-      "h": 573,
-      "l": 552,
-      "c": 571,
-      "v": 177400,
-      "ma5": 551.6,
-      "ma25": 577.6,
-      "ma75": 635.9,
-      "ma200": 704.2
-    },
     {
       "date": "2026-07-02",
       "o": 573,
@@ -614,6 +602,21 @@
       "ma25": 606.4,
       "ma75": 591.0,
       "ma200": 644.8
+    },
+    {
+      "date": "2026-09-11",
+      "o": 608,
+      "h": 698,
+      "l": 603,
+      "c": 692,
+      "v": 1441100,
+      "ma5": 625.4,
+      "ma25": 611.4,
+      "ma75": 591.4,
+      "ma200": 644.3,
+      "marks": [
+        "appear"
+      ]
     }
   ]
 }

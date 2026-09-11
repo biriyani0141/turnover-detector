@@ -5,28 +5,16 @@
   "market": "東証S",
   "sector": "ガラス･土石製品",
   "header": {
-    "price": 1515,
-    "change": 135,
-    "changePct": 9.8,
+    "price": 1500,
+    "change": -15,
+    "changePct": -1.0,
     "isStopHigh": false,
-    "turnoverPct": 2.8,
-    "marketCap": 1259998230,
+    "turnoverPct": 1.7,
+    "marketCap": 1247523000,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-06-25",
-      "o": 1228,
-      "h": 1228,
-      "l": 1200,
-      "c": 1200,
-      "v": 300,
-      "ma5": 1192.8,
-      "ma25": null,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-06-26",
       "o": 1170,
@@ -617,6 +605,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-09-11",
+      "o": 1501,
+      "h": 1599,
+      "l": 1423,
+      "c": 1500,
+      "v": 14200,
+      "ma5": 1396.0,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null
     }
   ]
 }

@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "金属製品",
   "header": {
-    "price": 1849,
-    "change": 37,
-    "changePct": 2.0,
+    "price": 1754,
+    "change": -95,
+    "changePct": -5.1,
     "isStopHigh": false,
-    "turnoverPct": 0.3,
-    "marketCap": 35328288300,
+    "turnoverPct": 0.5,
+    "marketCap": 33513151800,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-01",
-      "o": 1773,
-      "h": 1789,
-      "l": 1683,
-      "c": 1733,
-      "v": 75900,
-      "ma5": 1709.2,
-      "ma25": 1856.3,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-07-02",
       "o": 1724,
@@ -613,6 +601,18 @@
       "ma5": 1792.8,
       "ma25": 1753.3,
       "ma75": 1731.6,
+      "ma200": null
+    },
+    {
+      "date": "2026-09-11",
+      "o": 1769,
+      "h": 1794,
+      "l": 1743,
+      "c": 1754,
+      "v": 97200,
+      "ma5": 1798.8,
+      "ma25": 1753.3,
+      "ma75": 1723.6,
       "ma200": null
     }
   ]
