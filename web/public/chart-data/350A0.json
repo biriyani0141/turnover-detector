@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "電気･ガス業",
   "header": {
-    "price": 711,
-    "change": -103,
-    "changePct": -12.7,
+    "price": 696,
+    "change": -15,
+    "changePct": -2.1,
     "isStopHigh": false,
-    "turnoverPct": 7.9,
-    "marketCap": 29734147980,
+    "turnoverPct": 2.5,
+    "marketCap": 29106845280,
     "appearCount": 1,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-02",
-      "o": 775,
-      "h": 800,
-      "l": 771,
-      "c": 785,
-      "v": 329200,
-      "ma5": 765.8,
-      "ma25": 773.6,
-      "ma75": 810.1,
-      "ma200": 1810.0
-    },
     {
       "date": "2026-07-03",
       "o": 794,
@@ -618,6 +606,18 @@
         "turn5",
         "appear"
       ]
+    },
+    {
+      "date": "2026-09-14",
+      "o": 700,
+      "h": 700,
+      "l": 680,
+      "c": 696,
+      "v": 1074500,
+      "ma5": 777.4,
+      "ma25": 780.9,
+      "ma75": 772.4,
+      "ma200": 791.5
     }
   ]
 }

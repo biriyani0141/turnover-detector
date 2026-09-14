@@ -6,27 +6,15 @@
   "sector": "金属製品",
   "header": {
     "price": 1754,
-    "change": -95,
-    "changePct": -5.1,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.5,
+    "turnoverPct": 0.3,
     "marketCap": 33513151800,
     "appearCount": 0,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-02",
-      "o": 1724,
-      "h": 1769,
-      "l": 1679,
-      "c": 1705,
-      "v": 68600,
-      "ma5": 1707.0,
-      "ma25": 1832.3,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-07-03",
       "o": 1681,
@@ -613,6 +601,18 @@
       "ma5": 1798.8,
       "ma25": 1753.3,
       "ma75": 1723.6,
+      "ma200": null
+    },
+    {
+      "date": "2026-09-14",
+      "o": 1725,
+      "h": 1760,
+      "l": 1686,
+      "c": 1754,
+      "v": 67800,
+      "ma5": 1788.0,
+      "ma25": 1756.5,
+      "ma75": 1716.3,
       "ma200": null
     }
   ]

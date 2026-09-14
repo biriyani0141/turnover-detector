@@ -5,32 +5,16 @@
   "market": "東証G",
   "sector": "医薬品",
   "header": {
-    "price": 163,
-    "change": 3,
-    "changePct": 1.9,
+    "price": 170,
+    "change": 7,
+    "changePct": 4.3,
     "isStopHigh": false,
-    "turnoverPct": 2.0,
-    "marketCap": 3004008500,
+    "turnoverPct": 5.5,
+    "marketCap": 3133015000,
     "appearCount": 7,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-02",
-      "o": 166,
-      "h": 176,
-      "l": 154,
-      "c": 156,
-      "v": 1533800,
-      "ma5": 161.4,
-      "ma25": 152.5,
-      "ma75": 193.7,
-      "ma200": 246.8,
-      "marks": [
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-07-03",
       "o": 154,
@@ -639,6 +623,22 @@
       "ma25": 147.9,
       "ma75": 150.0,
       "ma200": 205.4
+    },
+    {
+      "date": "2026-09-14",
+      "o": 164,
+      "h": 172,
+      "l": 163,
+      "c": 170,
+      "v": 1031600,
+      "ma5": 163.0,
+      "ma25": 149.0,
+      "ma75": 150.1,
+      "ma200": 204.7,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
     }
   ]
 }

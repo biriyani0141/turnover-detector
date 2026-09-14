@@ -6,27 +6,15 @@
   "sector": "卸売業",
   "header": {
     "price": 342,
-    "change": -57,
-    "changePct": -14.3,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 4.1,
+    "turnoverPct": 0.8,
     "marketCap": 1013346000,
     "appearCount": 6,
     "stopHighCount": 2
   },
   "rows": [
-    {
-      "date": "2026-07-01",
-      "o": 298,
-      "h": 303,
-      "l": 297,
-      "c": 298,
-      "v": 2800,
-      "ma5": 300.4,
-      "ma25": 345.9,
-      "ma75": null,
-      "ma200": null
-    },
     {
       "date": "2026-07-02",
       "o": 305,
@@ -637,6 +625,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-09-14",
+      "o": 342,
+      "h": 343,
+      "l": 328,
+      "c": 342,
+      "v": 24300,
+      "ma5": 390.8,
+      "ma25": null,
+      "ma75": null,
+      "ma200": null
     }
   ]
 }
