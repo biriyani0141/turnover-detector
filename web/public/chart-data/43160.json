@@ -5,28 +5,16 @@
   "market": "東証G",
   "sector": "情報･通信業",
   "header": {
-    "price": 98,
-    "change": -7,
-    "changePct": -6.7,
+    "price": 88,
+    "change": -10,
+    "changePct": -10.2,
     "isStopHigh": false,
-    "turnoverPct": 15.5,
-    "marketCap": 349066200,
-    "appearCount": 20,
+    "turnoverPct": 9.2,
+    "marketCap": 313447200,
+    "appearCount": 21,
     "stopHighCount": 1
   },
   "rows": [
-    {
-      "date": "2026-07-03",
-      "o": 127,
-      "h": 130,
-      "l": 127,
-      "c": 128,
-      "v": 22800,
-      "ma5": 128.0,
-      "ma25": 131.8,
-      "ma75": 290.3,
-      "ma200": 796.8
-    },
     {
       "date": "2026-07-06",
       "o": 128,
@@ -687,6 +675,22 @@
       "ma25": 97.4,
       "ma75": 112.2,
       "ma200": 546.3,
+      "marks": [
+        "turn5",
+        "appear"
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "o": 99,
+      "h": 99,
+      "l": 84,
+      "c": 88,
+      "v": 324600,
+      "ma5": 100.8,
+      "ma25": 97.4,
+      "ma75": 111.3,
+      "ma200": 541.9,
       "marks": [
         "turn5",
         "appear"

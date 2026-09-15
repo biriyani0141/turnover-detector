@@ -6,32 +6,15 @@
   "sector": "小売業",
   "header": {
     "price": 60,
-    "change": -2,
-    "changePct": -3.2,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 0.5,
+    "turnoverPct": 1.0,
     "marketCap": 3744946980,
-    "appearCount": 14,
-    "stopHighCount": 1
+    "appearCount": 13,
+    "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-03",
-      "o": 74,
-      "h": 102,
-      "l": 71,
-      "c": 102,
-      "v": 10225800,
-      "ma5": 74.2,
-      "ma25": 110.4,
-      "ma75": 225.1,
-      "ma200": 410.1,
-      "marks": [
-        "shc",
-        "turn5",
-        "appear"
-      ]
-    },
     {
       "date": "2026-07-06",
       "o": 130,
@@ -665,6 +648,18 @@
       "ma25": 70.9,
       "ma75": 93.0,
       "ma200": 268.3
+    },
+    {
+      "date": "2026-09-15",
+      "o": 58,
+      "h": 63,
+      "l": 58,
+      "c": 60,
+      "v": 610100,
+      "ma5": 61.0,
+      "ma25": 69.8,
+      "ma75": 91.6,
+      "ma200": 266.1
     }
   ]
 }
