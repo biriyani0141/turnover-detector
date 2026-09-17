@@ -6,30 +6,15 @@
   "sector": "その他金融業",
   "header": {
     "price": 48,
-    "change": -3,
-    "changePct": -5.9,
+    "change": 0,
+    "changePct": 0.0,
     "isStopHigh": false,
-    "turnoverPct": 3.6,
+    "turnoverPct": 1.0,
     "marketCap": 1927306512,
-    "appearCount": 21,
+    "appearCount": 20,
     "stopHighCount": 0
   },
   "rows": [
-    {
-      "date": "2026-07-07",
-      "o": 80,
-      "h": 86,
-      "l": 79,
-      "c": 82,
-      "v": 1404100,
-      "ma5": 90.4,
-      "ma25": 93.5,
-      "ma75": 148.8,
-      "ma200": 227.4,
-      "marks": [
-        "appear"
-      ]
-    },
     {
       "date": "2026-07-08",
       "o": 89,
@@ -683,6 +668,18 @@
       "marks": [
         "appear"
       ]
+    },
+    {
+      "date": "2026-09-17",
+      "o": 48,
+      "h": 49,
+      "l": 47,
+      "c": 48,
+      "v": 405600,
+      "ma5": 49.6,
+      "ma25": 58.3,
+      "ma75": 73.3,
+      "ma200": 162.5
     }
   ]
 }
