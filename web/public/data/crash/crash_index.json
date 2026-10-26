@@ -82,7 +82,8 @@
     "2026-10-19",
     "2026-10-20",
     "2026-10-21",
-    "2026-10-22"
+    "2026-10-22",
+    "2026-10-23"
   ],
   "phases": [
     {
@@ -332,10 +333,10 @@
     },
     {
       "start": "2026-10-15",
-      "end": "2026-10-22",
+      "end": "2026-10-23",
       "end_reason": "データ末尾到達",
       "crash_day_count": 2,
-      "index_max_dd": -0.0601
+      "index_max_dd": -0.0817
     }
   ],
   "history": [
@@ -778,6 +779,17 @@
       "median_excess": null,
       "large_pick_count": 0,
       "index_daily_change": -0.0265
+    },
+    {
+      "date": "2026-10-23",
+      "phase_start": "2026-10-15",
+      "day_index": 7,
+      "index_dd": -0.0817,
+      "star_count": 0,
+      "universe_count": 0,
+      "median_excess": null,
+      "large_pick_count": 0,
+      "index_daily_change": -0.0034
     }
   ]
 }
