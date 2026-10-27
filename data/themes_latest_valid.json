@@ -1,559 +1,551 @@
 {
   "themes": [
     {
-      "theme": "光接続：レーザー光源",
-      "slug": "dc-optical-ems",
-      "theme1": "データセンター",
-      "return_1d": 7.16,
-      "return_5d": -3.87,
-      "return_10d": -19.81,
-      "return_1m": -23.89,
-      "return_2m": -21.88,
-      "return_3m": -5.04,
-      "return_6m": -28.02,
-      "return_1y": 337.46,
+      "theme": "レアアース",
+      "slug": "rare-earth",
+      "theme1": "戦略資源",
+      "return_1d": 13.54,
+      "return_5d": 7.11,
+      "return_10d": -2.1,
+      "return_1m": -21.56,
+      "return_2m": -35.06,
+      "return_3m": -15.94,
+      "return_6m": -46.23,
+      "return_1y": -40.57,
       "top_movers": [
         {
-          "ticker": "LITE",
-          "pct_1d": 8.25
+          "ticker": "CRML",
+          "pct_1d": 27.43
         },
         {
-          "ticker": "AXTI",
-          "pct_1d": 8.05
+          "ticker": "NB",
+          "pct_1d": 18.28
         },
         {
-          "ticker": "AAOI",
-          "pct_1d": 6.5
-        }
-      ],
-      "bucket": "新規点火"
-    },
-    {
-      "theme": "DC チップ直下給電  VPD",
-      "slug": "dc-vpd",
-      "theme1": "データセンター",
-      "return_1d": 5.8,
-      "return_5d": -0.27,
-      "return_10d": -12.1,
-      "return_1m": -14.46,
-      "return_2m": 0.62,
-      "return_3m": -1.76,
-      "return_6m": -15.4,
-      "return_1y": 72.24,
-      "top_movers": [
-        {
-          "ticker": "VICR",
-          "pct_1d": 10.66
-        },
-        {
-          "ticker": "ADI",
-          "pct_1d": 4.34
-        },
-        {
-          "ticker": "MPWR",
-          "pct_1d": 2.41
-        }
-      ],
-      "bucket": "新規点火"
-    },
-    {
-      "theme": "光接続：CPO",
-      "slug": "dc-optical-semi",
-      "theme1": "データセンター",
-      "return_1d": 5.13,
-      "return_5d": -4.35,
-      "return_10d": -17.6,
-      "return_1m": -20.15,
-      "return_2m": -18.49,
-      "return_3m": -4.84,
-      "return_6m": -14.08,
-      "return_1y": 200.72,
-      "top_movers": [
-        {
-          "ticker": "LITE",
-          "pct_1d": 8.25
-        },
-        {
-          "ticker": "AXTI",
-          "pct_1d": 8.05
-        },
-        {
-          "ticker": "AAOI",
-          "pct_1d": 6.5
-        }
-      ],
-      "bucket": "新規点火"
-    },
-    {
-      "theme": "ストレージ ソリュション",
-      "slug": "storage-solutions",
-      "theme1": "データセンター",
-      "return_1d": 4.79,
-      "return_5d": 5.27,
-      "return_10d": -11.3,
-      "return_1m": 7.53,
-      "return_2m": 18.3,
-      "return_3m": 54.3,
-      "return_6m": 98.47,
-      "return_1y": 72.09,
-      "top_movers": [
-        {
-          "ticker": "P",
-          "pct_1d": 6.52
-        },
-        {
-          "ticker": "NTAP",
-          "pct_1d": 3.06
+          "ticker": "USAR",
+          "pct_1d": 16.72
         }
       ],
       "bucket": "加速中"
     },
     {
-      "theme": "天然ガス：生産",
-      "slug": "natural-gas-production",
-      "theme1": "天然ガス",
-      "return_1d": 4.7,
-      "return_5d": 7.56,
-      "return_10d": 12.1,
-      "return_1m": 17.44,
-      "return_2m": 7.51,
-      "return_3m": 14.19,
-      "return_6m": 5.33,
-      "return_1y": 16.4,
+      "theme": "重要鉱物：その他",
+      "slug": "critical-minerals-other",
+      "theme1": "戦略資源",
+      "return_1d": 13.49,
+      "return_5d": 3.79,
+      "return_10d": -0.21,
+      "return_1m": -25.3,
+      "return_2m": -36.04,
+      "return_3m": -24.65,
+      "return_6m": -51.21,
+      "return_1y": -50.68,
       "top_movers": [
         {
-          "ticker": "RRC",
-          "pct_1d": 17.66
+          "ticker": "UAMY",
+          "pct_1d": 16.84
         },
         {
-          "ticker": "AR",
-          "pct_1d": 3.36
+          "ticker": "TMC",
+          "pct_1d": 15.27
         },
         {
-          "ticker": "CNX",
-          "pct_1d": 3.02
+          "ticker": "IPX",
+          "pct_1d": 11.18
         }
       ],
-      "bucket": "継続強"
-    },
-    {
-      "theme": "半導体設計ソフト",
-      "slug": "semiconductor-design",
-      "theme1": "ソフトウェア",
-      "return_1d": 4.3,
-      "return_5d": -1.04,
-      "return_10d": -13.03,
-      "return_1m": -10.58,
-      "return_2m": -2.39,
-      "return_3m": -2.52,
-      "return_6m": -2.16,
-      "return_1y": 23.97,
-      "top_movers": [
-        {
-          "ticker": "ARM",
-          "pct_1d": 6.19
-        },
-        {
-          "ticker": "SNPS",
-          "pct_1d": 5.62
-        },
-        {
-          "ticker": "PDFS",
-          "pct_1d": 3.85
-        }
-      ],
-      "bucket": "新規点火"
-    },
-    {
-      "theme": "光接続：LPO",
-      "slug": "dc-optical-lpo",
-      "theme1": "データセンター",
-      "return_1d": 4.28,
-      "return_5d": -8.86,
-      "return_10d": -25.87,
-      "return_1m": -21.77,
-      "return_2m": -24.54,
-      "return_3m": -21.85,
-      "return_6m": -40.66,
-      "return_1y": 67.57,
-      "top_movers": [
-        {
-          "ticker": "AAOI",
-          "pct_1d": 6.5
-        },
-        {
-          "ticker": "FN",
-          "pct_1d": 3.25
-        },
-        {
-          "ticker": "MTSI",
-          "pct_1d": 3.1
-        }
-      ],
-      "bucket": "新規点火"
-    },
-    {
-      "theme": "石油精製",
-      "slug": "refinary",
-      "theme1": "石油",
-      "return_1d": 4.1,
-      "return_5d": 0.28,
-      "return_10d": 0.24,
-      "return_1m": 13.32,
-      "return_2m": 19.86,
-      "return_3m": 34.78,
-      "return_6m": 87.9,
-      "return_1y": 138.15,
-      "top_movers": [
-        {
-          "ticker": "PARR",
-          "pct_1d": 7.84
-        },
-        {
-          "ticker": "PBF",
-          "pct_1d": 5.74
-        },
-        {
-          "ticker": "DK",
-          "pct_1d": 5.44
-        }
-      ],
-      "bucket": "継続強"
-    },
-    {
-      "theme": "CDN",
-      "slug": "cdn",
-      "theme1": "ITサービス",
-      "return_1d": 4.03,
-      "return_5d": 12.07,
-      "return_10d": -3.7,
-      "return_1m": -5.11,
-      "return_2m": 6.53,
-      "return_3m": 13.39,
-      "return_6m": 31.84,
-      "return_1y": 114.37,
-      "top_movers": [
-        {
-          "ticker": "AKAM",
-          "pct_1d": 5.24
-        },
-        {
-          "ticker": "FSLY",
-          "pct_1d": 4.92
-        },
-        {
-          "ticker": "NET",
-          "pct_1d": 1.95
-        }
-      ],
-      "bucket": "加速中"
-    },
-    {
-      "theme": "サイバー：端末保護",
-      "slug": "cybersecurity-end",
-      "theme1": "ソフトウェア",
-      "return_1d": 3.97,
-      "return_5d": 16.17,
-      "return_10d": -0.42,
-      "return_1m": 8.95,
-      "return_2m": 31.63,
-      "return_3m": 42.39,
-      "return_6m": 107.15,
-      "return_1y": 73.35,
-      "top_movers": [
-        {
-          "ticker": "S",
-          "pct_1d": 6.27
-        },
-        {
-          "ticker": "CRWD",
-          "pct_1d": 1.66
-        }
-      ],
-      "bucket": "継続強"
+      "bucket": null
     },
     {
       "theme": "次世代セル",
       "slug": "nextgen-batteries",
       "theme1": "バッテリー",
-      "return_1d": -2.53,
-      "return_5d": 3.81,
-      "return_10d": -7.37,
-      "return_1m": -6.06,
-      "return_2m": -11.79,
-      "return_3m": -5.52,
-      "return_6m": -47.73,
-      "return_1y": -64.18,
+      "return_1d": 13.2,
+      "return_5d": 19.71,
+      "return_10d": 2.75,
+      "return_1m": 6.56,
+      "return_2m": -2.91,
+      "return_3m": 0.81,
+      "return_6m": -39.43,
+      "return_1y": -58.11,
       "top_movers": [
         {
-          "ticker": "AMPX",
-          "pct_1d": 2.14
+          "ticker": "ENVX",
+          "pct_1d": 25.56
         },
         {
-          "ticker": "SLDP",
-          "pct_1d": 0.25
+          "ticker": "SES",
+          "pct_1d": 25.17
         },
         {
           "ticker": "QS",
-          "pct_1d": -3.47
+          "pct_1d": 7.44
         }
       ],
-      "bucket": null
+      "bucket": "加速中"
     },
     {
-      "theme": "ロボ：物流/サービス",
-      "slug": "robotics-logistics",
-      "theme1": "ロボティクス",
-      "return_1d": -2.7,
-      "return_5d": -4.49,
-      "return_10d": -13.97,
-      "return_1m": -16.94,
-      "return_2m": -18.55,
-      "return_3m": -13.21,
-      "return_6m": -26.79,
-      "return_1y": -38.17,
-      "top_movers": [
-        {
-          "ticker": "CGNX",
-          "pct_1d": 0.14
-        },
-        {
-          "ticker": "ZBRA",
-          "pct_1d": -0.64
-        },
-        {
-          "ticker": "TNC",
-          "pct_1d": -1.18
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "新興国EC",
-      "slug": "develping-ec",
-      "theme1": "新興国",
-      "return_1d": -2.8,
-      "return_5d": -8.81,
-      "return_10d": -13.7,
-      "return_1m": -15.77,
-      "return_2m": -23.06,
-      "return_3m": -11.14,
-      "return_6m": -11.63,
-      "return_1y": -38.37,
-      "top_movers": [
-        {
-          "ticker": "JMIA",
-          "pct_1d": 0.26
-        },
-        {
-          "ticker": "SE",
-          "pct_1d": -0.84
-        },
-        {
-          "ticker": "MELI",
-          "pct_1d": -7.81
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "石炭：原料炭中心",
-      "slug": "coking-coal",
-      "theme1": "戦略資源",
-      "return_1d": -2.95,
-      "return_5d": -3.81,
-      "return_10d": -10.4,
-      "return_1m": -8.12,
-      "return_2m": -20.91,
-      "return_3m": -0.01,
-      "return_6m": -6.82,
-      "return_1y": -13.75,
-      "top_movers": [
-        {
-          "ticker": "HCC",
-          "pct_1d": -0.7
-        },
-        {
-          "ticker": "SXC",
-          "pct_1d": -2.15
-        },
-        {
-          "ticker": "BTU",
-          "pct_1d": -2.32
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "化学：農業",
-      "slug": "food-agriculture",
-      "theme1": "化学",
-      "return_1d": -3.15,
-      "return_5d": -4.2,
-      "return_10d": -12.22,
-      "return_1m": -31.71,
-      "return_2m": -36.21,
-      "return_3m": -34.8,
-      "return_6m": -37.08,
-      "return_1y": -35.89,
-      "top_movers": [
-        {
-          "ticker": "CF",
-          "pct_1d": 0.16
-        },
-        {
-          "ticker": "MOS",
-          "pct_1d": -0.78
-        },
-        {
-          "ticker": "NTR",
-          "pct_1d": -2.17
-        }
-      ],
-      "bucket": null
-    },
-    {
-      "theme": "太陽光発電",
-      "slug": "solar-energy-storage",
+      "theme": "ネオクラウド：リース",
+      "slug": "neo-cloud-lease",
       "theme1": "データセンター",
-      "return_1d": -3.6,
-      "return_5d": -5.65,
-      "return_10d": -16.64,
-      "return_1m": -17.1,
-      "return_2m": -26.86,
-      "return_3m": -32.65,
-      "return_6m": -35.46,
-      "return_1y": -28.39,
+      "return_1d": 9.58,
+      "return_5d": 3.74,
+      "return_10d": -16.11,
+      "return_1m": -36.46,
+      "return_2m": -31.92,
+      "return_3m": -37.35,
+      "return_6m": -29.28,
+      "return_1y": -24.49,
       "top_movers": [
         {
-          "ticker": "ARRY",
+          "ticker": "SLNH",
+          "pct_1d": 25.77
+        },
+        {
+          "ticker": "CIFR",
+          "pct_1d": 9.86
+        },
+        {
+          "ticker": "NUAI",
+          "pct_1d": 9.76
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "光接続：投機的",
+      "slug": "dc-optical-speculative",
+      "theme1": "データセンター",
+      "return_1d": 9.09,
+      "return_5d": 6.65,
+      "return_10d": -1.66,
+      "return_1m": -20.02,
+      "return_2m": -25.82,
+      "return_3m": -21.69,
+      "return_6m": -43.26,
+      "return_1y": 9.22,
+      "top_movers": [
+        {
+          "ticker": "LWLG",
+          "pct_1d": 12.04
+        },
+        {
+          "ticker": "POET",
+          "pct_1d": 6.15
+        }
+      ],
+      "bucket": "加速中"
+    },
+    {
+      "theme": "量子コンピュータ",
+      "slug": "quantum-computing",
+      "theme1": "量子技術",
+      "return_1d": 9.0,
+      "return_5d": 7.07,
+      "return_10d": -3.45,
+      "return_1m": -28.39,
+      "return_2m": -34.84,
+      "return_3m": -27.96,
+      "return_6m": -37.59,
+      "return_1y": -58.71,
+      "top_movers": [
+        {
+          "ticker": "XNDU",
+          "pct_1d": 14.65
+        },
+        {
+          "ticker": "INFQ",
+          "pct_1d": 12.92
+        },
+        {
+          "ticker": "RGTI",
+          "pct_1d": 8.57
+        }
+      ],
+      "bucket": "加速中"
+    },
+    {
+      "theme": "リチウム",
+      "slug": "lithium",
+      "theme1": "戦略資源",
+      "return_1d": 8.49,
+      "return_5d": 2.77,
+      "return_10d": 0.33,
+      "return_1m": -16.31,
+      "return_2m": -29.77,
+      "return_3m": -17.55,
+      "return_6m": -50.04,
+      "return_1y": -14.28,
+      "top_movers": [
+        {
+          "ticker": "CRML",
+          "pct_1d": 27.43
+        },
+        {
+          "ticker": "ELVR",
+          "pct_1d": 10.64
+        },
+        {
+          "ticker": "SLI",
+          "pct_1d": 8.57
+        }
+      ],
+      "bucket": "新規点火"
+    },
+    {
+      "theme": "ラック内接続：機器",
+      "slug": "dc-rack-connect",
+      "theme1": "データセンター",
+      "return_1d": 8.45,
+      "return_5d": -0.77,
+      "return_10d": -11.89,
+      "return_1m": -16.04,
+      "return_2m": -12.45,
+      "return_3m": -2.53,
+      "return_6m": 19.21,
+      "return_1y": 43.46,
+      "top_movers": [
+        {
+          "ticker": "CRDO",
+          "pct_1d": 10.81
+        },
+        {
+          "ticker": "ALAB",
+          "pct_1d": 10.55
+        },
+        {
+          "ticker": "APH",
+          "pct_1d": 3.99
+        }
+      ],
+      "bucket": "新規点火"
+    },
+    {
+      "theme": "人型ロボ：目",
+      "slug": "humanoid-eyes",
+      "theme1": "ロボティクス",
+      "return_1d": 8.31,
+      "return_5d": 7.39,
+      "return_10d": -2.19,
+      "return_1m": -12.22,
+      "return_2m": -1.9,
+      "return_3m": -7.56,
+      "return_6m": 5.52,
+      "return_1y": 27.96,
+      "top_movers": [
+        {
+          "ticker": "OUST",
+          "pct_1d": 10.4
+        },
+        {
+          "ticker": "ON",
+          "pct_1d": 6.22
+        }
+      ],
+      "bucket": "加速中"
+    },
+    {
+      "theme": "宇宙：インフラ",
+      "slug": "space-infrastructure",
+      "theme1": "防衛・宇宙",
+      "return_1d": 7.87,
+      "return_5d": 11.25,
+      "return_10d": -1.39,
+      "return_1m": -16.75,
+      "return_2m": -14.48,
+      "return_3m": 2.87,
+      "return_6m": -13.22,
+      "return_1y": 15.81,
+      "top_movers": [
+        {
+          "ticker": "VOYG",
+          "pct_1d": 11.38
+        },
+        {
+          "ticker": "LUNR",
+          "pct_1d": 10.31
+        },
+        {
+          "ticker": "FLY",
+          "pct_1d": 9.04
+        }
+      ],
+      "bucket": "加速中"
+    },
+    {
+      "theme": "ソフト：業界特化",
+      "slug": "soft-vertical",
+      "theme1": "ソフトウェア",
+      "return_1d": -2.67,
+      "return_5d": -0.46,
+      "return_10d": 7.6,
+      "return_1m": 17.61,
+      "return_2m": -2.87,
+      "return_3m": 24.62,
+      "return_6m": 30.01,
+      "return_1y": -10.54,
+      "top_movers": [
+        {
+          "ticker": "TRMB",
+          "pct_1d": -0.35
+        },
+        {
+          "ticker": "MANH",
+          "pct_1d": -1.22
+        },
+        {
+          "ticker": "BSY",
+          "pct_1d": -1.33
+        }
+      ],
+      "bucket": "失速"
+    },
+    {
+      "theme": "保険仲介",
+      "slug": "insurance-brokerage",
+      "theme1": "保険",
+      "return_1d": -2.68,
+      "return_5d": -0.67,
+      "return_10d": 9.03,
+      "return_1m": 10.91,
+      "return_2m": -4.28,
+      "return_3m": -1.41,
+      "return_6m": 11.3,
+      "return_1y": -8.24,
+      "top_movers": [
+        {
+          "ticker": "AON",
+          "pct_1d": 0.11
+        },
+        {
+          "ticker": "WTW",
+          "pct_1d": -1.49
+        },
+        {
+          "ticker": "MRSH",
+          "pct_1d": -2.07
+        }
+      ],
+      "bucket": "失速"
+    },
+    {
+      "theme": "コンサル",
+      "slug": "consulting",
+      "theme1": "ITサービス",
+      "return_1d": -2.72,
+      "return_5d": 1.27,
+      "return_10d": 10.68,
+      "return_1m": 19.12,
+      "return_2m": 11.26,
+      "return_3m": 28.99,
+      "return_6m": 17.9,
+      "return_1y": -8.68,
+      "top_movers": [
+        {
+          "ticker": "BAH",
+          "pct_1d": 0.08
+        },
+        {
+          "ticker": "IBM",
+          "pct_1d": -1.26
+        },
+        {
+          "ticker": "INFY",
+          "pct_1d": -2.78
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "ソフト：バックオフィス",
+      "slug": "soft-back-office",
+      "theme1": "ソフトウェア",
+      "return_1d": -2.73,
+      "return_5d": 0.3,
+      "return_10d": 11.0,
+      "return_1m": 16.56,
+      "return_2m": 9.48,
+      "return_3m": 33.8,
+      "return_6m": 41.05,
+      "return_1y": -19.44,
+      "top_movers": [
+        {
+          "ticker": "WDAY",
+          "pct_1d": -1.46
+        },
+        {
+          "ticker": "DOCU",
+          "pct_1d": -3.36
+        },
+        {
+          "ticker": "INTU",
+          "pct_1d": -3.38
+        }
+      ],
+      "bucket": "失速"
+    },
+    {
+      "theme": "インフラ計測",
+      "slug": "infra-measure",
+      "theme1": "機械",
+      "return_1d": -2.98,
+      "return_5d": 5.79,
+      "return_10d": 5.22,
+      "return_1m": 4.51,
+      "return_2m": -3.88,
+      "return_3m": 2.35,
+      "return_6m": 2.79,
+      "return_1y": -24.99,
+      "top_movers": [
+        {
+          "ticker": "ITRI",
+          "pct_1d": 7.93
+        },
+        {
+          "ticker": "BMI",
+          "pct_1d": -2.63
+        },
+        {
+          "ticker": "XYL",
+          "pct_1d": -14.25
+        }
+      ],
+      "bucket": null
+    },
+    {
+      "theme": "病院運営",
+      "slug": "hospital-operators",
+      "theme1": "医療保険・診療",
+      "return_1d": -3.05,
+      "return_5d": -2.18,
+      "return_10d": -1.3,
+      "return_1m": 1.86,
+      "return_2m": 2.09,
+      "return_3m": 2.15,
+      "return_6m": 17.35,
+      "return_1y": 15.77,
+      "top_movers": [
+        {
+          "ticker": "DVA",
           "pct_1d": -1.25
         },
         {
-          "ticker": "FSLR",
-          "pct_1d": -2.23
+          "ticker": "EHC",
+          "pct_1d": -2.06
         },
         {
-          "ticker": "NXT",
-          "pct_1d": -3.04
+          "ticker": "THC",
+          "pct_1d": -2.56
         }
       ],
       "bucket": null
     },
     {
-      "theme": "スーパーメジャー 海外",
-      "slug": "oil-supermajors-non-us",
+      "theme": "ソフト：マーケ・販売",
+      "slug": "soft-marketing",
+      "theme1": "ソフトウェア",
+      "return_1d": -3.1,
+      "return_5d": -0.74,
+      "return_10d": 4.4,
+      "return_1m": 11.69,
+      "return_2m": -3.75,
+      "return_3m": 18.04,
+      "return_6m": 32.7,
+      "return_1y": -12.04,
+      "top_movers": [
+        {
+          "ticker": "SHOP",
+          "pct_1d": -1.39
+        },
+        {
+          "ticker": "FIG",
+          "pct_1d": -2.17
+        },
+        {
+          "ticker": "KVYO",
+          "pct_1d": -2.58
+        }
+      ],
+      "bucket": "失速"
+    },
+    {
+      "theme": "海洋掘削サービス",
+      "slug": "offshore-drilling",
       "theme1": "石油",
-      "return_1d": -3.92,
-      "return_5d": -0.92,
-      "return_10d": 1.88,
-      "return_1m": 10.55,
-      "return_2m": 18.3,
-      "return_3m": 18.32,
-      "return_6m": 13.49,
-      "return_1y": 64.92,
+      "return_1d": -3.12,
+      "return_5d": 8.51,
+      "return_10d": 9.35,
+      "return_1m": 12.86,
+      "return_2m": 5.2,
+      "return_3m": 14.32,
+      "return_6m": -6.92,
+      "return_1y": 63.89,
       "top_movers": [
         {
-          "ticker": "TTE",
-          "pct_1d": 1.09
+          "ticker": "RIG",
+          "pct_1d": -0.92
         },
         {
-          "ticker": "SHEL",
-          "pct_1d": -1.17
-        },
-        {
-          "ticker": "BP",
-          "pct_1d": -1.54
-        }
-      ],
-      "bucket": "失速"
-    },
-    {
-      "theme": "アルコール飲料",
-      "slug": "alcoholic-beverages",
-      "theme1": "食品",
-      "return_1d": -4.7,
-      "return_5d": -1.56,
-      "return_10d": 2.36,
-      "return_1m": 8.55,
-      "return_2m": 0.73,
-      "return_3m": 2.77,
-      "return_6m": 4.21,
-      "return_1y": 12.89,
-      "top_movers": [
-        {
-          "ticker": "DEO",
-          "pct_1d": -1.62
-        },
-        {
-          "ticker": "STZ",
-          "pct_1d": -2.21
-        },
-        {
-          "ticker": "BUD",
-          "pct_1d": -2.71
-        }
-      ],
-      "bucket": "失速"
-    },
-    {
-      "theme": "水道",
-      "slug": "water-utilities",
-      "theme1": "ライフライン",
-      "return_1d": -5.74,
-      "return_5d": -0.95,
-      "return_10d": -1.5,
-      "return_1m": 3.59,
-      "return_2m": -0.01,
-      "return_3m": -0.78,
-      "return_6m": -0.5,
-      "return_1y": 5.39,
-      "top_movers": [
-        {
-          "ticker": "AWR",
-          "pct_1d": -0.34
-        },
-        {
-          "ticker": "CWT",
-          "pct_1d": -0.56
-        },
-        {
-          "ticker": "AWK",
-          "pct_1d": -0.75
+          "ticker": "NE",
+          "pct_1d": -5.31
         }
       ],
       "bucket": null
     },
     {
-      "theme": "次世代銀行",
-      "slug": "nextgen-bank",
-      "theme1": "フィンテック",
-      "return_1d": -5.96,
-      "return_5d": -4.76,
-      "return_10d": -11.83,
-      "return_1m": -8.9,
-      "return_2m": -16.13,
-      "return_3m": 3.99,
-      "return_6m": 2.73,
-      "return_1y": -14.48,
+      "theme": "不動産検索PF",
+      "slug": "re-pf",
+      "theme1": "不動産",
+      "return_1d": -3.48,
+      "return_5d": -1.95,
+      "return_10d": 10.54,
+      "return_1m": 13.34,
+      "return_2m": -3.71,
+      "return_3m": 5.19,
+      "return_6m": -20.53,
+      "return_1y": -57.6,
       "top_movers": [
         {
-          "ticker": "SOFI",
-          "pct_1d": -1.06
+          "ticker": "Z",
+          "pct_1d": -1.73
         },
         {
-          "ticker": "HOOD",
-          "pct_1d": -2.35
+          "ticker": "CSGP",
+          "pct_1d": -5.22
+        }
+      ],
+      "bucket": "失速"
+    },
+    {
+      "theme": "石油精製",
+      "slug": "refinary",
+      "theme1": "石油",
+      "return_1d": -8.87,
+      "return_5d": -9.81,
+      "return_10d": -13.21,
+      "return_1m": 3.27,
+      "return_2m": 9.44,
+      "return_3m": 21.0,
+      "return_6m": 69.29,
+      "return_1y": 115.46,
+      "top_movers": [
+        {
+          "ticker": "PSX",
+          "pct_1d": -7.08
         },
         {
-          "ticker": "CHYM",
-          "pct_1d": -3.43
+          "ticker": "MPC",
+          "pct_1d": -7.4
+        },
+        {
+          "ticker": "PBF",
+          "pct_1d": -8.63
         }
       ],
       "bucket": null
     }
   ],
-  "stock_date": "2026-10-26",
-  "updated_at": "2026-10-26 21:16:38",
-  "saved_at": "2026-10-26T23:58:41.352623"
+  "stock_date": "2026-10-27",
+  "updated_at": "2026-10-27 21:16:38",
+  "saved_at": "2026-10-27T23:54:23.723872"
 }
