@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-29",
+  "generated_at": "2026-10-30T16:45:24.691880+00:00",
+  "status": "ACTIVE",
+  "phase": {
+    "start": "2026-10-15",
+    "end_reason": "データ末尾到達",
+    "crash_day_count": 2,
+    "crash_days": [
+      "2026-10-15",
+      "2026-10-22"
+    ],
+    "index_max_dd": -0.0817,
+    "day_index": 11
+  },
+  "stocks": [],
+  "data_date": null,
+  "stocks_stale": true,
+  "population_base_date": "2026-10-14",
+  "population_stats": {
+    "n": 0,
+    "positive_count": 0,
+    "median_cum_excess_return": null
+  }
+}
