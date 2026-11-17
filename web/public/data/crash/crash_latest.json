@@ -1,21 +1,28 @@
 {
-  "date": "2026-11-13",
-  "generated_at": "2026-11-16T20:35:36.169605+00:00",
-  "status": "COOLDOWN",
+  "date": "2026-11-16",
+  "generated_at": "2026-11-17T19:15:15.179533+00:00",
+  "status": "ACTIVE",
   "phase": {
     "start": "2026-10-15",
-    "end_reason": "(iii)20営業日経過",
-    "crash_day_count": 4,
+    "end_reason": "データ末尾到達",
+    "crash_day_count": 5,
     "crash_days": [
       "2026-10-15",
       "2026-10-22",
       "2026-10-30",
-      "2026-11-06"
+      "2026-11-06",
+      "2026-11-16"
     ],
     "index_max_dd": -0.1522,
-    "day_index": 21
+    "day_index": 22
   },
   "stocks": [],
-  "data_date": "2026-11-13",
-  "stocks_stale": false
+  "data_date": null,
+  "stocks_stale": true,
+  "population_base_date": "2026-10-14",
+  "population_stats": {
+    "n": 0,
+    "positive_count": 0,
+    "median_cum_excess_return": null
+  }
 }
