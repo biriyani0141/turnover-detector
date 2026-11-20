@@ -1,10 +1,10 @@
 {
-  "date": "2026-11-18",
-  "generated_at": "2026-11-19T19:04:05.562900+00:00",
-  "status": "ACTIVE",
+  "date": "2026-11-19",
+  "generated_at": "2026-11-20T18:40:49.548466+00:00",
+  "status": "COOLDOWN",
   "phase": {
     "start": "2026-10-15",
-    "end_reason": "データ末尾到達",
+    "end_reason": "(ii)静穏3日AND安値未更新5日",
     "crash_day_count": 5,
     "crash_days": [
       "2026-10-15",
@@ -14,15 +14,9 @@
       "2026-11-16"
     ],
     "index_max_dd": -0.1522,
-    "day_index": 24
+    "day_index": 25
   },
   "stocks": [],
-  "data_date": null,
-  "stocks_stale": true,
-  "population_base_date": "2026-10-14",
-  "population_stats": {
-    "n": 0,
-    "positive_count": 0,
-    "median_cum_excess_return": null
-  }
+  "data_date": "2026-11-19",
+  "stocks_stale": false
 }
